@@ -27,3 +27,9 @@
 *.exe
 *.out
 *.app
+*.pdb
+*.ncb
+*.bsc
+*.user
+*.dep
+*.map
