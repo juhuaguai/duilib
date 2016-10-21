@@ -142,8 +142,8 @@ LRESULT CMainWnd::OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
 	if( pt.x >= rcClient.left + rcCaption.left && pt.x < rcClient.right - rcCaption.right \
 		&& pt.y >= rcCaption.top && pt.y < rcCaption.bottom ) {
 			CControlUI* pControl = static_cast<CControlUI*>(m_PM.FindControl(pt));
-			if( pControl && _tcscmp(pControl->GetClass(), _T("ButtonUI")) != 0 && 
-				_tcscmp(pControl->GetClass(), _T("OptionUI")) != 0 && 
+			if( pControl && _tcscmp(pControl->GetClass(), DUI_CTR_BUTTON) != 0 && 
+				_tcscmp(pControl->GetClass(), DUI_CTR_OPTION) != 0 && 
 				_tcscmp(pControl->GetClass(), _T("CButtonUIEx")) != 0)
 				return HTCAPTION;
 	}
