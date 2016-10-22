@@ -16,7 +16,7 @@
 		<Attribute name="selectedcolor" default="0xFFBAE4FF" type="DWORD" comment="默认的selected字体颜色,如(0xFFBAE4FF)"/>
 		<Attribute name="showdirty" default="false" type="BOOL" comment="绘制脏矩形(屏幕上更新的区域被称为脏矩形)"/>
 		<Attribute name="layeredimage" default="" type="STRING" comment="启用分层窗口绘制,只要有该属性,即便值为空,也会启用"/>
-		<Attribute name="noactivate" default="FALSE" type="BOOL" comment=""/>
+		<Attribute name="noactivate" default="FALSE" type="BOOL" comment="为true时,点击客户区不会激活窗口"/>
 	</Window>
 	<ChildLayout parent="Container" >
 		<Attribute name="xmlfile" default="" type="STRING" comment="子窗体XML布局文件"/>
