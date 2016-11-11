@@ -345,7 +345,7 @@ UINT CComboWnd::GetClassStyle() const
 ////////////////////////////////////////////////////////
 
 
-CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0)
+CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0),m_dwTextColor(0),m_dwDisabledTextColor(0),m_iFont(-1),m_uTextStyle(DT_VCENTER|DT_SINGLELINE|DT_LEFT)
 {
     m_szDropBox = CDuiSize(0, 150);
     ::ZeroMemory(&m_rcTextPadding, sizeof(m_rcTextPadding));
@@ -755,6 +755,38 @@ void CComboUI::SetShowText(bool flag)
 	m_bShowText = flag;
 	Invalidate();
 }
+void CComboUI::SetTextColor(DWORD dwTextColor)
+{
+	m_dwTextColor = dwTextColor;
+	Invalidate();
+}
+
+DWORD CComboUI::GetTextColor() const
+{
+	return m_dwTextColor;
+}
+
+void CComboUI::SetFont(int index)
+{
+	m_iFont = index;
+	Invalidate();
+}
+
+int CComboUI::GetFont() const
+{
+	return m_iFont;
+}
+
+void CComboUI::SetDisabledTextColor(DWORD dwTextColor)
+{
+	m_dwDisabledTextColor = dwTextColor;
+	Invalidate();
+}
+
+DWORD CComboUI::GetDisabledTextColor() const
+{
+	return m_dwDisabledTextColor;
+}
 
 RECT CComboUI::GetTextPadding() const
 {
@@ -1097,7 +1129,35 @@ void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
         SetTextPadding(rcTextPadding);
     }
+	else if( _tcscmp(pstrName, _T("align")) == 0 ) {
+		if( _tcsstr(pstrValue, _T("left")) != NULL ) {
+			m_uTextStyle &= ~(DT_CENTER | DT_RIGHT);
+			m_uTextStyle |= DT_LEFT;
+		}
+		if( _tcsstr(pstrValue, _T("center")) != NULL ) {
+			m_uTextStyle &= ~(DT_LEFT | DT_RIGHT);
+			m_uTextStyle |= DT_CENTER;
+		}
+		if( _tcsstr(pstrValue, _T("right")) != NULL ) {
+			m_uTextStyle &= ~(DT_LEFT | DT_CENTER);
+			m_uTextStyle |= DT_RIGHT;
+		}
+	}
+	else if( _tcscmp(pstrName, _T("font")) == 0 ) SetFont(_ttoi(pstrValue));
+	else if( _tcscmp(pstrName, _T("textcolor")) == 0 ) {
+		if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+		LPTSTR pstr = NULL;
+		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		SetTextColor(clrColor);
+	}
+	else if( _tcscmp(pstrName, _T("disabledtextcolor")) == 0 ) {
+		if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+		LPTSTR pstr = NULL;
+		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		SetDisabledTextColor(clrColor);
+	}
 	else if( _tcscmp(pstrName, _T("showtext")) == 0 ) SetShowText(_tcscmp(pstrValue, _T("true")) == 0);
+	else if( _tcscmp(pstrName, _T("selectedid")) == 0 ) SelectItem(_ttoi(pstrValue));
     else if( _tcscmp(pstrName, _T("normalimage")) == 0 ) SetNormalImage(pstrValue);
     else if( _tcscmp(pstrName, _T("hotimage")) == 0 ) SetHotImage(pstrValue);
     else if( _tcscmp(pstrName, _T("pushedimage")) == 0 ) SetPushedImage(pstrValue);
@@ -1254,7 +1314,11 @@ void CComboUI::PaintText(HDC hDC)
         CControlUI* pControl = static_cast<CControlUI*>(m_items[m_iCurSel]);
         IListItemUI* pElement = static_cast<IListItemUI*>(pControl->GetInterface(DUI_CTR_ILISTITEM));
         if( pElement != NULL ) {
-            pElement->DrawItemText(hDC, rcText);
+            //pElement->DrawItemText(hDC, rcText);
+			if (IsEnabled())
+				CRenderEngine::DrawText(hDC,m_pManager,rcText,pControl->GetText(),m_dwTextColor,m_iFont,m_uTextStyle);
+			else
+				CRenderEngine::DrawText(hDC,m_pManager,rcText,pControl->GetText(),m_dwDisabledTextColor,m_iFont,m_uTextStyle);
         }
         else {
             RECT rcOldPos = pControl->GetPos();
