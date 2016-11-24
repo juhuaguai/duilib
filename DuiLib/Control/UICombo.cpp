@@ -197,7 +197,7 @@ void CComboWnd::Notify(TNotifyUI& msg)
 {
 	if (msg.sType == DUI_MSGTYPE_ITEMCLICK || msg.sType == DUI_MSGTYPE_ITEMACTIVATE || msg.sType == DUI_MSGTYPE_LINK ||		//ListElement的一些事件
 		msg.sType == DUI_MSGTYPE_CLICK)																						//Button的一些事件,其他一些控件一般不会用作combo的item,因此一些事件也没有进行转发,可根据需要增删
-		m_pOwner->GetManager()->SendNotify(msg.pSender,msg.sType,msg.wParam,msg.lParam);	
+		m_pOwner->GetManager()->SendNotify(msg.pSender,msg.sType,msg.wParam,msg.lParam,true);	
 }
 
 LPCTSTR CComboWnd::GetWindowClassName() const
