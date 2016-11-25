@@ -2069,7 +2069,8 @@ void CListElementUI::DoEvent(TEventUI& event)
 
 void CListElementUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
-    if( _tcscmp(pstrName, _T("selected")) == 0 ) Select();
+    //if( _tcscmp(pstrName, _T("selected")) == 0 ) Select();
+	if( _tcscmp(pstrName, _T("selected")) == 0 ) Select(_tcscmp(pstrValue, _T("true")) == 0);
     else CControlUI::SetAttribute(pstrName, pstrValue);
 }
 
@@ -2882,7 +2883,7 @@ void CListContainerElementUI::DoEvent(TEventUI& event)
 
 void CListContainerElementUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
-    if( _tcscmp(pstrName, _T("selected")) == 0 ) Select();
+    if( _tcscmp(pstrName, _T("selected")) == 0 ) Select(_tcscmp(pstrValue, _T("true")) == 0);
     else if( _tcscmp(pstrName, _T("expandable")) == 0 ) SetExpandable(_tcscmp(pstrValue, _T("true")) == 0);
     else CContainerUI::SetAttribute(pstrName, pstrValue);
 }
