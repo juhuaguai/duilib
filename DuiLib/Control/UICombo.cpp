@@ -239,6 +239,18 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         m_pm.AttachDialog(m_pLayout);
 		m_pm.AddNotifier(this);
+		
+		m_pLayout->SetAttribute(_T("vscrollbar"),m_pOwner->GetVscrollbar());
+		m_pLayout->SetAttribute(_T("hscrollbar"),m_pOwner->GetHscrollbar());
+		m_pLayout->SetAttribute(_T("vscrollbarstyle"),m_pOwner->GetVscrollStyle());
+		m_pLayout->SetAttribute(_T("hscrollbarstyle"),m_pOwner->GetHscrollStyle());
+		CScrollBarUI* pVerticalScrollBar = m_pLayout->GetVerticalScrollBar();
+		if (pVerticalScrollBar)
+		{
+			LPCTSTR pDefaultAttributes = m_pOwner->GetManager()->GetDefaultAttributeList(_T("VScrollBar"));
+			if( pDefaultAttributes )
+				pVerticalScrollBar->SetAttributeList(pDefaultAttributes);
+		}
 
 		CScrollBarUI* pHorizontalScrollBar = m_pLayout->GetHorizontalScrollBar();
 		if (pHorizontalScrollBar)
@@ -247,14 +259,7 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			if( pDefaultAttributes )
 				pHorizontalScrollBar->SetAttributeList(pDefaultAttributes);
 		}
-		CScrollBarUI* pVerticalScrollBar = m_pLayout->GetVerticalScrollBar();
-		if (pVerticalScrollBar)
-		{
-			LPCTSTR pDefaultAttributes = m_pOwner->GetManager()->GetDefaultAttributeList(_T("VScrollBar"));
-			if( pDefaultAttributes )
-				pVerticalScrollBar->SetAttributeList(pDefaultAttributes);
-		}
-        
+      
         return 0;
     }
     else if( uMsg == WM_CLOSE ) {
@@ -1293,6 +1298,10 @@ void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         SetItemHLineColor(clrColor);
     }
     else if( _tcscmp(pstrName, _T("itemshowhtml")) == 0 ) SetItemShowHtml(_tcscmp(pstrValue, _T("true")) == 0);
+	else if (_tcscmp(pstrName, _T("vscrollbar")) == 0)	m_sVscrollbar = pstrValue;
+	else if (_tcscmp(pstrName, _T("hscrollbar")) == 0)	m_sHscrollbar = pstrValue;
+	else if( _tcscmp(pstrName, _T("vscrollbarstyle")) == 0 )	m_sVscrollbarStyle = pstrValue;
+	else if( _tcscmp(pstrName, _T("hscrollbarstyle")) == 0 )	m_sHscrollStyle = pstrValue;
     else CContainerUI::SetAttribute(pstrName, pstrValue);
 }
 
@@ -1351,6 +1360,26 @@ void CComboUI::PaintText(HDC hDC)
             pControl->SetPos(rcOldPos, false);
         }
     }
+}
+
+LPCTSTR CComboUI::GetVscrollbar() const
+{
+	return m_sVscrollbar;
+}
+
+LPCTSTR CComboUI::GetHscrollbar() const
+{
+	return m_sHscrollbar;
+}
+
+LPCTSTR CComboUI::GetVscrollStyle() const
+{
+	return m_sVscrollbarStyle;
+}
+
+LPCTSTR CComboUI::GetHscrollStyle() const
+{
+	return m_sHscrollStyle;
 }
 
 } // namespace DuiLib
