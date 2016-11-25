@@ -239,6 +239,21 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         m_pm.AttachDialog(m_pLayout);
 		m_pm.AddNotifier(this);
+
+		CScrollBarUI* pHorizontalScrollBar = m_pLayout->GetHorizontalScrollBar();
+		if (pHorizontalScrollBar)
+		{
+			LPCTSTR pDefaultAttributes = m_pOwner->GetManager()->GetDefaultAttributeList(_T("HScrollBar"));
+			if( pDefaultAttributes )
+				pHorizontalScrollBar->SetAttributeList(pDefaultAttributes);
+		}
+		CScrollBarUI* pVerticalScrollBar = m_pLayout->GetVerticalScrollBar();
+		if (pVerticalScrollBar)
+		{
+			LPCTSTR pDefaultAttributes = m_pOwner->GetManager()->GetDefaultAttributeList(_T("VScrollBar"));
+			if( pDefaultAttributes )
+				pVerticalScrollBar->SetAttributeList(pDefaultAttributes);
+		}
         
         return 0;
     }

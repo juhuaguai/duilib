@@ -195,6 +195,7 @@
 		<Attribute name="vscrollbar" default="false" type="BOOL" comment="是否使用竖向滚动条,如(true)"/>
 		<Attribute name="hscrollbar" default="false" type="BOOL" comment="是否使用横向滚动条,如(true)"/>
 		<Attribute name="childpadding" default="0" type="INT" comment="子控件之间的额外距离,如(4)"/>
+		<Attribute name="childvpadding" default="0" type="INT" comment="子控件之间的垂直额外距离,如(4)"/>
 		<Attribute name="columns" default="1" type="INT" comment="列数,如(4)"/>
 		<Attribute name="itemsize" default="0,0" type="SIZE" comment="子项固定大小，如(128,128)"/>
 	</TileLayout>
