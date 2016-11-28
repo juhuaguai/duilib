@@ -3,6 +3,15 @@
 
 #pragma once
 
+#define _USE_GDIPLUS 1
+#ifdef _USE_GDIPLUS
+#include <GdiPlus.h>
+#pragma comment( lib, "GdiPlus.lib" )
+using namespace Gdiplus;
+class DUILIB_API Gdiplus::RectF;
+struct DUILIB_API Gdiplus::GdiplusStartupInput;
+#endif
+
 namespace DuiLib
 {
 	class DUILIB_API CButtonUI : public CLabelUI
