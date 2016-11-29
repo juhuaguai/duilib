@@ -3,6 +3,8 @@
 
 namespace DuiLib
 {
+	extern Color ARGB2Color(DWORD dwColor);
+
 	class CEditWnd : public CWindowWnd
 	{
 	public:
@@ -160,8 +162,9 @@ namespace DuiLib
 			DWORD clrColor = m_pOwner->GetNativeEditBkColor();
 			if( clrColor == 0xFFFFFFFF ) return 0;
 			::SetBkMode((HDC)wParam, TRANSPARENT);
-			DWORD dwTextColor = m_pOwner->GetTextColor();
-			::SetTextColor((HDC)wParam, RGB(GetBValue(dwTextColor),GetGValue(dwTextColor),GetRValue(dwTextColor)));
+			//DWORD dwTextColor = m_pOwner->GetTextColor();
+			//::SetTextColor((HDC)wParam, RGB(GetBValue(dwTextColor),GetGValue(dwTextColor),GetRValue(dwTextColor)));
+			::SetTextColor((HDC)wParam, RGB(255-GetRValue(clrColor),255-GetGValue(clrColor),255-GetBValue(clrColor)));
 			if (clrColor < 0xFF000000) {
 				if (m_hBkBrush != NULL) ::DeleteObject(m_hBkBrush);
 				RECT rcWnd = m_pOwner->GetManager()->GetNativeWindowRect(m_hWnd);
@@ -190,8 +193,10 @@ namespace DuiLib
 					::GetClientRect(m_hWnd, &rcClient);
 					POINT ptCaret;
 					::GetCaretPos(&ptCaret);
-					RECT rcCaret = { ptCaret.x, ptCaret.y, ptCaret.x, ptCaret.y+rcClient.bottom-rcClient.top };
-					CRenderEngine::DrawLine((HDC)wParam, rcCaret, 1, 0xFF000000);
+					RECT rcCaret = { ptCaret.x, ptCaret.y+1, ptCaret.x, ptCaret.y+rcClient.bottom-rcClient.top-1 };
+					//CRenderEngine::DrawLine((HDC)wParam, rcCaret, 1, 0xFF000000);
+					DWORD clrColor = m_pOwner->GetNativeEditBkColor();
+					CRenderEngine::DrawLine((HDC)wParam, rcCaret, 1, RGB(255-GetRValue(clrColor),255-GetGValue(clrColor),255-GetBValue(clrColor)));					
 				}
 				return lRes;
 			}
@@ -248,7 +253,7 @@ namespace DuiLib
 		m_dwEditbkColor(0xFFFFFFFF), m_iWindowStyls(0)
 	{
 		SetTextPadding(CDuiRect(4, 3, 4, 3));
-		SetBkColor(0xFFFFFFFF);
+		//SetBkColor(0xFFFFFFFF);
 	}
 
 	LPCTSTR CEditUI::GetClass() const
@@ -276,7 +281,7 @@ namespace DuiLib
 	}
 
 	void CEditUI::DoEvent(TEventUI& event)
-	{
+	{CDuiString szLog;szLog.Format(_T("Type=%d,pSenderName=%s\n"),event.Type,event.pSender->GetName());OutputDebugString(szLog);
 		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
 			if( m_pParent != NULL ) m_pParent->DoEvent(event);
 			else CLabelUI::DoEvent(event);
@@ -658,14 +663,65 @@ namespace DuiLib
 		rc.right -= m_rcTextPadding.right;
 		rc.top += m_rcTextPadding.top;
 		rc.bottom -= m_rcTextPadding.bottom;
-		if( IsEnabled() ) {
-			CRenderEngine::DrawText(hDC, m_pManager, rc, sText, m_dwTextColor, \
-				m_iFont, DT_SINGLELINE | m_uTextStyle);
-		}
-		else {
-			CRenderEngine::DrawText(hDC, m_pManager, rc, sText, m_dwDisabledTextColor, \
-				m_iFont, DT_SINGLELINE | m_uTextStyle);
+		//if( IsEnabled() ) {
+		//	CRenderEngine::DrawText(hDC, m_pManager, rc, sText, m_dwTextColor, \
+		//		m_iFont, DT_SINGLELINE | m_uTextStyle);
+		//}
+		//else {
+		//	CRenderEngine::DrawText(hDC, m_pManager, rc, sText, m_dwDisabledTextColor, \
+		//		m_iFont, DT_SINGLELINE | m_uTextStyle);
+		//}
 
+		if(!GetEnabledEffect())
+		{
+			if( IsEnabled() ) {
+				CRenderEngine::DrawText(hDC, m_pManager, rc, sText, m_dwTextColor, \
+					m_iFont, DT_SINGLELINE | m_uTextStyle);
+			}
+			else {
+				CRenderEngine::DrawText(hDC, m_pManager, rc, sText, m_dwDisabledTextColor, \
+					m_iFont, DT_SINGLELINE | m_uTextStyle);
+			}
 		}
+		else
+		{
+#ifdef _USE_GDIPLUS
+			Font	nFont(hDC,m_pManager->GetFont(GetFont()));
+			Graphics nGraphics(hDC);
+			nGraphics.SetTextRenderingHint(TextRenderingHintAntiAlias);
+
+			StringFormat format;
+			StringAlignment sa = StringAlignment::StringAlignmentNear;
+			if ((m_uTextStyle & DT_VCENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
+			else if( (m_uTextStyle & DT_BOTTOM) != 0) sa = StringAlignment::StringAlignmentFar;
+			format.SetLineAlignment((StringAlignment)sa);
+			sa = StringAlignment::StringAlignmentNear;
+			if ((m_uTextStyle & DT_CENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
+			else if( (m_uTextStyle & DT_RIGHT) != 0) sa = StringAlignment::StringAlignmentFar;
+			format.SetAlignment((StringAlignment)sa);
+			format.SetFormatFlags(StringFormatFlagsNoWrap);
+
+			DWORD clrColor=0x0;
+			if( IsEnabled() ) clrColor = m_dwTextColor;
+			else	clrColor = m_dwDisabledTextColor;
+			SolidBrush nSolidBrush(ARGB2Color(clrColor));
+
+#ifdef _UNICODE
+			nGraphics.DrawString(sText,sText.GetLength(),&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
+#else
+			int iLen = sText.GetLength();
+			LPWSTR  pWideText = NULL;
+			pWideText = new WCHAR[iLen + 1];
+			::ZeroMemory(pWideText, (iLen + 1) * sizeof(WCHAR));
+			::MultiByteToWideChar(CP_ACP, 0, sText.GetData(), -1, (LPWSTR)pWideText, iLen);
+
+			iLen = wcslen(pWideText);
+			nGraphics.DrawString(pWideText,iLen,&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
+
+			delete[] pWideText;
+#endif	//_UNICODE
+#endif	//_USE_GDIPLUS
+		}
+
 	}
 }
