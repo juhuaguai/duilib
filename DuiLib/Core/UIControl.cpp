@@ -991,7 +991,7 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcscmp(pstrName, _T("visible")) == 0 ) SetVisible(_tcscmp(pstrValue, _T("true")) == 0);
     else if( _tcscmp(pstrName, _T("float")) == 0 ) {
 		CDuiString nValue = pstrValue;
-		if(nValue.Find(',') < 0) {
+		if(nValue.Find(_T(',')) < 0) {
 			SetFloat(_tcscmp(pstrValue, _T("true")) == 0);
 		}
 		else {
