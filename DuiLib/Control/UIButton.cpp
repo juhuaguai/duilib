@@ -13,6 +13,7 @@ namespace DuiLib
 		, m_dwHotBkColor(0)
 		, m_uFadeAlphaDelta(0)
 		, m_uFadeAlpha(255)
+		,m_sCursor(_T("hand"))
 	{
 		m_uTextStyle = DT_SINGLELINE | DT_VCENTER | DT_CENTER;
 	}
@@ -126,7 +127,12 @@ namespace DuiLib
 		}
 		if( event.Type == UIEVENT_SETCURSOR )
 		{
-			::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
+			if (m_sCursor == _T("arrow"))
+				::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_ARROW)));
+			else if (m_sCursor == _T("hand"))
+				::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
+			else
+				::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
 			return;
 		}
 		if( event.Type == UIEVENT_TIMER  && event.wParam == FADE_TIMERID ) 
@@ -297,6 +303,25 @@ namespace DuiLib
 		Invalidate();
 	}
 
+	CDuiString CButtonUI::GetCursor()
+	{
+		return m_sCursor;
+	}
+
+	void CButtonUI::SetCursor(LPCTSTR pStrCursor)
+	{
+		m_sCursor = pStrCursor;
+		POINT ptMouse;
+		GetCursorPos(&ptMouse);
+		if(IsEnabled() && ::PtInRect(&m_rcItem,ptMouse))
+		{
+			if (_tcscmp(pStrCursor,_T("arrow")) == 0)
+				::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_ARROW)));
+			else if (_tcscmp(pStrCursor,_T("hand")) == 0)
+				::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
+		}
+	}
+
 	void CButtonUI::SetFiveStatusImage(LPCTSTR pStrImage)
 	{
 		m_diNormal.Clear();
@@ -406,6 +431,7 @@ namespace DuiLib
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetFocusedTextColor(clrColor);
 		}
+		else if (_tcscmp(pstrName, _T("cursor")) == 0)	SetCursor(pstrValue);
 		else CLabelUI::SetAttribute(pstrName, pstrValue);
 	}
 

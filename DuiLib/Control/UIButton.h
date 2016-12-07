@@ -41,6 +41,8 @@ namespace DuiLib
 		void SetForeImage(LPCTSTR pStrImage);
 		LPCTSTR GetHotForeImage();
 		void SetHotForeImage(LPCTSTR pStrImage);
+		CDuiString GetCursor();
+		void SetCursor(LPCTSTR pStrCursor);
 
 		// 对应按钮的5个状态图
 		void SetFiveStatusImage(LPCTSTR pStrImage);
@@ -69,6 +71,7 @@ namespace DuiLib
 		};
 
 		UINT m_uButtonState;
+		CDuiString m_sCursor;			//光标形状 arrow/hand 其他根据需要添加
 
 		DWORD m_dwHotBkColor;
 		DWORD m_dwHotTextColor;
