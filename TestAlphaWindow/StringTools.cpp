@@ -254,6 +254,36 @@ std::string URLEncodeGB2312(const char* szSrc/*, char* pBuf, int cbBufLen*/)
     return sOut;
 };
 
+std::string URLEncodeGB2312Forspace(const char* szSrc/*, char* pBuf, int cbBufLen*/)
+{
+	std::string sOut;
+	for( size_t ix = 0; ix < strlen(szSrc); ix++ )
+	{       
+		BYTE buf[4]; 
+		memset( buf, 0, 4 ); 
+		if( isalnum( (BYTE)szSrc[ix] ) || ispunct((BYTE)szSrc[ix]))
+		{       
+			buf[0] = szSrc[ix];
+		}
+		else if ( isspace( (BYTE)szSrc[ix] ) )
+		{
+			//buf[0] = '+';
+			buf[0] = '%';
+			buf[1] = '2';
+			buf[2] = '0';
+		}
+		else
+		{
+			buf[0] = '%';
+			buf[1] = toHex( (BYTE)szSrc[ix] >> 4 );
+			buf[2] = toHex( (BYTE)szSrc[ix] % 16);
+		}
+		sOut += (char *)buf;
+	}
+	//strncpy(pBuf,sOut.data(),cbBufLen);
+	return sOut;
+};
+
 char* Utf8ToGBK(const char* strUtf8)
 {
     int len=MultiByteToWideChar(CP_UTF8, 0, /*(LPCTSTR)*/strUtf8, -1, NULL,0); 
