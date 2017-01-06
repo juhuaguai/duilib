@@ -1,0 +1,17 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DuilibPreview", "DuilibPreview\DuilibPreview.vcproj", "{B1B1B73B-612A-408F-A074-33FB0D333D32}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		UnicodeRelease|Win32 = UnicodeRelease|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B1B1B73B-612A-408F-A074-33FB0D333D32}.UnicodeRelease|Win32.ActiveCfg = UnicodeRelease|Win32
+		{B1B1B73B-612A-408F-A074-33FB0D333D32}.UnicodeRelease|Win32.Build.0 = UnicodeRelease|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
