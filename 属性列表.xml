@@ -980,6 +980,7 @@
 		<Attribute name="align" default="left" type="STRING" comment="文字对齐方式,取值left、right、cente，如(center)"/>
 		<Attribute name="font" default="-1" type="INT" comment="字体id,如(0)"/>
 		<Attribute name="textcolor" default="0xFF000000" type="DWORD" comment="字体颜色，如(0xFFFF0000)"/>
+		<Attribute name="maxchar" default="255" type="INT" comment="输入字符最大长度，如(100)"/>
 	</RichEdit>
 	<TreeView parent="List" notifies="selectchanged setfocus killfocus timer menu itemselect windowinit(root)">
 		<Attribute name="name" default="" type="STRING" comment="控件名字，同一窗口内必须唯一，如(testbtn)"/>

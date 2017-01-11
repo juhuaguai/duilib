@@ -2293,6 +2293,7 @@ void CRichEditUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
 		SetTextPadding(rcTextPadding);
 	}
+	else if( _tcscmp(pstrName, _T("maxchar")) == 0 ) SetLimitText(_ttoi(pstrValue));
     else CContainerUI::SetAttribute(pstrName, pstrValue);
 }
 
