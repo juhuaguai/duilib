@@ -38,6 +38,12 @@ namespace DuiLib
 		return NULL;
 	}
 
+	void CTextUI::GetLinkRect(RECT* pRect,int& nLinksCount)
+	{
+		*pRect = m_rcLinks;
+		nLinksCount = m_nLinks;
+	}
+
 	void CTextUI::DoEvent(TEventUI& event)
 	{
 		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {

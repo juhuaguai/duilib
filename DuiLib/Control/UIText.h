@@ -20,6 +20,7 @@ namespace DuiLib
 		void DoEvent(TEventUI& event);
 
 		void PaintText(HDC hDC);
+		void GetLinkRect(RECT** ppRect,int& nLinksCount);
 
 	protected:
 		enum { MAX_LINK = 8 };
