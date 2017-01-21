@@ -38,7 +38,7 @@ namespace DuiLib
 		return NULL;
 	}
 
-	void CTextUI::GetLinkRect(RECT* pRect,int& nLinksCount)
+	void CTextUI::GetLinkRect(RECT** pRect,int& nLinksCount)
 	{
 		*pRect = m_rcLinks;
 		nLinksCount = m_nLinks;

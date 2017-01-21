@@ -281,7 +281,7 @@ namespace DuiLib
 	}
 
 	void CEditUI::DoEvent(TEventUI& event)
-	{CDuiString szLog;szLog.Format(_T("Type=%d,pSenderName=%s\n"),event.Type,event.pSender->GetName());OutputDebugString(szLog);
+	{//CDuiString szLog;szLog.Format(_T("Type=%d,pSenderName=%s\n"),event.Type,event.pSender->GetName());OutputDebugString(szLog);
 		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
 			if( m_pParent != NULL ) m_pParent->DoEvent(event);
 			else CLabelUI::DoEvent(event);
