@@ -34,8 +34,6 @@ LRESULT CMainWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 	m_PM.AttachDialog(pRoot);
 	m_PM.AddNotifier(this);
 
-	InitDlg();
-
 	return 0;
 }
 
@@ -117,6 +115,10 @@ LRESULT CMainWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 void CMainWnd::Notify(TNotifyUI& msg)
 {
+	if (msg.sType == DUI_MSGTYPE_WINDOWINIT)
+	{
+		InitDlg();
+	}
 	if ( msg.sType == DUI_MSGTYPE_CLICK)
 	{
 	}
