@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<Window size="480,480" caption="0,0,0,30" showdirty="false" layeredimage="WinStyle.png">
+	<Font name="微软雅黑" size="14" bold="false" default="true"/>
+    <VerticalLayout>
+		<Label text="标题栏" textcolor="#FFFFFFFF" bkcolor="#FF168AFA" height="30"/>
+		<Control />
+		<CustomLayout name="CustomLyt1" height="48" bkcolor="#FFFFFFFF"/>
+		<Control />
+		<CustomLayout name="CustomLyt2" height="48" bkcolor="#FFFFFFFF"/>
+		<Control />
+		<CustomLayout name="CustomLyt3" height="48" bkcolor="#FFFFFFFF"/>
+    </VerticalLayout>
+</Window>

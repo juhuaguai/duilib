@@ -32,10 +32,6 @@
 		<Attribute name="focusbordercolor" default="0x00000000" type="DWORD" comment="获得焦点时边框的颜色,如(0xFFFF0000)"/>
 		<Attribute name="colorhsl" default="false" type="BOOL" comment="本控件的颜色是否随窗口的hsl变化而变化,如(false)"/>
 		<Attribute name="bordersize" default="0" type="INT | RECT" comment="可以设置INT或RECT类型的值。当值为ING时则左、上、右、下都用该值作为宽。值为RECT类型时则分别设置左、上、右、下的边框"/>
-		<Attribute name="leftbordersize" default="0" type="INT" comment="左边边框大小，如(1)，设置该值大于0，则将忽略bordersize属性的设置"/>
-		<Attribute name="topbordersize" default="0" type="INT" comment="顶部边框大小，如(1)，设置该值大于0，则将忽略bordersize属性的设置"/>
-		<Attribute name="rightbordersize" default="0" type="INT" comment="右边边框大小，如(1)，设置该值大于0，则将忽略bordersize属性的设置"/>
-		<Attribute name="bottombordersize" default="0" type="INT" comment="底部边框大小，如(1)，设置该值大于0，则将忽略bordersize属性的设置"/>
 		<Attribute name="borderstyle" default="0" type="INT" comment="边框样式的设置,数值范围0-5"/>
 		<Attribute name="borderround" default="0,0" type="SIZE" comment="边框圆角半径,如(2,2)"/>
 		<Attribute name="bkimage" default="" type="STRING" comment="背景图片,如(bk.bmp或file='aaa.jpg' res='' restype='0' dest='0,0,0,0' source='0,0,0,0' corner='0,0,0,0' mask='#FF0000' fade='255' hole='false' xtiled='false' ytiled='false')"/>
@@ -362,6 +358,7 @@
 		<Attribute name="menu" default="false" type="BOOL" comment="是否需要右键菜单,如(true)"/>
 		<Attribute name="align" default="left" type="STRING" comment="文字对齐方式,取值left、right、center、top、bottom，如(center)"/>
 		<Attribute name="endellipsis" default="false" type="BOOL" comment="句末显示不全是否使用...代替,如(true)"/>
+		<Attribute name="multiline" default="true" type="BOOL" comment="是否使用多行,如(true)"/>
 		<Attribute name="font" default="-1" type="INT" comment="字体id,如(0)"/>
 		<Attribute name="textcolor" default="0x00000000" type="DWORD" comment="字体颜色，0表示使用默认字体颜色,如(0xFFFF0000)"/>
 		<Attribute name="disabledtextcolor" default="0x00000000" type="DWORD" comment="disabled字体颜色，0表示使用默认disabled字体颜色,如(0xFFFF0000)"/>
@@ -433,6 +430,8 @@
 		<Attribute name="pos" default="0,0,0,0" type="RECT" comment="位置，如果为float控件则指定位置和大小，否则只指定大小,如(0,0,100,100)"/>
 		<Attribute name="padding" default="0,0,0,0" type="RECT" comment="外边距,如(2,2,2,2)"/>
 		<Attribute name="bkcolor" default="0x00000000" type="DWORD" comment="背景颜色,如(0xFFFF0000)"/>
+		<Attribute name="hotbkcolor" default="0x00000000" type="DWORD" comment="悬停背景颜色,如(0xFFFF0000)"/>
+		<Attribute name="selectedbkcolor" default="0x00000000" type="DWORD" comment="选中时背景颜色,如(0xFFFF0000)"/>
 		<Attribute name="bkcolor2" default="0x00000000" type="DWORD" comment="背景渐变色2,和bkcolor配合使用,如(0xFFFFFF00)"/>
 		<Attribute name="bkcolor3" default="0x00000000" type="DWORD" comment="背景渐变色3,和bkcolor、bkcolor2配合使用,如(0xFFFF00FF)"/>
 		<Attribute name="hotbkcolor" default="0x00000000" type="DWORD" comment="鼠标悬浮背景颜色,如(0xFFFF0000)"/>
@@ -508,6 +507,7 @@
 		<Attribute name="menu" default="false" type="BOOL" comment="是否需要右键菜单,如(true)"/>
 		<Attribute name="align" default="left" type="STRING" comment="文字对齐方式,取值left、right、center、top、button，如(center)"/>
 		<Attribute name="endellipsis" default="false" type="BOOL" comment="句末显示不完是否使用...代替,如(true)"/>
+		<Attribute name="multiline" default="true" type="BOOL" comment="是否使用多行,如(true)"/>
 		<Attribute name="font" default="-1" type="INT" comment="字体id,如(0)"/>
 		<Attribute name="textcolor" default="0x00000000" type="DWORD" comment="字体颜色，0表示使用默认字体颜色,如(0xFFFF0000)"/>
 		<Attribute name="disabledtextcolor" default="0x00000000" type="DWORD" comment="disabled字体颜色，0表示使用默认disabled字体颜色,如(0xFFFF0000)"/>

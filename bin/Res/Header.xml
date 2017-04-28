@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<Window>
+    <HorizontalLayout>
+		<Control />
+		<Button name="min_btn" text="minBtn" textcolor="#FFFFFFFF" bkimage="LOL.png" width="48"/>
+		<Control width="10"/>
+		<Button name="close_btn" text="closeBtn" textcolor="#FFFFFFFF" bkimage="LOL.png" width="48"/>
+    </HorizontalLayout>
+</Window>

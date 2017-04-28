@@ -55,6 +55,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestAlphaWindow", "TestAlph
 		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E} = {E106ACD7-4E53-4AEE-942B-D0DD426DB34E}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CustomControlDemo", "CustomControlDemo\CustomControlDemo.vcproj", "{756BB6A9-2949-41A8-84D1-23FDDF81AF45}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E} = {E106ACD7-4E53-4AEE-942B-D0DD426DB34E}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -151,6 +156,14 @@ Global
 		{6E39F5AB-4241-4538-9CD7-96BA9C9F105F}.UnicodeDebug|Win32.Build.0 = UnicodeDebug|Win32
 		{6E39F5AB-4241-4538-9CD7-96BA9C9F105F}.UnicodeRelease|Win32.ActiveCfg = UnicodeRelease|Win32
 		{6E39F5AB-4241-4538-9CD7-96BA9C9F105F}.UnicodeRelease|Win32.Build.0 = UnicodeRelease|Win32
+		{756BB6A9-2949-41A8-84D1-23FDDF81AF45}.Debug|Win32.ActiveCfg = Debug|Win32
+		{756BB6A9-2949-41A8-84D1-23FDDF81AF45}.Debug|Win32.Build.0 = Debug|Win32
+		{756BB6A9-2949-41A8-84D1-23FDDF81AF45}.Release|Win32.ActiveCfg = Release|Win32
+		{756BB6A9-2949-41A8-84D1-23FDDF81AF45}.Release|Win32.Build.0 = Release|Win32
+		{756BB6A9-2949-41A8-84D1-23FDDF81AF45}.UnicodeDebug|Win32.ActiveCfg = UnicodeDebug|Win32
+		{756BB6A9-2949-41A8-84D1-23FDDF81AF45}.UnicodeDebug|Win32.Build.0 = UnicodeDebug|Win32
+		{756BB6A9-2949-41A8-84D1-23FDDF81AF45}.UnicodeRelease|Win32.ActiveCfg = UnicodeRelease|Win32
+		{756BB6A9-2949-41A8-84D1-23FDDF81AF45}.UnicodeRelease|Win32.Build.0 = UnicodeRelease|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -166,5 +179,6 @@ Global
 		{41B017E7-7805-40D5-9D96-AABF572F57D1} = {5ABBC10A-DC58-4A8D-AA4D-D1CB2A58FD01}
 		{41B017E7-7805-40D5-9D96-AABF572F5700} = {5ABBC10A-DC58-4A8D-AA4D-D1CB2A58FD01}
 		{6E39F5AB-4241-4538-9CD7-96BA9C9F105F} = {5ABBC10A-DC58-4A8D-AA4D-D1CB2A58FD01}
+		{756BB6A9-2949-41A8-84D1-23FDDF81AF45} = {5ABBC10A-DC58-4A8D-AA4D-D1CB2A58FD01}
 	EndGlobalSection
 EndGlobal
