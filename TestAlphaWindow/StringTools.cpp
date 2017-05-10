@@ -360,3 +360,99 @@ std::string EscapeToAnsi(const std::string& strSource)
 		return "";
 	}
 }
+
+//描述：中文汉字在没在对应的拼音范围
+bool  InPYRange(wchar_t start, wchar_t end, wchar_t code)
+{
+	if (code >= start && code <= end)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+//描述：得到当前中文字的拼音的第一个字母
+char  GetChineseFirstPY(wchar_t n)
+{
+	if (InPYRange(0xB0A1,0xB0C4,n)) return 'a';
+	if (InPYRange(0XB0C5,0XB2C0,n)) return 'b';
+	if (InPYRange(0xB2C1,0xB4ED,n)) return 'c';
+	if (InPYRange(0xB4EE,0xB6E9,n)) return 'd';
+	if (InPYRange(0xB6EA,0xB7A1,n)) return 'e';
+	if (InPYRange(0xB7A2,0xB8c0,n)) return 'f';
+	if (InPYRange(0xB8C1,0xB9FD,n)) return 'g';
+	if (InPYRange(0xB9FE,0xBBF6,n)) return 'h';
+	if (InPYRange(0xBBF7,0xBFA5,n)) return 'j';
+	if (InPYRange(0xBFA6,0xC0AB,n)) return 'k';
+	if (InPYRange(0xC0AC,0xC2E7,n)) return 'l';
+	if (InPYRange(0xC2E8,0xC4C2,n)) return 'm';
+	if (InPYRange(0xC4C3,0xC5B5,n)) return 'n';
+	if (InPYRange(0xC5B6,0xC5BD,n)) return 'o';
+	if (InPYRange(0xC5BE,0xC6D9,n)) return 'p';
+	if (InPYRange(0xC6DA,0xC8BA,n)) return 'q';
+	if (InPYRange(0xC8BB,0xC8F5,n)) return 'r';
+	if (InPYRange(0xC8F6,0xCBF0,n)) return 's';
+	if (InPYRange(0xCBFA,0xCDD9,n)) return 't';
+	if (InPYRange(0xCDDA,0xCEF3,n)) return 'w';
+	if (InPYRange(0xCEF4,0xD188,n)) return 'x';
+	if (InPYRange(0xD1B9,0xD4D0,n)) return 'y';
+	if (InPYRange(0xD4D1,0xD7F9,n)) return 'z';
+	return '\0';
+}
+
+
+//***************************************************
+//名称：GetFirstChinesePYCharOfText
+//功能：得到中文文本中的第一个中文的拼音的第一个字母 
+//参数：
+//      szText - 包含有中文的文本
+//      firstChar - 返回第一个中文的拼音的首个字母
+//返回值：
+//     若文本以中文打头，且成功得到其拼音的首个字母，则返回true,否则false
+//***************************************************
+bool GetFirstChinesePYCharOfText(char* szText, char &firstChar)
+{
+	if (!szText || strlen(szText) <= 1)
+	{
+		return false;
+	}
+
+	string sChinese = szText;
+	int  nCnt = 1;//sChinese.length()/2   //得到文本中前几个中文的拼音的第一个字母
+
+	char chr[3];
+	wchar_t wchr = 0;
+	char* buff = new char[nCnt + 1];
+
+	memset(buff, 0x00, sizeof(char) * nCnt + 1);
+	for (int i = 0, j = 0; i < nCnt; ++i)
+	{
+		memset(chr, 0x00, sizeof(chr));
+		chr[0] = sChinese[j++];
+		chr[1] = sChinese[j++];
+		chr[2] = '\0';
+
+		// 单个字符的编码 如：'我' = 0xced2
+		wchr = 0;
+		wchr = (chr[0] & 0xff) << 8;
+		wchr |= (chr[1] & 0xff);
+
+		buff[i] = GetChineseFirstPY(wchr);
+	}
+
+	firstChar = buff[0];
+	delete []buff;
+
+	if (firstChar == '\0')
+	{
+		firstChar = szText[0];
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
