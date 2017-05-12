@@ -64,7 +64,6 @@ namespace DuiLib
 		SendMessage(EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN, MAKELPARAM(0, 0));
 		Edit_Enable(m_hWnd, m_pOwner->IsEnabled() == true);
 		Edit_SetReadOnly(m_hWnd, m_pOwner->IsReadOnly() == true);
-
 		//Styls
 		::ShowWindow(m_hWnd, SW_SHOWNOACTIVATE);
 		::SetFocus(m_hWnd);
@@ -89,11 +88,11 @@ namespace DuiLib
 		rcPos.top += rcInset.top;
 		rcPos.right -= rcInset.right;
 		rcPos.bottom -= rcInset.bottom;
-		LONG lEditHeight = m_pOwner->GetManager()->GetFontInfo(m_pOwner->GetFont())->tm.tmHeight;
-		if( lEditHeight < rcPos.GetHeight() ) {
-			rcPos.top += (rcPos.GetHeight() - lEditHeight) / 2;
-			rcPos.bottom = rcPos.top + lEditHeight;
-		}
+		//LONG lEditHeight = m_pOwner->GetManager()->GetFontInfo(m_pOwner->GetFont())->tm.tmHeight;
+		//if( lEditHeight < rcPos.GetHeight() ) {
+		//	rcPos.top += (rcPos.GetHeight() - lEditHeight) / 2;
+		//	rcPos.bottom = rcPos.top + lEditHeight;
+		//}
 
 		CControlUI* pParent = m_pOwner;
 		RECT rcParent;
