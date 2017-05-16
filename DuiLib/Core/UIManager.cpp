@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include <zmouse.h>
 #include <stdlib.h>
+#include <CommCtrl.h>
+#pragma  comment(lib,"Comctl32.lib")
 
 DECLARE_HANDLE(HZIP);	// An HZIP identifies a zip file that has been opened
 typedef DWORD ZRESULT;
