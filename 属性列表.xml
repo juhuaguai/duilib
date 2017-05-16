@@ -356,7 +356,6 @@
 		<Attribute name="float" default="false" type="BOOL" comment="是否使用绝对定位,如(true)"/>
 		<Attribute name="shortcut" default="" type="CHAR" comment="对应的快捷键,如(P)"/>
 		<Attribute name="menu" default="false" type="BOOL" comment="是否需要右键菜单,如(true)"/>
-		<Attribute name="align" default="left" type="STRING" comment="文字对齐方式,取值left、right、center、top、bottom，如(center)"/>
 		<Attribute name="endellipsis" default="false" type="BOOL" comment="句末显示不全是否使用...代替,如(true)"/>
 		<Attribute name="multiline" default="true" type="BOOL" comment="是否使用多行,如(true)"/>
 		<Attribute name="font" default="-1" type="INT" comment="字体id,如(0)"/>
