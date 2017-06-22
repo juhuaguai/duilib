@@ -954,20 +954,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 
                 m_pRoot->Paint(m_hDcOffscreen, rcPaint, NULL);
 
-				//juhuaguai 重新补上背景色的Alpha通道
-				if (m_bLayered) {
-					LPBYTE pBits=(LPBYTE)m_pOffscreenBits;
-					for(int i = rcClient.bottom - rcPaint.bottom; i < rcClient.bottom - rcPaint.top; ++i)
-					{
-						for(int j = rcPaint.left; j < rcPaint.right; ++j)
-						{
-							int x = (i*(rcClient.right - rcClient.left) + j) * 4;
-							if((pBits[x + 3] == 0)&& (pBits[x + 0] != 0 || pBits[x + 1] != 0|| pBits[x + 2] != 0))
-								pBits[x + 3] = 255;	
-						}
-					}
-				}
-
 				if( m_bLayered ) {
 					for( int i = 0; i < m_aNativeWindow.GetSize(); ) {
 						HWND hChildWnd = static_cast<HWND>(m_aNativeWindow[i]);
@@ -1064,6 +1050,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 							}
 						}
 					}
+
                     BLENDFUNCTION bf = { AC_SRC_OVER, 0, m_nOpacity, AC_SRC_ALPHA };
                     POINT ptPos   = { rcWnd.left, rcWnd.top };
                     SIZE sizeWnd  = { dwWidth, dwHeight };

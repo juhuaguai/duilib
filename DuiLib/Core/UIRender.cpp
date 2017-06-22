@@ -1124,12 +1124,12 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 void CRenderEngine::DrawColor(HDC hDC, const RECT& rc, DWORD color)
 {
     if( color <= 0x00FFFFFF ) return;
-    if( color >= 0xFF000000 )
-    {
-        ::SetBkColor(hDC, RGB(GetBValue(color), GetGValue(color), GetRValue(color)));
-        ::ExtTextOut(hDC, 0, 0, ETO_OPAQUE, &rc, NULL, 0, NULL);
-    }
-    else
+    //if( color >= 0xFF000000 )
+    //{
+    //    ::SetBkColor(hDC, RGB(GetBValue(color), GetGValue(color), GetRValue(color)));
+    //    ::ExtTextOut(hDC, 0, 0, ETO_OPAQUE, &rc, NULL, 0, NULL);
+    //}
+    //else
     {
         // Create a new 32bpp bitmap with room for an alpha channel
         BITMAPINFO bmi = { 0 };
