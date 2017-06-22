@@ -951,7 +951,22 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 						}
 					}
 				}
+
                 m_pRoot->Paint(m_hDcOffscreen, rcPaint, NULL);
+
+				//juhuaguai 重新补上背景色的Alpha通道
+				if (m_bLayered) {
+					LPBYTE pBits=(LPBYTE)m_pOffscreenBits;
+					for(int i = rcClient.bottom - rcPaint.bottom; i < rcClient.bottom - rcPaint.top; ++i)
+					{
+						for(int j = rcPaint.left; j < rcPaint.right; ++j)
+						{
+							int x = (i*(rcClient.right - rcClient.left) + j) * 4;
+							if((pBits[x + 3] == 0)&& (pBits[x + 0] != 0 || pBits[x + 1] != 0|| pBits[x + 2] != 0))
+								pBits[x + 3] = 255;	
+						}
+					}
+				}
 
 				if( m_bLayered ) {
 					for( int i = 0; i < m_aNativeWindow.GetSize(); ) {
@@ -1033,11 +1048,18 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 								for( LONG x = rcPaint.left; x < rcPaint.right; ++x ) {
 									pOffscreenBits = m_pOffscreenBits + y * dwWidth + x;
 									pBackgroundBits = m_pBackgroundBits + y * dwWidth + x;
-									A = (BYTE)((*pBackgroundBits) >> 24);
-									R = (BYTE)((*pOffscreenBits) >> 16) * A / 255;
-									G = (BYTE)((*pOffscreenBits) >> 8) * A / 255;
-									B = (BYTE)(*pOffscreenBits) * A / 255;
-									*pOffscreenBits = RGB(B, G, R) + ((DWORD)A << 24);
+									if ( ( (BYTE)((*pOffscreenBits) >> 24) ) < 255 )	//画好的内容像素点alpha=255时(不透明),就不混合背景.
+									{
+										A = (BYTE)((*pBackgroundBits) >> 24);
+										if (A==0 && ((BYTE)((*pOffscreenBits) >> 24) )!=0)	//当背景像素点全透明时,以内容像素点的alpha为准,避免因为混合而导致内容像素点全透明了.
+										{
+											A=(BYTE)((*pOffscreenBits) >> 24) ;
+										}
+										R = (BYTE)((*pOffscreenBits) >> 16) * A / 255;
+										G = (BYTE)((*pOffscreenBits) >> 8) * A / 255;
+										B = (BYTE)(*pOffscreenBits) * A / 255;
+										*pOffscreenBits = RGB(B, G, R) + ((DWORD)A << 24);
+									}
 								}
 							}
 						}
