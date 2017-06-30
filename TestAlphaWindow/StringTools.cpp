@@ -227,26 +227,26 @@ inline BYTE toHex(const BYTE &x)
 
 }
 
-std::string URLEncodeGB2312(const char* szSrc/*, char* pBuf, int cbBufLen*/)
+std::string URLEncodeGB2312(const string& strUtf8/*, char* pBuf, int cbBufLen*/)
 {
     std::string sOut;
-	for( size_t ix = 0; ix < strlen(szSrc); ix++ )
+	for( size_t ix = 0; ix < strUtf8.length(); ix++ )
     {       
         BYTE buf[4]; 
         memset( buf, 0, 4 ); 
-        if( isalnum( (BYTE)szSrc[ix] ) || ispunct((BYTE)szSrc[ix]))
+        if( isalnum( (BYTE)strUtf8[ix] ) || ispunct((BYTE)strUtf8[ix]))
         {       
-            buf[0] = szSrc[ix];
+            buf[0] = strUtf8[ix];
         }
-        else if ( isspace( (BYTE)szSrc[ix] ) )
+        else if ( isspace( (BYTE)strUtf8[ix] ) )
         {
             buf[0] = '+';
         }
         else
         {
             buf[0] = '%';
-            buf[1] = toHex( (BYTE)szSrc[ix] >> 4 );
-            buf[2] = toHex( (BYTE)szSrc[ix] % 16);
+            buf[1] = toHex( (BYTE)strUtf8[ix] >> 4 );
+            buf[2] = toHex( (BYTE)strUtf8[ix] % 16);
         }
         sOut += (char *)buf;
     }
@@ -254,18 +254,18 @@ std::string URLEncodeGB2312(const char* szSrc/*, char* pBuf, int cbBufLen*/)
     return sOut;
 };
 
-std::string URLEncodeGB2312Forspace(const char* szSrc/*, char* pBuf, int cbBufLen*/)
+std::string URLEncodeGB2312Forspace(const string& strUtf8/*, char* pBuf, int cbBufLen*/)
 {
 	std::string sOut;
-	for( size_t ix = 0; ix < strlen(szSrc); ix++ )
+	for( size_t ix = 0; ix < strUtf8.length(); ix++ )
 	{       
 		BYTE buf[4]; 
 		memset( buf, 0, 4 ); 
-		if( isalnum( (BYTE)szSrc[ix] ) || ispunct((BYTE)szSrc[ix]))
+		if( isalnum( (BYTE)strUtf8[ix] ) || ispunct((BYTE)strUtf8[ix]))
 		{       
-			buf[0] = szSrc[ix];
+			buf[0] = strUtf8[ix];
 		}
-		else if ( isspace( (BYTE)szSrc[ix] ) )
+		else if ( isspace( (BYTE)strUtf8[ix] ) )
 		{
 			//buf[0] = '+';
 			buf[0] = '%';
@@ -275,8 +275,8 @@ std::string URLEncodeGB2312Forspace(const char* szSrc/*, char* pBuf, int cbBufLe
 		else
 		{
 			buf[0] = '%';
-			buf[1] = toHex( (BYTE)szSrc[ix] >> 4 );
-			buf[2] = toHex( (BYTE)szSrc[ix] % 16);
+			buf[1] = toHex( (BYTE)strUtf8[ix] >> 4 );
+			buf[2] = toHex( (BYTE)strUtf8[ix] % 16);
 		}
 		sOut += (char *)buf;
 	}
