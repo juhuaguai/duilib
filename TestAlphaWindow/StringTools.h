@@ -7,6 +7,14 @@
 #pragma warning(disable:4190)
 using namespace std;
 
+#ifndef xstring 
+#ifdef UNICODE
+#define xstring wstring
+#else
+#define xstring string
+#endif
+#endif
+
 std::string  UnicodeToAnsi(const std::wstring& strSource);
 std::wstring AnsiToUnicode(const std::string& strSource);
 std::wstring Utf8ToUnicode(const std::string& strSrouce);
@@ -18,6 +26,7 @@ std::string URLEncodeGB2312Forspace(const string& strUtf8/*, char* pBuf, int cbB
 char* Utf8ToGBK(const char* strSource);
 char* GBKToUtf8(const char* strSource);
 bool UrlEncode(const char* szSrc, char* pBuf, int cbBufLen, bool bUpperCase);
+bool Utf8UrlDecode(const char* szSrc, char* pBuf, int cbBufLen);
 bool UrlDecode(const char* szSrc, char* pBuf, int cbBufLen);
 std::string EscapeToAnsi(const std::string& strSource);
 
@@ -28,6 +37,10 @@ std::string EscapeToAnsi(const std::string& strSource);
 #ifndef _A
 #define _A(x) UnicodeToAnsi(x).data()
 #endif
+
+//字符串替换 会对strText中的所有strOld都进行替换,但不会对替换后的串再次检查替换.例如将"1001"中的"1"替换为"1234",那么返回值为"1234001234"
+//strText-全部内容 strOld-将要被替换的内容 strNew-新的用来替换的
+xstring StringReplace(const xstring& strText, const xstring& strOld, const xstring& strNew);
 
 inline bool IsGB2312(const unsigned char *pszIn) 
 { 
@@ -82,6 +95,23 @@ inline bool IsValidName(const unsigned char *pszIn, int nLen)
 	}
 	return true;
 }
+
+inline bool IsValidQQ(const unsigned char *pszIn, int nLen) 
+{
+	for (int i=0; i < nLen; )
+	{
+		if(isdigit(*(pszIn+i)))
+		{
+			i++;
+			continue;
+		}
+		else
+			return false;
+	}
+	return true;
+
+}
+
 inline void CutChineseChar(char *pszSrc,unsigned int nNeedLen)
 {
 	if (strlen(pszSrc) >= nNeedLen)

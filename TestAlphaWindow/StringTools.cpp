@@ -144,78 +144,157 @@ bool UrlEncode(const char* szSrc, char* pBuf, int cbBufLen, bool bUpperCase)
     return true;
 }
 
+bool Utf8UrlDecode(const char* szSrc, char* pBuf, int cbBufLen)
+{
+	if(szSrc == NULL || pBuf == NULL || cbBufLen <= 0)
+		return false;
+
+	size_t len_ascii = strlen(szSrc);
+	if(len_ascii == 0)
+	{
+		pBuf[0] = 0;
+		return true;
+	}
+
+	char *pUTF8 = (char*)malloc(len_ascii + 1);
+	if(pUTF8 == NULL)
+		return false;
+
+	int cbDest = 0; //累加
+	unsigned char *pSrc = (unsigned char*)szSrc;
+	unsigned char *pDest = (unsigned char*)pUTF8;
+	while(*pSrc)
+	{
+		if(*pSrc == '%')
+		{
+			*pDest = 0;
+			//高位
+			if(pSrc[1] >= 'A' && pSrc[1] <= 'F')
+				*pDest += (pSrc[1] - 'A' + 10) * 0x10;
+			else if(pSrc[1] >= 'a' && pSrc[1] <= 'f')
+				*pDest += (pSrc[1] - 'a' + 10) * 0x10;
+			else
+				*pDest += (pSrc[1] - '0') * 0x10;
+
+			//低位
+			if(pSrc[2] >= 'A' && pSrc[2] <= 'F')
+				*pDest += (pSrc[2] - 'A' + 10);
+			else if(pSrc[2] >= 'a' && pSrc[2] <= 'f')
+				*pDest += (pSrc[2] - 'a' + 10);
+			else
+				*pDest += (pSrc[2] - '0');
+
+			pSrc += 3;
+		}
+		else if(*pSrc == '+')
+		{
+			*pDest = ' ';
+			++pSrc;
+		}
+		else
+		{
+			*pDest = *pSrc;
+			++pSrc;
+		}
+		++pDest;
+		++cbDest;
+	}
+	//null-terminator
+	*pDest = '\0';
+	++cbDest;
+
+	if(cbDest < cbBufLen)
+	{
+		strncpy_s(pBuf, cbBufLen, pUTF8, cbDest);
+		return true;
+	}
+	return false;
+}
+
 //解码后是utf-8编码
 bool UrlDecode(const char* szSrc, char* pBuf, int cbBufLen)
 {
-    if(szSrc == NULL || pBuf == NULL || cbBufLen <= 0)
-        return false;
+	if(Utf8UrlDecode(szSrc, pBuf, cbBufLen))
+	{
+		string strTemp = Utf8ToAnsi(pBuf);
+		if(strTemp.size() > 0)
+		{
+			strncpy_s(pBuf, cbBufLen, strTemp.c_str(), strTemp.size());
+			return true;
+		}
+	}
+	return false;
 
-    size_t len_ascii = strlen(szSrc);
-    if(len_ascii == 0)
-    {
-        pBuf[0] = 0;
-        return true;
-    }
 
-    char *pUTF8 = (char*)malloc(len_ascii + 1);
-    if(pUTF8 == NULL)
-        return false;
+ //   if(szSrc == NULL || pBuf == NULL || cbBufLen <= 0)
+ //       return false;
 
-    int cbDest = 0; //累加
-    unsigned char *pSrc = (unsigned char*)szSrc;
-    unsigned char *pDest = (unsigned char*)pUTF8;
-    while(*pSrc)
-    {
-        if(*pSrc == '%')
-        {
-            *pDest = 0;
-            //高位
-            if(pSrc[1] >= 'A' && pSrc[1] <= 'F')
-                *pDest += (pSrc[1] - 'A' + 10) * 0x10;
-            else if(pSrc[1] >= 'a' && pSrc[1] <= 'f')
-                *pDest += (pSrc[1] - 'a' + 10) * 0x10;
-            else
-                *pDest += (pSrc[1] - '0') * 0x10;
+ //   size_t len_ascii = strlen(szSrc);
+ //   if(len_ascii == 0)
+ //   {
+ //       pBuf[0] = 0;
+ //       return true;
+ //   }
 
-            //低位
-            if(pSrc[2] >= 'A' && pSrc[2] <= 'F')
-                *pDest += (pSrc[2] - 'A' + 10);
-            else if(pSrc[2] >= 'a' && pSrc[2] <= 'f')
-                *pDest += (pSrc[2] - 'a' + 10);
-            else
-                *pDest += (pSrc[2] - '0');
+ //   char *pUTF8 = (char*)malloc(len_ascii + 1);
+ //   if(pUTF8 == NULL)
+ //       return false;
 
-            pSrc += 3;
-        }
-        else if(*pSrc == '+')
-        {
-            *pDest = ' ';
-            ++pSrc;
-        }
-        else
-        {
-            *pDest = *pSrc;
-            ++pSrc;
-        }
-        ++pDest;
-        ++cbDest;
-    }
-    //null-terminator
-    *pDest = '\0';
-    ++cbDest;
+ //   int cbDest = 0; //累加
+ //   unsigned char *pSrc = (unsigned char*)szSrc;
+ //   unsigned char *pDest = (unsigned char*)pUTF8;
+ //   while(*pSrc)
+ //   {
+ //       if(*pSrc == '%')
+ //       {
+ //           *pDest = 0;
+ //           //高位
+ //           if(pSrc[1] >= 'A' && pSrc[1] <= 'F')
+ //               *pDest += (pSrc[1] - 'A' + 10) * 0x10;
+ //           else if(pSrc[1] >= 'a' && pSrc[1] <= 'f')
+ //               *pDest += (pSrc[1] - 'a' + 10) * 0x10;
+ //           else
+ //               *pDest += (pSrc[1] - '0') * 0x10;
 
-    int cchWideChar = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)pUTF8, cbDest, NULL, 0);
-    LPWSTR pUnicode = (LPWSTR)malloc(cchWideChar * sizeof(WCHAR));
-    if(pUnicode == NULL)
-    {
-        free(pUTF8);
-        return false;
-    }
-    MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)pUTF8, cbDest, pUnicode, cchWideChar);
-    WideCharToMultiByte(CP_ACP, 0, pUnicode, cchWideChar, pBuf, cbBufLen, NULL, NULL);
-    free(pUTF8);
-    free(pUnicode);
-    return true;
+ //           //低位
+ //           if(pSrc[2] >= 'A' && pSrc[2] <= 'F')
+ //               *pDest += (pSrc[2] - 'A' + 10);
+ //           else if(pSrc[2] >= 'a' && pSrc[2] <= 'f')
+ //               *pDest += (pSrc[2] - 'a' + 10);
+ //           else
+ //               *pDest += (pSrc[2] - '0');
+
+ //           pSrc += 3;
+ //       }
+ //       else if(*pSrc == '+')
+ //       {
+ //           *pDest = ' ';
+ //           ++pSrc;
+ //       }
+ //       else
+ //       {
+ //           *pDest = *pSrc;
+ //           ++pSrc;
+ //       }
+ //       ++pDest;
+ //       ++cbDest;
+ //   }
+ //   //null-terminator
+ //   *pDest = '\0';
+ //   ++cbDest;
+
+ //   int cchWideChar = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)pUTF8, cbDest, NULL, 0);
+ //   LPWSTR pUnicode = (LPWSTR)malloc(cchWideChar * sizeof(WCHAR));
+ //   if(pUnicode == NULL)
+ //   {
+ //       free(pUTF8);
+ //       return false;
+ //   }
+ //   MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)pUTF8, cbDest, pUnicode, cchWideChar);
+ //   WideCharToMultiByte(CP_ACP, 0, pUnicode, cchWideChar, pBuf, cbBufLen, NULL, NULL);
+ //   free(pUTF8);
+ //   free(pUnicode);
+ //   return true;
 }
 
 typedef unsigned char BYTE;
@@ -318,7 +397,7 @@ std::string EscapeToAnsi(const std::string& strSource)
 		string strValue,strvalue1;
 		wchar_t wch;
 
-		int npos = strAnsi.find("\\u",0);
+		unsigned int npos = strAnsi.find("\\u",0);
 		while (npos != string::npos)
 		{
 			strvalue1 = strAnsi.substr(npos,6);		//"\u50ab"
@@ -456,3 +535,20 @@ bool GetFirstChinesePYCharOfText(char* szText, char &firstChar)
 	}
 }
 
+xstring StringReplace(const xstring& strText, const xstring& strOld, const xstring& strNew)
+{
+	if (strOld == strNew)
+		return strText;
+
+	xstring strValue = strText;
+	int nFind = 0;
+	int nStart = strValue.find(strOld, nFind);
+	while (nStart != string::npos)
+	{
+		strValue.replace(nStart, strOld.length(), strNew);
+		nFind = nStart + strNew.length();
+		nStart = strValue.find(strOld, nFind);
+	}
+
+	return strValue;
+}
