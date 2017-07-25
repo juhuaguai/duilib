@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #pragma warning(disable:4190)
 using namespace std;
@@ -21,8 +22,8 @@ std::wstring Utf8ToUnicode(const std::string& strSrouce);
 std::string UnicodeToUtf8(const std::wstring& strSource);
 std::string AnsiToUtf8(const std::string& strSource);
 std::string Utf8ToAnsi(const std::string& strSource);
-std::string URLEncodeGB2312(const string& strUtf8/*, char* pBuf, int cbBufLen*/);			//空格转为'+'
-std::string URLEncodeGB2312Forspace(const string& strUtf8/*, char* pBuf, int cbBufLen*/);	//空格转为'%20'
+std::string URLEncodeGB2312(const char* szSrc/*, char* pBuf, int cbBufLen*/);			//空格转为'+'
+std::string URLEncodeGB2312Forspace(const char* szSrc/*, char* pBuf, int cbBufLen*/);	//空格转为'%20'
 char* Utf8ToGBK(const char* strSource);
 char* GBKToUtf8(const char* strSource);
 bool UrlEncode(const char* szSrc, char* pBuf, int cbBufLen, bool bUpperCase);
@@ -41,6 +42,9 @@ std::string EscapeToAnsi(const std::string& strSource);
 //字符串替换 会对strText中的所有strOld都进行替换,但不会对替换后的串再次检查替换.例如将"1001"中的"1"替换为"1234",那么返回值为"1234001234"
 //strText-全部内容 strOld-将要被替换的内容 strNew-新的用来替换的
 xstring StringReplace(const xstring& strText, const xstring& strOld, const xstring& strNew);
+
+//大小写转换
+xstring StringConvertUpperOrLower(bool bUpper,const xstring& strValue);
 
 inline bool IsGB2312(const unsigned char *pszIn) 
 { 

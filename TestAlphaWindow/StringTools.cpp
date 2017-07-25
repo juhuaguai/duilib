@@ -224,77 +224,6 @@ bool UrlDecode(const char* szSrc, char* pBuf, int cbBufLen)
 		}
 	}
 	return false;
-
-
- //   if(szSrc == NULL || pBuf == NULL || cbBufLen <= 0)
- //       return false;
-
- //   size_t len_ascii = strlen(szSrc);
- //   if(len_ascii == 0)
- //   {
- //       pBuf[0] = 0;
- //       return true;
- //   }
-
- //   char *pUTF8 = (char*)malloc(len_ascii + 1);
- //   if(pUTF8 == NULL)
- //       return false;
-
- //   int cbDest = 0; //累加
- //   unsigned char *pSrc = (unsigned char*)szSrc;
- //   unsigned char *pDest = (unsigned char*)pUTF8;
- //   while(*pSrc)
- //   {
- //       if(*pSrc == '%')
- //       {
- //           *pDest = 0;
- //           //高位
- //           if(pSrc[1] >= 'A' && pSrc[1] <= 'F')
- //               *pDest += (pSrc[1] - 'A' + 10) * 0x10;
- //           else if(pSrc[1] >= 'a' && pSrc[1] <= 'f')
- //               *pDest += (pSrc[1] - 'a' + 10) * 0x10;
- //           else
- //               *pDest += (pSrc[1] - '0') * 0x10;
-
- //           //低位
- //           if(pSrc[2] >= 'A' && pSrc[2] <= 'F')
- //               *pDest += (pSrc[2] - 'A' + 10);
- //           else if(pSrc[2] >= 'a' && pSrc[2] <= 'f')
- //               *pDest += (pSrc[2] - 'a' + 10);
- //           else
- //               *pDest += (pSrc[2] - '0');
-
- //           pSrc += 3;
- //       }
- //       else if(*pSrc == '+')
- //       {
- //           *pDest = ' ';
- //           ++pSrc;
- //       }
- //       else
- //       {
- //           *pDest = *pSrc;
- //           ++pSrc;
- //       }
- //       ++pDest;
- //       ++cbDest;
- //   }
- //   //null-terminator
- //   *pDest = '\0';
- //   ++cbDest;
-
- //   int cchWideChar = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)pUTF8, cbDest, NULL, 0);
- //   LPWSTR pUnicode = (LPWSTR)malloc(cchWideChar * sizeof(WCHAR));
- //   if(pUnicode == NULL)
- //   {
- //       free(pUTF8);
- //       return false;
- //   }
- //   MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)pUTF8, cbDest, pUnicode, cchWideChar);
- //   WideCharToMultiByte(CP_ACP, 0, pUnicode, cchWideChar, pBuf, cbBufLen, NULL, NULL);
- //   free(pUTF8);
- //   free(pUnicode);
- //   return true;
 }
 
 typedef unsigned char BYTE;
@@ -306,26 +235,26 @@ inline BYTE toHex(const BYTE &x)
 
 }
 
-std::string URLEncodeGB2312(const string& strUtf8/*, char* pBuf, int cbBufLen*/)
+std::string URLEncodeGB2312(const char* szSrc/*, char* pBuf, int cbBufLen*/)
 {
     std::string sOut;
-	for( size_t ix = 0; ix < strUtf8.length(); ix++ )
+	for( size_t ix = 0; ix < strlen(szSrc); ix++ )
     {       
         BYTE buf[4]; 
         memset( buf, 0, 4 ); 
-        if( isalnum( (BYTE)strUtf8[ix] ) || ispunct((BYTE)strUtf8[ix]))
+        if( isalnum( (BYTE)szSrc[ix] ) || ispunct((BYTE)szSrc[ix]))
         {       
-            buf[0] = strUtf8[ix];
+            buf[0] = szSrc[ix];
         }
-        else if ( isspace( (BYTE)strUtf8[ix] ) )
+        else if ( isspace( (BYTE)szSrc[ix] ) )
         {
             buf[0] = '+';
         }
         else
         {
             buf[0] = '%';
-            buf[1] = toHex( (BYTE)strUtf8[ix] >> 4 );
-            buf[2] = toHex( (BYTE)strUtf8[ix] % 16);
+            buf[1] = toHex( (BYTE)szSrc[ix] >> 4 );
+            buf[2] = toHex( (BYTE)szSrc[ix] % 16);
         }
         sOut += (char *)buf;
     }
@@ -333,18 +262,18 @@ std::string URLEncodeGB2312(const string& strUtf8/*, char* pBuf, int cbBufLen*/)
     return sOut;
 };
 
-std::string URLEncodeGB2312Forspace(const string& strUtf8/*, char* pBuf, int cbBufLen*/)
+std::string URLEncodeGB2312Forspace(const char* szSrc/*, char* pBuf, int cbBufLen*/)
 {
 	std::string sOut;
-	for( size_t ix = 0; ix < strUtf8.length(); ix++ )
+	for( size_t ix = 0; ix < strlen(szSrc); ix++ )
 	{       
 		BYTE buf[4]; 
 		memset( buf, 0, 4 ); 
-		if( isalnum( (BYTE)strUtf8[ix] ) || ispunct((BYTE)strUtf8[ix]))
+		if( isalnum( (BYTE)szSrc[ix] ) || ispunct((BYTE)szSrc[ix]))
 		{       
-			buf[0] = strUtf8[ix];
+			buf[0] = szSrc[ix];
 		}
-		else if ( isspace( (BYTE)strUtf8[ix] ) )
+		else if ( isspace( (BYTE)szSrc[ix] ) )
 		{
 			//buf[0] = '+';
 			buf[0] = '%';
@@ -354,8 +283,8 @@ std::string URLEncodeGB2312Forspace(const string& strUtf8/*, char* pBuf, int cbB
 		else
 		{
 			buf[0] = '%';
-			buf[1] = toHex( (BYTE)strUtf8[ix] >> 4 );
-			buf[2] = toHex( (BYTE)strUtf8[ix] % 16);
+			buf[1] = toHex( (BYTE)szSrc[ix] >> 4 );
+			buf[2] = toHex( (BYTE)szSrc[ix] % 16);
 		}
 		sOut += (char *)buf;
 	}
@@ -551,4 +480,30 @@ xstring StringReplace(const xstring& strText, const xstring& strOld, const xstri
 	}
 
 	return strValue;
+}
+
+xstring StringConvertUpperOrLower(bool bUpper, const xstring& strValue)
+{
+	xstring strText = strValue;
+
+#ifdef UNICODE
+	if (bUpper)
+	{
+		transform(strText.begin(), strText.end(), strText.begin(), ::towupper);
+	}
+	else
+	{
+		transform(strText.begin(), strText.end(), strText.begin(), ::towlower);
+	}
+#else
+	if (bUpper)
+	{
+		transform(strText.begin(), strText.end(), strText.begin(), ::toupper);
+	}
+	else
+	{
+		transform(strText.begin(), strText.end(), strText.begin(), ::tolower);
+	}
+#endif
+	return strText;
 }
