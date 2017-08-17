@@ -19,7 +19,7 @@ namespace DuiLib
 		m_EnableEffect(false),
 		m_bEnableLuminous(false),
 		m_fLuminousFuzzy(3),
-		m_gdiplusToken(0),
+//		m_gdiplusToken(0),
 		m_dwTextColor1(-1),
 		m_dwTextShadowColorA(0xff000000),
 		m_dwTextShadowColorB(-1),
@@ -38,9 +38,9 @@ namespace DuiLib
         m_szAvailableLast.cx = m_szAvailableLast.cy = 0;
 		::ZeroMemory(&m_rcTextPadding, sizeof(m_rcTextPadding));
 
-#ifdef _USE_GDIPLUS
-        GdiplusStartup( &m_gdiplusToken,&m_gdiplusStartupInput, NULL);
-#endif
+//#ifdef _USE_GDIPLUS
+//        GdiplusStartup( &m_gdiplusToken,&m_gdiplusStartupInput, NULL);
+//#endif
 	}
 
 	CLabelUI::~CLabelUI()
@@ -51,9 +51,9 @@ namespace DuiLib
 		if( m_pWideText ) delete[] m_pWideText;
 #endif
 
-#ifdef _USE_GDIPLUS
-		GdiplusShutdown( m_gdiplusToken );
-#endif
+//#ifdef _USE_GDIPLUS
+//		GdiplusShutdown( m_gdiplusToken );
+//#endif
 	}
 
 	LPCTSTR CLabelUI::GetClass() const

@@ -3,6 +3,16 @@
 
 #pragma once
 
+#define _USE_GDIPLUS 1
+
+#ifdef _USE_GDIPLUS
+#include <GdiPlus.h>
+#pragma comment( lib, "GdiPlus.lib" )
+using namespace Gdiplus;
+class DUILIB_API Gdiplus::RectF;
+struct DUILIB_API Gdiplus::GdiplusStartupInput;
+#endif
+
 namespace DuiLib {
 /////////////////////////////////////////////////////////////////////////////////////
 //
@@ -499,6 +509,11 @@ private:
     static short m_L;
     static CDuiPtrArray m_aPreMessages;
     static CDuiPtrArray m_aPlugins;
+
+#ifdef _USE_GDIPLUS
+	ULONG_PTR				m_gdiplusToken;
+	GdiplusStartupInput		m_gdiplusStartupInput;
+#endif
 
 public:
 	CDuiPtrArray m_aTranslateAccelerator;
