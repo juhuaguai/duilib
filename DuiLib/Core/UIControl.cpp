@@ -1124,7 +1124,7 @@ void CControlUI::PaintText(HDC hDC)
 
 void CControlUI::PaintBorder(HDC hDC)
 {
-	if(m_rcBorderSize.left > 0 && (m_dwBorderColor != 0 || m_dwFocusBorderColor != 0)) {
+	if( (m_rcBorderSize.left>0 || m_rcBorderSize.top>0 || m_rcBorderSize.right>0 || m_rcBorderSize.bottom>0) && (m_dwBorderColor != 0 || m_dwFocusBorderColor != 0)) {
 		if( m_cxyBorderRound.cx > 0 || m_cxyBorderRound.cy > 0 )//画圆角边框
 		{
 			if (IsFocused() && m_dwFocusBorderColor != 0)
@@ -1163,7 +1163,10 @@ void CControlUI::PaintBorder(HDC hDC)
 				}
 				if(m_rcBorderSize.right > 0) {
 					rcBorder		= m_rcItem;
-					rcBorder.left	= m_rcItem.right - m_rcBorderSize.right / 2;
+					if (m_rcBorderSize.right % 2)
+						rcBorder.left	= m_rcItem.right - m_rcBorderSize.right / 2 - 1;
+					else
+						rcBorder.left	= m_rcItem.right - m_rcBorderSize.right / 2;
                     rcBorder.right  = rcBorder.left;
 					if (IsFocused() && m_dwFocusBorderColor != 0)
 						CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.right,GetAdjustColor(m_dwFocusBorderColor),m_nBorderStyle);
@@ -1172,7 +1175,10 @@ void CControlUI::PaintBorder(HDC hDC)
 				}
 				if(m_rcBorderSize.bottom > 0) {
 					rcBorder		= m_rcItem;
-					rcBorder.top	= m_rcItem.bottom - m_rcBorderSize.bottom / 2;
+					if (m_rcBorderSize.bottom % 2)
+						rcBorder.top	= m_rcItem.bottom - m_rcBorderSize.bottom / 2 - 1;
+					else
+						rcBorder.top	= m_rcItem.bottom - m_rcBorderSize.bottom / 2;
                     rcBorder.bottom = rcBorder.top;
                     rcBorder.left  += m_rcBorderSize.left;
                     rcBorder.right -= m_rcBorderSize.right;
