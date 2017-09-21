@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <tchar.h>
 
 #pragma warning(disable:4190)
 using namespace std;
@@ -22,14 +23,20 @@ std::wstring Utf8ToUnicode(const std::string& strSrouce);
 std::string UnicodeToUtf8(const std::wstring& strSource);
 std::string AnsiToUtf8(const std::string& strSource);
 std::string Utf8ToAnsi(const std::string& strSource);
-std::string URLEncodeGB2312(const char* szSrc/*, char* pBuf, int cbBufLen*/);			//空格转为'+'
+//std::string URLEncodeGB2312(const char* szSrc/*, char* pBuf, int cbBufLen*/);			//空格转为'+'
 std::string URLEncodeGB2312Forspace(const char* szSrc/*, char* pBuf, int cbBufLen*/);	//空格转为'%20'
 char* Utf8ToGBK(const char* strSource);
 char* GBKToUtf8(const char* strSource);
-bool UrlEncode(const char* szSrc, char* pBuf, int cbBufLen, bool bUpperCase);
-bool Utf8UrlDecode(const char* szSrc, char* pBuf, int cbBufLen);
-bool UrlDecode(const char* szSrc, char* pBuf, int cbBufLen);
+//bool UrlEncode(const char* szSrc, char* pBuf, int cbBufLen, bool bUpperCase);
+//bool Utf8UrlDecode(const char* szSrc, char* pBuf, int cbBufLen);
+//bool UrlDecode(const char* szSrc, char* pBuf, int cbBufLen);
 std::string EscapeToAnsi(const std::string& strSource);
+
+//尽量用这个编码来代替 URLEncodeGB2312 URLEncodeGB2312Forspace如果发现编码结果不对,可以尝试传入utf8编码参数
+//如果仍然不对则需要视情况而定来对函数进行修正了
+string escape(const string &URL);
+string escapeURL(const string &URL);
+string deescapeURL(const std::string &URL);
 
 #ifndef _W
 #define _W(x) AnsiToUnicode(x).data()
@@ -42,6 +49,16 @@ std::string EscapeToAnsi(const std::string& strSource);
 //字符串替换 会对strText中的所有strOld都进行替换,但不会对替换后的串再次检查替换.例如将"1001"中的"1"替换为"1234",那么返回值为"1234001234"
 //strText-全部内容 strOld-将要被替换的内容 strNew-新的用来替换的
 xstring StringReplace(const xstring& strText, const xstring& strOld, const xstring& strNew);
+
+void SplitString(const char *pszSrc, std::vector<std::string>& vec, const char *pszDelim=",");
+void SplitStringW(const wstring& src,vector<wstring> &dst,const wstring& strDelim);
+
+void TrimStringA(string &strVal, LPCSTR lpszOneOfFinds);
+void TrimString(xstring &strVal, LPCTSTR lpszOneOfFinds=_T(" "));
+
+void ReplaceSubString(xstring &strSrc, LPCTSTR lpszStart, LPCTSTR lpszEnd, LPCTSTR lpszNew);
+
+xstring GetSubString(const xstring &strSrc, LPCTSTR lpszStart, LPCTSTR lpszEnd);
 
 //大小写转换
 xstring StringConvertUpperOrLower(bool bUpper,const xstring& strValue);

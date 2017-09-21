@@ -507,3 +507,219 @@ xstring StringConvertUpperOrLower(bool bUpper, const xstring& strValue)
 #endif
 	return strText;
 }
+
+void SplitString(const char *pszSrc, std::vector<std::string>& vec, const char *pszDelim)
+{
+	vec.clear();
+	int nStrLen = strlen(pszSrc);
+	if (pszSrc == NULL || nStrLen >= 2048)
+	{
+		return;
+	}
+
+	char szPszDelim[3];
+	if (pszDelim == NULL || strlen(pszDelim) == 0)
+	{
+		strcpy_s(szPszDelim, ",");
+		pszDelim = szPszDelim;
+	}
+
+	const char *pszStart = pszSrc;
+	const char *pszEnd = pszSrc + nStrLen;
+	int nPos = strcspn(pszStart, pszDelim);
+	if (nPos < 0 || nPos >= 2048 || pszStart >= pszEnd)
+	{
+		return;
+	}
+	while (pszStart + nPos <= pszEnd)
+	{
+		char szSrc[2048];
+		strncpy(szSrc, pszStart, nPos);
+		szSrc[nPos] = '\0';
+		vec.push_back(szSrc);
+
+		pszStart = pszStart + nPos + 1;
+		if (pszStart >= pszEnd)
+		{
+			break;
+		}
+		nPos = strcspn(pszStart, pszDelim);		
+	}
+}
+
+void SplitStringW(const wstring& src,vector<wstring> &dst,const wstring& strDelim)
+{
+	size_t last = 0; 
+	wstring strTmp = src;
+	wstring delim = strDelim;
+	size_t index = strTmp.find_first_of(delim, last);  
+
+	while (index != std::wstring::npos)  
+	{  
+		dst.push_back(strTmp.substr(last, index - last));  
+		last = strTmp.find_first_not_of(delim, index + 1);
+		index = strTmp.find_first_of(delim, last);  
+	}  
+
+	if (index-last > 0)  
+	{  
+		dst.push_back(strTmp.substr(last, index - last));  
+	}
+}
+
+void TrimStringA(string &strVal, LPCSTR lpszOneOfFinds)
+{
+	string::size_type nStartPos = strVal.find_first_not_of(lpszOneOfFinds);
+	string::size_type nEndPos = strVal.find_last_not_of(lpszOneOfFinds);
+
+	if (nStartPos == string::npos)
+	{
+		strVal.clear();
+		return;
+	}
+	strVal = strVal.substr(nStartPos, nEndPos - nStartPos+1);
+}
+
+void TrimString(xstring &strVal, LPCTSTR lpszOneOfFinds/* = _T(" ")*/)
+{
+	string::size_type nStartPos = strVal.find_first_not_of(lpszOneOfFinds);
+	string::size_type nEndPos = strVal.find_last_not_of(lpszOneOfFinds);
+
+	if (nStartPos == string::npos)
+	{
+		strVal.clear();
+		return;
+	}
+	strVal = strVal.substr(nStartPos, nEndPos - nStartPos + 1);
+}
+
+void ReplaceSubString(xstring &strSrc, LPCTSTR lpszStart, LPCTSTR lpszEnd, LPCTSTR lpszNew)
+{
+	xstring::size_type nStartPos = strSrc.find(lpszStart);
+
+	int nEndPos = 0;
+	if (nStartPos != string::npos)
+	{
+		nEndPos = strSrc.find(lpszEnd, nStartPos + _tcslen(lpszStart));
+		if (nEndPos == string::npos)
+		{
+			nEndPos = strSrc.size();
+		}
+		strSrc.replace(nStartPos + _tcslen(lpszStart), nEndPos - nStartPos - _tcslen(lpszStart), lpszNew);
+	}
+}
+
+xstring GetSubString(const xstring &strSrc, LPCTSTR lpszStart, LPCTSTR lpszEnd)
+{
+	xstring::size_type nStartPos = strSrc.find(lpszStart);
+
+	int nEndPos = 0;
+	if (nStartPos != string::npos)
+	{
+		nEndPos = strSrc.find(lpszEnd, nStartPos + _tcslen(lpszStart));
+		if (nEndPos == string::npos)
+		{
+			nEndPos = strSrc.size();
+		}
+		return strSrc.substr(nStartPos + _tcslen(lpszStart), nEndPos - nStartPos - _tcslen(lpszStart));
+	}
+	return _T("");
+}
+
+char dec2hexChar(short int n) {
+	if ( 0 <= n && n <= 9 ) {
+		return char( short('0') + n );
+	} else if ( 10 <= n && n <= 15 ) {
+		return char( short('A') + n - 10 );
+	} else {
+		return char(0);
+	}
+}
+short int hexChar2dec(char c) {
+	if ( '0'<=c && c<='9' ) {
+		return short(c-'0');
+	} else if ( 'a'<=c && c<='f' ) {
+		return ( short(c-'a') + 10 );
+	} else if ( 'A'<=c && c<='F' ) {
+		return ( short(c-'A') + 10 );
+	} else {
+		return -1;
+	}
+}
+string escape(const string &URL)
+{
+	string result = "";
+	for ( unsigned int i=0; i<URL.size(); i++ ) 
+	{
+		char c = URL[i];
+		if ( ('0'<=c && c<='9')||('a'<=c && c<='z') || ('A'<=c && c<='Z') ) 
+		{
+			result += c;
+		} 
+		else 
+		{
+			int j = (short int)c;
+			if ( j < 0 ) 
+			{
+				j += 256;
+			}
+			int i1, i0;
+			i1 = j / 16;
+			i0 = j - i1*16;
+			result += '%';
+			result += dec2hexChar(i1);
+			result += dec2hexChar(i0); 
+		}
+	}
+	return result;
+}
+string escapeURL(const string &URL)
+{
+	string result = "";
+	for ( unsigned int i=0; i<URL.size(); i++ ) 
+	{
+		char c = URL[i];
+		if ( ('0'<=c && c<='9')||('a'<=c && c<='z') || ('A'<=c && c<='Z') || c=='/' || c=='.' || c==':') 
+		{
+			result += c;
+		} 
+		else 
+		{
+			int j = (short int)c;
+			if ( j < 0 ) 
+			{
+				j += 256;
+			}
+			int i1, i0;
+			i1 = j / 16;
+			i0 = j - i1*16;
+			result += '%';
+			result += dec2hexChar(i1);
+			result += dec2hexChar(i0); 
+		}
+	}
+	return result;
+}
+
+std::string deescapeURL(const std::string &URL) 
+{
+	string result = "";		
+	unsigned char num;
+	int nRemainSize = URL.size();
+	for (int i = 0; nRemainSize > 0; nRemainSize--,i++ ) 
+	{
+		num = URL[i];
+		if(('%' == num) && (nRemainSize >= 3))
+		{
+			char c1 = URL[i+1];
+			char c0 = URL[i+2];
+			num = hexChar2dec(c1) * 16 + hexChar2dec(c0);			
+
+			nRemainSize -= 2;
+			i += 2;
+		}
+
+		result += num;
+	}
+	return result;
+}
