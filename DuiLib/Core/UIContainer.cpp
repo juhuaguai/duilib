@@ -12,7 +12,7 @@ namespace DuiLib
 		m_iChildAlign(DT_LEFT),
 		m_iChildVAlign(DT_TOP),
 		m_bAutoDestroy(true),
-		m_bDelayedDestroy(true),
+		m_bDelayedDestroy(false),
 		m_bMouseChildEnabled(true),
 		m_pVerticalScrollBar(NULL),
 		m_pHorizontalScrollBar(NULL),
