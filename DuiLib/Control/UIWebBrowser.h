@@ -50,7 +50,7 @@ namespace DuiLib
 		DWORD m_dwCookie;
 		virtual void ReleaseControl();
 		HRESULT RegisterEventHandler(BOOL inAdvise);
-		virtual void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
+		
 		CDuiString m_sHomePage;	// 默认页面
 		bool m_bAutoNavi;	// 是否启动时打开默认页面
 		CWebBrowserEventHandler* m_pWebBrowserEventHandler;	//浏览器事件处理
@@ -68,6 +68,7 @@ namespace DuiLib
 	public:
 		virtual LPCTSTR GetClass() const;
 		virtual LPVOID GetInterface( LPCTSTR pstrName );
+		virtual void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
 		// IUnknown
 		STDMETHOD_(ULONG,AddRef)();
