@@ -394,8 +394,8 @@
 		</Configuration>
 		<Configuration
 			Name="Static|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory=".\Build\Static"
+			IntermediateDirectory=".\Build\Static"
 			ConfigurationType="4"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
