@@ -307,7 +307,7 @@
 		<Attribute name="focusedimage" default="" type="STRING" comment="获得焦点时的状态图片"/>
 		<Attribute name="disabledimage" default="" type="STRING" comment="禁用的状态图片"/>
 		<Attribute name="dropboxsize" default="0,150" type="STRING" comment="弹出框大小设置"/>
-		<Attribute name="itemfont" default="-1" type="INT" comment="item的字体id,如(0)"/>
+		<Attribute name="itemfont" default="-1" type="INT" comment="item的字体id,如(0),最好只使用共享资源中的字体.非共享资源的字体没有加载到下拉框的PM中"/>
 		<Attribute name="itemalign" default="center" type="STRING" comment="item对齐方式,取值left、right、center，如(center)"/>
 		<Attribute name="itemendellipsis" default="false" type="BOOL" comment="item句末显示不全是否使用...代替,如(true)"/>
 		<Attribute name="itemtextpadding" default="0,0,0,0" type="RECT" comment="item文字显示的边距,如(2,2,2,2)"/>
