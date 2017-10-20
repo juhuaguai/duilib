@@ -1090,7 +1090,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 
 			SetPainting(false);
 			m_bLayeredChanged = false;
-			if( m_bUpdateNeeded ) Invalidate();
+			if( m_bUpdateNeeded || m_bFocusNeeded) Invalidate();
         }
         return true;
     case WM_PRINTCLIENT:
@@ -1822,7 +1822,11 @@ void CPaintManagerUI::SetFocus(CControlUI* pControl, bool bFocusWnd)
 void CPaintManagerUI::SetFocusNeeded(CControlUI* pControl)
 {
     if (!m_bNoActivate) ::SetFocus(m_hWndPaint);
-    if( pControl == NULL ) return;
+    if( pControl == NULL ) 
+	{
+		m_bFocusNeeded = false;
+		return;
+	}
     if( m_pFocus != NULL ) {
         TEventUI event = { 0 };
         event.Type = UIEVENT_KILLFOCUS;
