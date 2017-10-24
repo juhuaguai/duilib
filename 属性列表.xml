@@ -377,8 +377,6 @@
 		<Attribute name="textshadowcolorb" default="0xff000000" type="STRING" comment="字体阴影渐变色"/>
 		<Attribute name="transshadow" default="100" type="INT" comment="阴影透明度"/>
 		<Attribute name="transshadow1" default="100" type="INT" comment="阴影透明度"/>
-		<Attribute name="transtext" default="100" type="INT" comment="字体色彩透明度"/>
-		<Attribute name="transtext1" default="100" type="INT" comment="字体色彩透明度"/>
 	</Label>
 	<Button parent="Label" notifies="setfocus killfocus timer menu click windowinit(root)">
 		<Attribute name="name" default="" type="STRING" comment="控件名字，同一窗口内必须唯一，如(testbtn)"/>

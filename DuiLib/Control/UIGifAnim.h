@@ -5,8 +5,6 @@
 
 namespace DuiLib
 {
-	class CControl;
-
 #define EVENT_TIEM_ID	100
 
 	class DUILIB_API CGifAnimUI : public CControlUI
