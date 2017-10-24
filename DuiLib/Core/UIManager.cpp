@@ -624,6 +624,7 @@ void CPaintManagerUI::SetLayered(bool bLayered)
 		}
 		if(dwExStyle != dwNewExStyle) ::SetWindowLong(m_hWndPaint, GWL_EXSTYLE, dwNewExStyle);
 		m_bLayered = bLayered;
+		m_bLayeredChanged = true;
 		if( m_pRoot != NULL ) m_pRoot->NeedUpdate();
 		Invalidate();
 	}
@@ -660,6 +661,7 @@ LPCTSTR CPaintManagerUI::GetLayeredImage()
 
 void CPaintManagerUI::SetLayeredImage(LPCTSTR pstrImage)
 {
+	SetLayered(true);
 	m_diLayered.sDrawString = pstrImage;
 	RECT rcNull = {0};
 	CRenderEngine::DrawImage(NULL, this, rcNull, rcNull, m_diLayered);
@@ -3162,7 +3164,6 @@ void CPaintManagerUI::SetWindowAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         SetLayeredOpacity(_ttoi(pstrValue));
     } 
     else if( _tcscmp(pstrName, _T("layeredimage")) == 0 ) {
-        SetLayered(true);
         SetLayeredImage(pstrValue);
     } 
     else if( _tcsicmp(pstrName, _T("disabledfontcolor")) == 0 ) {
