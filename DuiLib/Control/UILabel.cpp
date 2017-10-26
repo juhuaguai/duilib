@@ -230,7 +230,13 @@ namespace DuiLib
                 m_cxyFixedLast.cy = rcText.bottom - rcText.top + m_rcTextPadding.top + m_rcTextPadding.bottom;
             }
         }
-        return m_cxyFixedLast;
+        //return m_cxyFixedLast;
+		//GDI+绘制所需的宽度与GDI稍微不一样,这里做个修正
+		if (m_EnableEffect)
+		{
+			m_cxyFixedLast.cx = m_cxyFixedLast.cx*1.03;	//1.03是经过测试观察的结果 //目前先修正宽度,高度待有空详测后再修正
+		}
+		return m_cxyFixedLast;
 	}
 
 	void CLabelUI::DoEvent(TEventUI& event)
