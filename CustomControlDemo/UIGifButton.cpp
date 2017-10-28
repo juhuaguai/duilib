@@ -5,6 +5,11 @@ CGifButtonUI::CGifButtonUI(void)
 {
 	m_uButtonState = 0;
 	m_sCursor = _T("hand");
+	m_rcBkImageDest.left = 0;
+	m_rcBkImageDest.top = 0;
+	m_rcBkImageDest.right = 0;
+	m_rcBkImageDest.bottom = 0;
+	m_uTextStyle = DT_SINGLELINE | DT_VCENTER | DT_CENTER;
 }
 
 CGifButtonUI::~CGifButtonUI(void)
@@ -175,6 +180,136 @@ void CGifButtonUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
 	if( _tcscmp(pstrName, _T("cursor")) == 0 ) 
 		SetCursor(pstrValue);
+	else if( _tcscmp(pstrName, _T("align")) == 0 ) 
+	{
+		if( _tcsstr(pstrValue, _T("left")) != NULL ) {
+			m_uTextStyle &= ~(DT_CENTER | DT_RIGHT);
+			m_uTextStyle |= DT_LEFT;
+		}
+		if( _tcsstr(pstrValue, _T("center")) != NULL ) {
+			m_uTextStyle &= ~(DT_LEFT | DT_RIGHT);
+			m_uTextStyle |= DT_CENTER;
+		}
+		if( _tcsstr(pstrValue, _T("right")) != NULL ) {
+			m_uTextStyle &= ~(DT_LEFT | DT_CENTER);
+			m_uTextStyle |= DT_RIGHT;
+		}
+	}
 	else
 		CGifAnimUI::SetAttribute(pstrName, pstrValue);
+}
+
+
+void CGifButtonUI::SetTextColor(DWORD dwTextColor)
+{
+	m_dwTextColor = dwTextColor;
+}
+
+DWORD CGifButtonUI::GetTextColor() const
+{
+	return m_dwTextColor;
+}
+
+void CGifButtonUI::SetFont(int index)
+{
+	m_iFont = index;
+}
+
+int CGifButtonUI::GetFont() const
+{
+	return m_iFont;
+}
+
+RECT CGifButtonUI::GetTextPadding() const
+{
+	return m_rcTextPadding;
+}
+
+void CGifButtonUI::SetTextPadding(RECT rc)
+{
+	m_rcTextPadding = rc;
+}
+
+void CGifButtonUI::SetBkImageDest(const RECT& rcDest)
+{
+	if (rcDest.left==0 && rcDest.top==0 && rcDest.right==0 && rcDest.bottom==0)
+	{
+		m_rcBkImageDest.left = 0;
+		m_rcBkImageDest.top = 0;
+		m_rcBkImageDest.right = m_rcItem.right-m_rcItem.left;
+		m_rcBkImageDest.bottom = m_rcItem.bottom-m_rcItem.top;
+	}
+	else
+		m_rcBkImageDest = rcDest;
+}
+
+bool CGifButtonUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
+{
+	if ( NULL == m_pGifImage )
+	{		
+		InitGifImage();
+	}
+	DrawFrame( hDC );
+	return true;
+}
+
+void CGifButtonUI::DrawFrame( HDC hDC )
+{
+	if ( NULL == hDC || NULL == m_pGifImage ) 
+		return;
+	GUID pageGuid = Gdiplus::FrameDimensionTime;
+	Gdiplus::Graphics graphics( hDC );
+	graphics.SetTextRenderingHint(TextRenderingHintAntiAlias);
+	RECT rcTemp = {0,0,0,0};
+	if (m_rcBkImageDest.left==0 && m_rcBkImageDest.top==0 && m_rcBkImageDest.right==0 && m_rcBkImageDest.bottom==0)
+	{
+		rcTemp.left = m_rcItem.left;
+		rcTemp.top = m_rcItem.top;
+		rcTemp.right = m_rcItem.right;
+		rcTemp.bottom = m_rcItem.bottom;		
+	}
+	else
+	{
+		rcTemp.left = m_rcItem.left + m_rcBkImageDest.left;
+		rcTemp.top = m_rcItem.top + m_rcBkImageDest.top;
+		rcTemp.right = rcTemp.left + m_rcBkImageDest.right - m_rcBkImageDest.left;
+		rcTemp.bottom = rcTemp.top + m_rcBkImageDest.bottom - m_rcBkImageDest.top;
+	}
+	graphics.DrawImage( m_pGifImage, rcTemp.left, rcTemp.top, rcTemp.right-rcTemp.left, rcTemp.bottom-rcTemp.top );
+
+	if (m_sText.IsEmpty() == false)
+	{
+		//»æÖÆÎÄ±¾
+#ifdef UNICODE
+		wstring strText = m_sText.GetData();
+#else
+		wstring strText = AnsiToUnicode( m_sText.GetData());
+#endif
+		Font	nFont(hDC,m_pManager->GetFont(GetFont()));
+
+		RECT rcText = {m_rcItem.left+m_rcTextPadding.left,m_rcItem.top+m_rcTextPadding.top,m_rcItem.right-m_rcTextPadding.right,m_rcItem.bottom-m_rcTextPadding.bottom};
+		RectF nRc((float)rcText.left,(float)rcText.top,(float)rcText.right-rcText.left,(float)rcText.bottom-rcText.top);
+
+		StringFormat format;
+		StringAlignment sa = StringAlignment::StringAlignmentNear;
+		if ((m_uTextStyle & DT_VCENTER) != 0) 
+			sa = StringAlignment::StringAlignmentCenter;
+		else if( (m_uTextStyle & DT_BOTTOM) != 0) 
+			sa = StringAlignment::StringAlignmentFar;
+		format.SetLineAlignment((StringAlignment)sa);
+		sa = StringAlignment::StringAlignmentNear;
+		if ((m_uTextStyle & DT_CENTER) != 0) 
+			sa = StringAlignment::StringAlignmentCenter;
+		else if( (m_uTextStyle & DT_RIGHT) != 0) 
+			sa = StringAlignment::StringAlignmentFar;
+		format.SetAlignment((StringAlignment)sa);
+		if ((m_uTextStyle & DT_SINGLELINE) != 0) 
+			format.SetFormatFlags(StringFormatFlagsNoWrap);
+
+		SolidBrush nBrush( GetTextColor() );
+
+		graphics.DrawString(strText.c_str(),strText.length(),&nFont,nRc,&format,&nBrush);
+	}
+
+	m_pGifImage->SelectActiveFrame( &pageGuid, m_nFramePosition );
 }
