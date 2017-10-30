@@ -2512,17 +2512,31 @@ bool CRichEditUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl
 
 void CRichEditUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
-    if( _tcscmp(pstrName, _T("vscrollbar")) == 0 ) {
-        if( _tcscmp(pstrValue, _T("true")) == 0 ) m_lTwhStyle |= ES_DISABLENOSCROLL | WS_VSCROLL;
+    if( _tcscmp(pstrName, _T("vscrollbar")) == 0 ) 
+	{
+        if( _tcscmp(pstrValue, _T("true")) == 0 ) 
+			SetVscrollbar(true);
+		else
+			SetVscrollbar(false);
     }
     if( _tcscmp(pstrName, _T("autovscroll")) == 0 ) {
-        if( _tcscmp(pstrValue, _T("true")) == 0 ) m_lTwhStyle |= ES_AUTOVSCROLL;
+        if( _tcscmp(pstrValue, _T("true")) == 0 ) 
+			SetAutoVscroll(true);
+		else
+			SetAutoVscroll(false);
     }
-    else if( _tcscmp(pstrName, _T("hscrollbar")) == 0 ) {
-        if( _tcscmp(pstrValue, _T("true")) == 0 ) m_lTwhStyle |= ES_DISABLENOSCROLL | WS_HSCROLL;
+    else if( _tcscmp(pstrName, _T("hscrollbar")) == 0 ) 
+	{
+        if( _tcscmp(pstrValue, _T("true")) == 0 ) 
+			SetHscrollbar(true);
+		else
+			SetHscrollbar(false);
     }
     if( _tcscmp(pstrName, _T("autohscroll")) == 0 ) {
-        if( _tcscmp(pstrValue, _T("true")) == 0 ) m_lTwhStyle |= ES_AUTOHSCROLL;
+        if( _tcscmp(pstrValue, _T("true")) == 0 ) 
+			SetAutoHscroll(true);
+		else
+			SetAutoHscroll(false);
     }
     else if( _tcscmp(pstrName, _T("wanttab")) == 0 ) {
         SetWantTab(_tcscmp(pstrValue, _T("true")) == 0);
