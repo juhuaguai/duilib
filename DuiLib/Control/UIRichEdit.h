@@ -97,6 +97,18 @@ public:
 	RECT GetTextPadding() const;
 	void SetTextPadding(RECT rc);
 
+	void SetMultLine(bool bMultLine = true);
+	bool GetMultLine();
+
+	void SetVscrollbar(bool bVscrollbar);
+	bool GetVscrollbar();
+	void SetHscrollbar(bool bHscrollbar);
+	bool GetHsrcollbar();
+	void SetAutoVscroll(bool bAutoVscroll);
+	bool GetAutoVscroll();
+	void SetAutoHscroll(bool bAutoHscroll);
+	bool GetAutoHscroll();
+
     void DoInit();
 	bool SetDropAcceptFile(bool bAccept);
 	// 注意：TxSendMessage和SendMessage是有区别的，TxSendMessage没有multibyte和unicode自动转换的功能，

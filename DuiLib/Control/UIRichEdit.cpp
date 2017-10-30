@@ -49,6 +49,21 @@ public:
     BOOL IsReadOnly();
     void SetReadOnly(BOOL fReadOnly);
 
+	LONG GetWinStyle();
+	void SetWinStyle(LONG lStyle);
+
+	void SetMultLine(bool bMultLine = true);
+	bool GetMultLine();
+
+	void SetVscrollbar(bool bVscrollbar);
+	bool GetVscrollbar();
+	void SetHscrollbar(bool bHscrollbar);
+	bool GetHsrcollbar();
+	void SetAutoVscroll(bool bAutoVscroll);
+	bool GetAutoVscroll();
+	void SetAutoHscroll(bool bAutoHscroll);
+	bool GetAutoHscroll();
+
     void SetFont(HFONT hFont);
     void SetColor(DWORD dwColor);
     SIZEL* GetExtent();
@@ -257,6 +272,7 @@ CTxtWinHost::CTxtWinHost() : m_re(NULL)
     ::ZeroMemory(&cRefs, sizeof(CTxtWinHost) - offsetof(CTxtWinHost, cRefs));
     cchTextMost = cInitTextMax;
     laccelpos = -1;
+	dwStyle = 0;
 }
 
 CTxtWinHost::~CTxtWinHost()
@@ -284,9 +300,9 @@ BOOL CTxtWinHost::Init(CRichEditUI *re, const CREATESTRUCT *pcs)
     if(FAILED(InitDefaultParaFormat(re, &pf)))
         goto err;
 
-    // edit controls created without a window are multiline by default
-    // so that paragraph formats can be
-    dwStyle = ES_MULTILINE;
+    //// edit controls created without a window are multiline by default
+    //// so that paragraph formats can be
+    //dwStyle = ES_MULTILINE;
 
     // edit controls are rich by default
     fRich = re->IsRich();
@@ -786,6 +802,130 @@ void CTxtWinHost::SetReadOnly(BOOL fReadOnly)
         fReadOnly ? TXTBIT_READONLY : 0);
 }
 
+bool CTxtWinHost::GetMultLine()
+{
+	if (dwStyle & ES_MULTILINE)
+		return true;
+	else
+		return false;
+}
+
+void CTxtWinHost::SetMultLine(bool bMultLine /* = true */)
+{
+	if (bMultLine)
+	{
+		dwStyle = dwStyle|ES_MULTILINE;
+	}
+	else
+	{
+		dwStyle &= ~ES_MULTILINE;
+	}
+	pserv->OnTxPropertyBitsChange(TXTBIT_MULTILINE, bMultLine ? TXTBIT_MULTILINE : 0);
+}
+
+LONG CTxtWinHost::GetWinStyle()
+{
+	return dwStyle;
+}
+
+void CTxtWinHost::SetWinStyle(LONG lStyle)
+{
+	dwStyle = lStyle;
+}
+
+void CTxtWinHost::SetVscrollbar(bool bVscrollbar)
+{
+	if (bVscrollbar)
+	{
+		dwStyle |= ES_DISABLENOSCROLL | WS_VSCROLL;
+	}
+	else
+	{
+		dwStyle &= ~WS_VSCROLL;
+		if ( (dwStyle&WS_HSCROLL)==0)
+		{
+			dwStyle &= ~ES_DISABLENOSCROLL;
+		}
+	}
+}
+
+bool CTxtWinHost::GetVscrollbar()
+{
+	if (dwStyle & WS_VSCROLL)
+	{
+		return true;
+	}
+	else
+		return false;
+}
+
+void CTxtWinHost::SetHscrollbar(bool bHscrollbar)
+{
+	if (bHscrollbar)
+	{
+		dwStyle |= ES_DISABLENOSCROLL | WS_HSCROLL;
+	}
+	else
+	{
+		dwStyle &= ~WS_HSCROLL;
+		if ( (dwStyle&WS_VSCROLL)==0)
+		{
+			dwStyle &= ~ES_DISABLENOSCROLL;
+		}
+	}
+}
+
+bool CTxtWinHost::GetHsrcollbar()
+{
+	if (dwStyle & WS_HSCROLL)
+	{
+		return true;
+	}
+	else
+		return false;
+}
+
+void CTxtWinHost::SetAutoVscroll(bool bAutoVscroll)
+{
+	if (bAutoVscroll)
+	{
+		dwStyle |= ES_AUTOVSCROLL;
+	}
+	else
+	{
+		dwStyle &= ~ES_AUTOVSCROLL;
+	}
+}
+bool CTxtWinHost::GetAutoVscroll()
+{
+	if (dwStyle & ES_AUTOVSCROLL)
+	{
+		return true;
+	}
+	else
+		return false;
+}
+void CTxtWinHost::SetAutoHscroll(bool bAutoHscroll)
+{
+	if (bAutoHscroll)
+	{
+		dwStyle |= ES_AUTOHSCROLL;
+	}
+	else
+	{
+		dwStyle &= ~ES_AUTOHSCROLL;
+	}
+}
+bool CTxtWinHost::GetAutoHscroll()
+{
+	if (dwStyle & ES_AUTOHSCROLL)
+	{
+		return true;
+	}
+	else
+		return false;
+}
+
 void CTxtWinHost::SetFont(HFONT hFont) 
 {
     if( hFont == NULL ) return;
@@ -1071,6 +1211,7 @@ void CTxtWinHost::SetParaFormat(PARAFORMAT2 &p)
     pf = p;
 }
 
+
 /////////////////////////////////////////////////////////////////////////////////////
 //
 //
@@ -1221,6 +1362,10 @@ LONG CRichEditUI::GetWinStyle()
 void CRichEditUI::SetWinStyle(LONG lStyle)
 {
     m_lTwhStyle = lStyle;
+	if (m_pTwh)
+	{
+		m_pTwh->SetWinStyle(m_lTwhStyle);
+	}
 }
 
 DWORD CRichEditUI::GetTextColor()
@@ -1700,6 +1845,147 @@ void CRichEditUI::SetTextPadding(RECT rc)
 {
 	m_rcTextPadding = rc;
 	Invalidate();
+}
+
+
+bool CRichEditUI::GetMultLine()
+{
+	if (m_lTwhStyle & ES_MULTILINE)
+		return true;
+	else
+		return false;
+}
+
+void CRichEditUI::SetMultLine(bool bMultLine /* = true */)
+{
+	if (bMultLine)
+	{
+		m_lTwhStyle = m_lTwhStyle|ES_MULTILINE;
+	}
+	else
+	{
+		m_lTwhStyle &= ~ES_MULTILINE;
+	}
+	if (m_pTwh)
+	{
+		m_pTwh->SetMultLine(bMultLine);
+	}
+}
+
+void CRichEditUI::SetVscrollbar(bool bVscrollbar)
+{
+	if (bVscrollbar)
+	{
+		m_lTwhStyle |= ES_DISABLENOSCROLL | WS_VSCROLL;
+	}
+	else
+	{
+		m_lTwhStyle &= ~WS_VSCROLL;
+		if ( (m_lTwhStyle&WS_HSCROLL)==0)
+		{
+			m_lTwhStyle &= ~ES_DISABLENOSCROLL;
+		}
+	}
+
+	if (m_pTwh)
+	{
+		m_pTwh->SetVscrollbar(bVscrollbar);
+	}
+}
+
+bool CRichEditUI::GetVscrollbar()
+{
+	if (m_lTwhStyle & WS_VSCROLL)
+	{
+		return true;
+	}
+	else
+		return false;
+}
+
+void CRichEditUI::SetHscrollbar(bool bHscrollbar)
+{
+	if (bHscrollbar)
+	{
+		m_lTwhStyle |= ES_DISABLENOSCROLL | WS_HSCROLL;
+	}
+	else
+	{
+		m_lTwhStyle &= ~WS_HSCROLL;
+		if ( (m_lTwhStyle&WS_VSCROLL)==0)
+		{
+			m_lTwhStyle &= ~ES_DISABLENOSCROLL;
+		}
+	}
+
+	if (m_pTwh)
+	{
+		m_pTwh->SetHscrollbar(bHscrollbar);
+	}
+}
+
+bool CRichEditUI::GetHsrcollbar()
+{
+	if (m_lTwhStyle & WS_HSCROLL)
+	{
+		return true;
+	}
+	else
+		return false;
+}
+
+void CRichEditUI::SetAutoVscroll(bool bAutoVscroll)
+{
+	if (bAutoVscroll)
+	{
+		m_lTwhStyle |= ES_AUTOVSCROLL;
+	}
+	else
+	{
+		m_lTwhStyle &= ~ES_AUTOVSCROLL;
+	}
+
+	if (m_pTwh)
+	{
+		m_pTwh->SetAutoVscroll(bAutoVscroll);
+	}
+}
+
+bool CRichEditUI::GetAutoVscroll()
+{
+	if (m_lTwhStyle & ES_AUTOVSCROLL)
+	{
+		return true;
+	}
+	else
+		return false;
+}
+
+void CRichEditUI::SetAutoHscroll(bool bAutoHscroll)
+{
+	if (bAutoHscroll)
+	{
+		m_lTwhStyle |= ES_AUTOHSCROLL;
+	}
+	else
+	{
+		m_lTwhStyle &= ~ES_AUTOHSCROLL;
+	}
+
+	if (m_pTwh)
+	{
+		m_pTwh->SetAutoHscroll(bAutoHscroll);
+	}
+}
+
+bool CRichEditUI::GetAutoHscroll()
+{
+	if (m_lTwhStyle & ES_AUTOHSCROLL)
+	{
+		return true;
+	}
+	else
+		return false;
 }
 
 void CRichEditUI::DoInit()
@@ -2200,7 +2486,7 @@ bool CRichEditUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl
 		::GetCaretPos(&ptCaret);
 		if( ::PtInRect(&m_rcItem, ptCaret) ) {
 			RECT rcCaret = { ptCaret.x, ptCaret.y, ptCaret.x, ptCaret.y + m_pTwh->GetCaretHeight() };
-			CRenderEngine::DrawLine(hDC, rcCaret, m_pTwh->GetCaretWidth(), 0xFF000000);
+			CRenderEngine::DrawLine(hDC, rcCaret, m_pTwh->GetCaretWidth(), m_dwTextColor);
 		}
 	}
 
@@ -2254,7 +2540,10 @@ void CRichEditUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         SetRich(_tcscmp(pstrValue, _T("true")) == 0);
     }
     else if( _tcscmp(pstrName, _T("multiline")) == 0 ) {
-        if( _tcscmp(pstrValue, _T("false")) == 0 ) m_lTwhStyle &= ~ES_MULTILINE;
+        if( _tcscmp(pstrValue, _T("false")) == 0 )
+			SetMultLine(false);
+		else
+			SetMultLine(true);
     }
     else if( _tcscmp(pstrName, _T("readonly")) == 0 ) {
         if( _tcscmp(pstrValue, _T("true")) == 0 ) { m_lTwhStyle |= ES_READONLY; m_bReadOnly = true; }
