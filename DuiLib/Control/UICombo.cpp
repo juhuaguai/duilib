@@ -374,7 +374,7 @@ UINT CComboWnd::GetClassStyle() const
 ////////////////////////////////////////////////////////
 
 
-CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0),m_dwTextColor(0),m_dwDisabledTextColor(0),m_iFont(-1),m_uTextStyle(DT_VCENTER|DT_SINGLELINE|DT_LEFT)
+CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0),m_dwTextColor(0),m_dwDisabledTextColor(0),m_iFont(-1),m_uTextStyle(DT_VCENTER|DT_SINGLELINE|DT_LEFT),m_EnableEffect(false)
 {
     m_szDropBox = CDuiSize(0, 150);
     ::ZeroMemory(&m_rcTextPadding, sizeof(m_rcTextPadding));
@@ -1333,33 +1333,117 @@ void CComboUI::PaintStatusImage(HDC hDC)
     DrawImage(hDC, m_diNormal);
 }
 
+//void CComboUI::PaintText(HDC hDC)
+//{
+//	if (!m_bShowText) return;
+//
+//    RECT rcText = m_rcItem;
+//    rcText.left += m_rcTextPadding.left;
+//    rcText.right -= m_rcTextPadding.right;
+//    rcText.top += m_rcTextPadding.top;
+//    rcText.bottom -= m_rcTextPadding.bottom;
+//
+//    if( m_iCurSel >= 0 ) {
+//        CControlUI* pControl = static_cast<CControlUI*>(m_items[m_iCurSel]);
+//        IListItemUI* pElement = static_cast<IListItemUI*>(pControl->GetInterface(DUI_CTR_ILISTITEM));
+//        if( pElement != NULL ) 
+//		{
+//            //pElement->DrawItemText(hDC, rcText);
+//			if (IsEnabled())
+//				CRenderEngine::DrawText(hDC,m_pManager,rcText,pControl->GetText(),m_dwTextColor,m_iFont,m_uTextStyle);
+//			else
+//				CRenderEngine::DrawText(hDC,m_pManager,rcText,pControl->GetText(),m_dwDisabledTextColor,m_iFont,m_uTextStyle);
+//        }
+//        else 
+//		{
+//            RECT rcOldPos = pControl->GetPos();
+//            pControl->SetPos(rcText, false);
+//            pControl->Paint(hDC, rcText, NULL);
+//            pControl->SetPos(rcOldPos, false);
+//        }
+//    }
+//}
+
+void CComboUI::SetEnabledEffect( bool _EnabledEffect )
+{
+	m_EnableEffect = _EnabledEffect;
+	Invalidate();
+}
+
+bool CComboUI::GetEnabledEffect()
+{
+	return m_EnableEffect;
+}
+
 void CComboUI::PaintText(HDC hDC)
 {
 	if (!m_bShowText) return;
 
-    RECT rcText = m_rcItem;
-    rcText.left += m_rcTextPadding.left;
-    rcText.right -= m_rcTextPadding.right;
-    rcText.top += m_rcTextPadding.top;
-    rcText.bottom -= m_rcTextPadding.bottom;
+	RECT rcText = m_rcItem;
+	rcText.left += m_rcTextPadding.left;
+	rcText.right -= m_rcTextPadding.right;
+	rcText.top += m_rcTextPadding.top;
+	rcText.bottom -= m_rcTextPadding.bottom;
 
-    if( m_iCurSel >= 0 ) {
-        CControlUI* pControl = static_cast<CControlUI*>(m_items[m_iCurSel]);
-        IListItemUI* pElement = static_cast<IListItemUI*>(pControl->GetInterface(DUI_CTR_ILISTITEM));
-        if( pElement != NULL ) {
-            //pElement->DrawItemText(hDC, rcText);
-			if (IsEnabled())
-				CRenderEngine::DrawText(hDC,m_pManager,rcText,pControl->GetText(),m_dwTextColor,m_iFont,m_uTextStyle);
+	if( m_iCurSel >= 0 ) {
+		CControlUI* pControl = static_cast<CControlUI*>(m_items[m_iCurSel]);
+		IListItemUI* pElement = static_cast<IListItemUI*>(pControl->GetInterface(DUI_CTR_ILISTITEM));
+		if( pElement != NULL ) 
+		{
+			if(!GetEnabledEffect())
+			{
+				if (IsEnabled())
+					CRenderEngine::DrawText(hDC,m_pManager,rcText,pControl->GetText(),m_dwTextColor,m_iFont,m_uTextStyle);
+				else
+					CRenderEngine::DrawText(hDC,m_pManager,rcText,pControl->GetText(),m_dwDisabledTextColor,m_iFont,m_uTextStyle);
+			}
 			else
-				CRenderEngine::DrawText(hDC,m_pManager,rcText,pControl->GetText(),m_dwDisabledTextColor,m_iFont,m_uTextStyle);
-        }
-        else {
-            RECT rcOldPos = pControl->GetPos();
-            pControl->SetPos(rcText, false);
-            pControl->Paint(hDC, rcText, NULL);
-            pControl->SetPos(rcOldPos, false);
-        }
-    }
+			{
+#ifdef _USE_GDIPLUS
+				Font	nFont(hDC,m_pManager->GetFont(m_iFont));
+				Graphics nGraphics(hDC);
+				nGraphics.SetTextRenderingHint(TextRenderingHintAntiAlias);
+
+				StringFormat format;
+				StringAlignment sa = StringAlignment::StringAlignmentNear;
+				if ((m_uTextStyle & DT_VCENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
+				else if( (m_uTextStyle & DT_BOTTOM) != 0) sa = StringAlignment::StringAlignmentFar;
+				format.SetLineAlignment((StringAlignment)sa);
+				sa = StringAlignment::StringAlignmentNear;
+				if ((m_uTextStyle & DT_CENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
+				else if( (m_uTextStyle & DT_RIGHT) != 0) sa = StringAlignment::StringAlignmentFar;
+				format.SetAlignment((StringAlignment)sa);
+				if ((m_uTextStyle & DT_SINGLELINE) != 0) format.SetFormatFlags(StringFormatFlagsNoWrap);
+
+				SolidBrush nSolidBrush(m_dwTextColor);
+				if (!IsEnabled())
+					nSolidBrush.SetColor(m_dwDisabledTextColor);
+#ifdef _UNICODE
+				nGraphics.DrawString(pControl->GetText().GetData(),pControl->GetText().GetLength(),&nFont,RectF((float)rcText.left,(float)rcText.top,(float)rcText.right-rcText.left,(float)rcText.bottom-rcText.top),&format,&nSolidBrush);
+#else
+				int iLen = pControl->GetText().GetLength();
+				LPWSTR pWideText = new WCHAR[iLen + 1];
+				::ZeroMemory(pWideText, (iLen + 1) * sizeof(WCHAR));
+				::MultiByteToWideChar(CP_ACP, 0, pControl->GetText().GetData(), -1, (LPWSTR)pWideText, iLen);
+
+				int iLen = wcslen(pWideText);
+				nGraphics.DrawString(pWideText,iLen,&nFont,RectF((float)rcText.left,(float)rcText.top,(float)rcText.right-rcText.left,(float)rcText.bottom-rcText.top),&format,&nSolidBrush);
+				delete []pWideText;
+#endif	//_UNICODE
+#endif	//_USE_GDIPLUS
+			}
+		}
+		else 
+		{
+			if (pControl)
+			{
+				RECT rcOldPos = pControl->GetPos();
+				pControl->SetPos(rcText, false);
+				pControl->Paint(hDC, rcText, NULL);
+				pControl->SetPos(rcOldPos, false);
+			}
+		}
+	}
 }
 
 LPCTSTR CComboUI::GetVscrollbar() const

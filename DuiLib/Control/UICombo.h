@@ -112,6 +112,8 @@ public:
     void SetItemVLineColor(DWORD dwLineColor);
     bool IsItemShowHtml();
     void SetItemShowHtml(bool bShowHtml = true);
+	void SetEnabledEffect(bool _EnabledEffect);
+	bool GetEnabledEffect();
 
     SIZE EstimateSize(SIZE szAvailable);
 	void SetPos(RECT rc, bool bNeedInvalidate = true);
@@ -132,6 +134,7 @@ protected:
     CComboWnd* m_pWindow;
 
     int m_iCurSel;
+	bool m_EnableEffect;
 	bool m_bShowText;
 	bool m_bSelectCloseFlag;
     RECT m_rcTextPadding;
