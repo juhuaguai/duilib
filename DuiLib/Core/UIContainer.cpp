@@ -24,10 +24,11 @@ namespace DuiLib
 
 	CContainerUI::~CContainerUI()
 	{
+		m_pManager->RemovePostPaint(this);
 		m_bDelayedDestroy = false;
 		RemoveAll();
 		if( m_pVerticalScrollBar ) m_pVerticalScrollBar->Delete();
-		if( m_pHorizontalScrollBar ) m_pHorizontalScrollBar->Delete();
+		if( m_pHorizontalScrollBar ) m_pHorizontalScrollBar->Delete();		
 	}
 
 	LPCTSTR CContainerUI::GetClass() const
