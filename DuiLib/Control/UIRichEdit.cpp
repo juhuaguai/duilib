@@ -651,7 +651,7 @@ COLORREF CTxtWinHost::TxGetSysColor(int nIndex)
 
 HRESULT CTxtWinHost::TxGetBackStyle(TXTBACKSTYLE *pstyle)
 {
-    *pstyle = !fTransparent ? TXTBACK_OPAQUE : TXTBACK_TRANSPARENT;
+    *pstyle = fTransparent ? TXTBACK_TRANSPARENT : TXTBACK_OPAQUE;
     return NOERROR;
 }
 
