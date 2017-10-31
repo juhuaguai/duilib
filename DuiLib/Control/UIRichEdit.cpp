@@ -2386,6 +2386,11 @@ void CRichEditUI::Move(SIZE szOffset, bool bNeedInvalidate)
 		rc.right -= m_rcInset.right;
 		rc.bottom -= m_rcInset.bottom;
 
+		rc.left += m_rcTextPadding.left;
+		rc.top += m_rcTextPadding.top;
+		rc.right -= m_rcTextPadding.right;
+		rc.bottom -= m_rcTextPadding.bottom;
+
 		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetFixedWidth();
 		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
 		m_pTwh->SetClientRect(&rc);
