@@ -74,6 +74,7 @@ public:
 	void SetPos(RECT rc, bool bNeedInvalidate = true);
 	void Move(SIZE szOffset, bool bNeedInvalidate = true);
     bool DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
+	void DoPostPaint(HDC hDC, const RECT& rcPaint);
 
     void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
@@ -124,6 +125,7 @@ protected:
     bool m_bDelayedDestroy;
     bool m_bMouseChildEnabled;
     bool m_bScrollProcess; // ∑¿÷πSetPos—≠ª∑µ˜”√
+	bool m_bEndDown;
 
     CScrollBarUI* m_pVerticalScrollBar;
     CScrollBarUI* m_pHorizontalScrollBar;

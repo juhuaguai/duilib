@@ -16,7 +16,8 @@ namespace DuiLib
 		m_bMouseChildEnabled(true),
 		m_pVerticalScrollBar(NULL),
 		m_pHorizontalScrollBar(NULL),
-		m_bScrollProcess(false)
+		m_bScrollProcess(false),
+		m_bEndDown(false)
 	{
 		::ZeroMemory(&m_rcInset, sizeof(m_rcInset));
 	}
@@ -469,9 +470,11 @@ namespace DuiLib
 
 	void CContainerUI::EndDown()
 	{
-		SIZE sz = GetScrollPos();
-		sz.cy = GetScrollRange().cy;
-		SetScrollPos(sz);
+		//SIZE sz = GetScrollPos();
+		//sz.cy = GetScrollRange().cy;
+		//SetScrollPos(sz);
+		m_bEndDown = true;
+		m_pManager->AddPostPaint(this);
 	}
 
 	void CContainerUI::LineLeft()
@@ -855,6 +858,19 @@ namespace DuiLib
             }
 		}
         return true;
+	}
+
+	void CContainerUI::DoPostPaint(HDC hDC, const RECT& rcPaint)
+	{
+		if (m_bEndDown)
+		{
+			SIZE sz = GetScrollPos();
+			sz.cy = GetScrollRange().cy;
+			SetScrollPos(sz);
+			m_bEndDown = false;
+			m_pManager->RemovePostPaint(this);
+		}
+		CControlUI::DoPostPaint(hDC,rcPaint);
 	}
 
 	void CContainerUI::SetFloatPos(int iIndex)

@@ -192,6 +192,8 @@ namespace DuiLib
 			RECT rcSeparator = GetThumbRect(true);
 			CRenderEngine::DrawColor(hDC, rcSeparator, 0xAA000000);
 		}
+		
+		CContainerUI::DoPostPaint(hDC,rcPaint);
 	}
 
 	void CVerticalLayoutUI::SetSepHeight(int iHeight)
