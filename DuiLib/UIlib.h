@@ -59,8 +59,12 @@
 #	pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
 
-#include <windows.h>
-#include <windowsx.h>
+#ifdef USING_CEF_SHARED	//使用DUILIB同时兼容CEF
+	#include <OAIdl.h>
+#else
+	#include <windows.h>
+	#include <windowsx.h>
+#endif
 #include <commctrl.h>
 #include <stddef.h>
 #include <richedit.h>
@@ -69,6 +73,13 @@
 #include <crtdbg.h>
 #include <malloc.h>
 #include <stdio.h>
+
+#ifndef min
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+#endif
+#ifndef max
+#define max(a,b) (((a) > (b)) ? (a) : (b))
+#endif
 
 #include "Utils/Utils.h"
 #include "Utils/UIDelegate.h"
