@@ -1045,18 +1045,23 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 								for( LONG x = rcPaint.left; x < rcPaint.right; ++x ) {
 									pOffscreenBits = m_pOffscreenBits + y * dwWidth + x;
 									pBackgroundBits = m_pBackgroundBits + y * dwWidth + x;
-									if ( ( (BYTE)((*pOffscreenBits) >> 24) ) < 255 )	//画好的内容像素点alpha=255时(不透明),就不混合背景.
+									if (*pOffscreenBits!=0)
 									{
-										A = (BYTE)((*pBackgroundBits) >> 24);
-										if (A==0 && ((BYTE)((*pOffscreenBits) >> 24) )!=0)	//当背景像素点全透明时,以内容像素点的alpha为准,避免因为混合而导致内容像素点全透明了.
+										if ( ( (BYTE)((*pOffscreenBits) >> 24) ) < 255 )	//画好的内容像素点alpha=255时(不透明),就不混合背景.
 										{
-											A=(BYTE)((*pOffscreenBits) >> 24) ;
+											A = (BYTE)((*pBackgroundBits) >> 24);
+											if (A==0)	//当背景像素点全透明时,以内容像素点的alpha为准,避免因为混合而导致内容像素点全透明了.
+											{
+												A=(BYTE)((*pOffscreenBits) >> 24) ;
+											}
+											R = (BYTE)((*pOffscreenBits) >> 16) * A / 255;
+											G = (BYTE)((*pOffscreenBits) >> 8) * A / 255;
+											B = (BYTE)(*pOffscreenBits) * A / 255;
+											*pOffscreenBits = RGB(B, G, R) + ((DWORD)A << 24);
 										}
-										R = (BYTE)((*pOffscreenBits) >> 16) * A / 255;
-										G = (BYTE)((*pOffscreenBits) >> 8) * A / 255;
-										B = (BYTE)(*pOffscreenBits) * A / 255;
-										*pOffscreenBits = RGB(B, G, R) + ((DWORD)A << 24);
 									}
+									else
+										*pOffscreenBits = *pBackgroundBits;
 								}
 							}
 						}
