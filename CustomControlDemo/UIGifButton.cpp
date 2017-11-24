@@ -285,23 +285,23 @@ void CGifButtonUI::DrawFrame( HDC hDC )
 #else
 		wstring strText = AnsiToUnicode( m_sText.GetData());
 #endif
-		Font	nFont(hDC,m_pManager->GetFont(GetFont()));
+		Gdiplus::Font	nFont(hDC,m_pManager->GetFont(GetFont()));
 
 		RECT rcText = {m_rcItem.left+m_rcTextPadding.left,m_rcItem.top+m_rcTextPadding.top,m_rcItem.right-m_rcTextPadding.right,m_rcItem.bottom-m_rcTextPadding.bottom};
 		RectF nRc((float)rcText.left,(float)rcText.top,(float)rcText.right-rcText.left,(float)rcText.bottom-rcText.top);
 
 		StringFormat format;
-		StringAlignment sa = StringAlignment::StringAlignmentNear;
+		StringAlignment sa = StringAlignmentNear;
 		if ((m_uTextStyle & DT_VCENTER) != 0) 
-			sa = StringAlignment::StringAlignmentCenter;
+			sa = StringAlignmentCenter;
 		else if( (m_uTextStyle & DT_BOTTOM) != 0) 
-			sa = StringAlignment::StringAlignmentFar;
+			sa = StringAlignmentFar;
 		format.SetLineAlignment((StringAlignment)sa);
-		sa = StringAlignment::StringAlignmentNear;
+		sa = StringAlignmentNear;
 		if ((m_uTextStyle & DT_CENTER) != 0) 
-			sa = StringAlignment::StringAlignmentCenter;
+			sa = StringAlignmentCenter;
 		else if( (m_uTextStyle & DT_RIGHT) != 0) 
-			sa = StringAlignment::StringAlignmentFar;
+			sa = StringAlignmentFar;
 		format.SetAlignment((StringAlignment)sa);
 		if ((m_uTextStyle & DT_SINGLELINE) != 0) 
 			format.SetFormatFlags(StringFormatFlagsNoWrap);
