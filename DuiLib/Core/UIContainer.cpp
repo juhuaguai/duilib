@@ -24,7 +24,8 @@ namespace DuiLib
 
 	CContainerUI::~CContainerUI()
 	{
-		m_pManager->RemovePostPaint(this);
+		if (m_pManager)
+			m_pManager->RemovePostPaint(this);
 		m_bDelayedDestroy = false;
 		RemoveAll();
 		if( m_pVerticalScrollBar ) m_pVerticalScrollBar->Delete();

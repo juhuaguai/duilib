@@ -1426,7 +1426,7 @@ void CComboUI::PaintText(HDC hDC)
 				::ZeroMemory(pWideText, (iLen + 1) * sizeof(WCHAR));
 				::MultiByteToWideChar(CP_ACP, 0, pControl->GetText().GetData(), -1, (LPWSTR)pWideText, iLen);
 
-				int iLen = wcslen(pWideText);
+				iLen = wcslen(pWideText);
 				nGraphics.DrawString(pWideText,iLen,&nFont,RectF((float)rcText.left,(float)rcText.top,(float)rcText.right-rcText.left,(float)rcText.bottom-rcText.top),&format,&nSolidBrush);
 				delete []pWideText;
 #endif	//_UNICODE
