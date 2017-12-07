@@ -1066,6 +1066,24 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 							}
 						}
 					}
+					else
+					{
+						for( LONG y = rcClient.bottom - rcPaint.bottom; y < rcClient.bottom - rcPaint.top; ++y ) {
+							for( LONG x = rcPaint.left; x < rcPaint.right; ++x ) {
+								pOffscreenBits = m_pOffscreenBits + y * dwWidth + x;								
+								if (*pOffscreenBits!=0)
+								{
+									A=(BYTE)((*pOffscreenBits) >> 24);
+									if (A==0)
+										A=255;
+									R = (BYTE)((*pOffscreenBits) >> 16) * A / 255;
+									G = (BYTE)((*pOffscreenBits) >> 8) * A / 255;
+									B = (BYTE)(*pOffscreenBits) * A / 255;
+									*pOffscreenBits = RGB(B, G, R) + ((DWORD)A << 24);
+								}
+							}
+						}
+					}
 
                     BLENDFUNCTION bf = { AC_SRC_OVER, 0, m_nOpacity, AC_SRC_ALPHA };
                     POINT ptPos   = { rcWnd.left, rcWnd.top };

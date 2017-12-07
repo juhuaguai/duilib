@@ -1268,20 +1268,119 @@ void CRenderEngine::DrawRoundRect(HDC hDC, const RECT& rc, int nSize, int width,
     ::DeleteObject(hPen);
 }
 
+//void CRenderEngine::DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTSTR pstrText, DWORD dwTextColor, int iFont, UINT uStyle)
+//{
+//    ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
+//    if( pstrText == NULL || pManager == NULL ) return;
+//
+//	CDuiString sText = pstrText;
+//	CPaintManagerUI::ProcessMultiLanguageTokens(sText);
+//	pstrText = sText;
+//
+//    ::SetBkMode(hDC, TRANSPARENT);
+//    ::SetTextColor(hDC, RGB(GetBValue(dwTextColor), GetGValue(dwTextColor), GetRValue(dwTextColor)));
+//    HFONT hOldFont = (HFONT)::SelectObject(hDC, pManager->GetFont(iFont));
+//    ::DrawText(hDC, pstrText, -1, &rc, uStyle | DT_NOPREFIX);
+//    ::SelectObject(hDC, hOldFont);
+//}
+void DrawTextUnderLayered(HDC inDC, LPCTSTR szText, HFONT hFont, DWORD dwColor, RECT rc, UINT format)
+{
+	if ((rc.right > rc.left) && (rc.bottom > rc.top))
+	{
+		int TextLength = (int)_tcslen(szText); 
+		if (TextLength <= 0) 
+			return ; 
+		// Create DC and select font into it 
+		HDC hTextDC = CreateCompatibleDC(inDC); 
+		SelectObject(hTextDC, hFont); 
+
+		BITMAPINFOHEADER BMIH;
+		memset(&BMIH, 0x0, sizeof(BITMAPINFOHEADER)); 
+		COLORREF* pvBits = NULL; 
+
+		// Specify DIB setup 
+		BMIH.biSize = sizeof(BMIH); 
+		BMIH.biWidth = rc.right - rc.left; 
+		BMIH.biHeight = rc.bottom - rc.top; 
+		BMIH.biPlanes = 1; 
+		BMIH.biBitCount = 32; 
+		BMIH.biCompression = BI_RGB;
+		HBITMAP hMyDIB = CreateDIBSection(hTextDC, (LPBITMAPINFO)&BMIH, 0, (LPVOID*)&pvBits, NULL, 0); 
+		SelectObject(hTextDC, hMyDIB); 
+
+		SetTextColor(hTextDC, RGB(GetBValue(dwColor), GetGValue(dwColor), GetRValue(dwColor)));
+		SetBkColor(hTextDC, 0x00000000); 
+		SetBkMode(hTextDC, OPAQUE); 
+		RECT rcText = {0, 0, rc.right-rc.left, rc.bottom - rc.top};
+		DrawText(hTextDC, szText, TextLength, &rcText, format); 
+		BYTE* DataPtr = (BYTE*)pvBits; 
+		BYTE A = (BYTE)(dwColor >> 24); 
+		BYTE R = (BYTE)(dwColor >> 16); 
+		BYTE G = (BYTE)(dwColor >> 8); 
+		BYTE B = (BYTE)(dwColor);
+		BYTE RR=0,GG=0,BB=0;
+		COLORREF* pBits = NULL;
+		for (int LoopY = 0; LoopY < BMIH.biHeight; LoopY++) 
+		{ 
+			for (int LoopX = 0; LoopX < BMIH.biWidth; LoopX++) 
+			{
+				pBits = pvBits + LoopY * BMIH.biWidth + LoopX;
+				if (*pBits != 0)
+				{
+					RR = R * A / 255;
+					GG = G * A / 255;
+					BB = B * A / 255;
+					*pBits = RGB(BB, GG, RR) + ((DWORD)A << 24);
+				}
+			} 
+		} 
+
+		BLENDFUNCTION bf; 
+		bf.BlendOp = AC_SRC_OVER; 
+		bf.BlendFlags = 0; 
+		bf.SourceConstantAlpha = 0xFF; 
+		bf.AlphaFormat = AC_SRC_ALPHA;
+
+		int nLeft = rc.left;
+		int nTop = rc.top;
+		if (format & DT_RIGHT)
+			nLeft += rc.right - rc.left - BMIH.biWidth;
+		else if (format & DT_CENTER)
+			nLeft += (rc.right - rc.left - BMIH.biWidth) / 2;
+
+		if (format & DT_BOTTOM)
+			nTop += rc.bottom - rc.bottom - BMIH.biHeight;
+		else if (format & DT_VCENTER)
+			nTop += (rc.bottom - rc.top - BMIH.biHeight) /2;
+
+		typedef BOOL (WINAPI *LPALPHABLEND)(HDC, int, int, int, int,HDC, int, int, int, int, BLENDFUNCTION);
+		static LPALPHABLEND lpAlphaBlend = (LPALPHABLEND) ::GetProcAddress(::GetModuleHandle(_T("msimg32.dll")), "AlphaBlend");
+
+		if( lpAlphaBlend == NULL ) lpAlphaBlend = AlphaBitBlt;
+		lpAlphaBlend(inDC, nLeft, nTop, BMIH.biWidth, BMIH.biHeight, hTextDC, 0, 0,BMIH.biWidth,BMIH.biHeight, bf); 
+
+		// Clean up 
+		DeleteObject(hMyDIB); 
+		DeleteDC(hTextDC);
+	}	
+}
 void CRenderEngine::DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTSTR pstrText, DWORD dwTextColor, int iFont, UINT uStyle)
 {
-    ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
-    if( pstrText == NULL || pManager == NULL ) return;
+	ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
+	if( pstrText == NULL || pManager == NULL ) return;
 
 	CDuiString sText = pstrText;
 	CPaintManagerUI::ProcessMultiLanguageTokens(sText);
 	pstrText = sText;
 
-    ::SetBkMode(hDC, TRANSPARENT);
-    ::SetTextColor(hDC, RGB(GetBValue(dwTextColor), GetGValue(dwTextColor), GetRValue(dwTextColor)));
-    HFONT hOldFont = (HFONT)::SelectObject(hDC, pManager->GetFont(iFont));
-    ::DrawText(hDC, pstrText, -1, &rc, uStyle | DT_NOPREFIX);
-    ::SelectObject(hDC, hOldFont);
+	::SetBkMode(hDC, TRANSPARENT);
+	::SetTextColor(hDC, RGB(GetBValue(dwTextColor), GetGValue(dwTextColor), GetRValue(dwTextColor)));
+	HFONT hOldFont = (HFONT)::SelectObject(hDC, pManager->GetFont(iFont));
+	if (pManager->IsLayered() == TRUE && (uStyle & DT_CALCRECT) != DT_CALCRECT)
+		DrawTextUnderLayered(hDC, pstrText, pManager->GetFont(iFont), dwTextColor, rc, uStyle);
+	else
+		::DrawText(hDC, pstrText, -1, &rc, uStyle | DT_NOPREFIX);
+	::SelectObject(hDC, hOldFont);
 }
 
 void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTSTR pstrText, DWORD dwTextColor, RECT* prcLinks, CDuiString* sLinks, int& nLinkRects, int iDefaultFont, UINT uStyle)
