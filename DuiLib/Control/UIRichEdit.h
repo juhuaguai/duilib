@@ -139,6 +139,8 @@ public:
     bool DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
 
     void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
+	void SetCaret(bool bCaret);
+	bool GetCaret();
 
     LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled);
 
@@ -160,6 +162,7 @@ protected:
     int m_iFont;
     int m_iLimitText;
     LONG m_lTwhStyle;
+	bool m_bCaret;
 	bool m_bDrawCaret;
 	bool m_bInited;
 	RECT	m_rcTextPadding;

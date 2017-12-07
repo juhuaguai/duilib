@@ -531,9 +531,17 @@ void CTxtWinHost::TxViewChange(BOOL fUpdate)
 
 BOOL CTxtWinHost::TxCreateCaret(HBITMAP hbmp, INT xWidth, INT yHeight)
 {
+	if (!fShowCaret)
+		xWidth = 0;
+
     iCaretWidth = xWidth;
     iCaretHeight = yHeight;
-    return ::CreateCaret(m_re->GetManager()->GetPaintWindow(), hbmp, xWidth, yHeight);
+	if (fShowCaret)
+	{
+		return ::CreateCaret(m_re->GetManager()->GetPaintWindow(), hbmp, xWidth, yHeight);
+	}
+	
+	return FALSE;
 }
 
 BOOL CTxtWinHost::TxShowCaret(BOOL fShow)
@@ -1218,7 +1226,7 @@ void CTxtWinHost::SetParaFormat(PARAFORMAT2 &p)
 
 CRichEditUI::CRichEditUI() : m_pTwh(NULL), m_bVScrollBarFixing(false), m_bWantTab(true), m_bWantReturn(true), 
     m_bWantCtrlReturn(true), m_bTransparent(true), m_bRich(true), m_bReadOnly(false), m_bWordWrap(false), m_dwTextColor(0), m_iFont(-1), 
-	m_iLimitText(cInitTextMax), m_lTwhStyle(ES_MULTILINE), m_bDrawCaret(true), m_bInited(false)
+	m_iLimitText(cInitTextMax), m_lTwhStyle(ES_MULTILINE), m_bCaret(true),m_bDrawCaret(true), m_bInited(false)
 {
 	::ZeroMemory(&m_rcTextPadding, sizeof(m_rcTextPadding));
 }
@@ -2007,7 +2015,8 @@ void CRichEditUI::DoInit()
         m_pTwh->GetTextServices()->TxSendMessage(EM_SETLANGOPTIONS, 0, 0, &lResult);
         m_pTwh->OnTxInPlaceActivate(NULL);
         m_pManager->AddMessageFilter(this);
-		if( m_pManager->IsLayered() ) m_pManager->SetTimer(this, DEFAULT_TIMERID, ::GetCaretBlinkTime());
+		if( m_pManager->IsLayered() ) 
+			m_pManager->SetTimer(this, DEFAULT_TIMERID, ::GetCaretBlinkTime());
     }
 
 	m_bInited= true;
@@ -2603,6 +2612,23 @@ void CRichEditUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	}
 	else if( _tcscmp(pstrName, _T("maxchar")) == 0 ) SetLimitText(_ttoi(pstrValue));
     else CContainerUI::SetAttribute(pstrName, pstrValue);
+}
+
+void CRichEditUI::SetCaret(bool bCaret)
+{
+	if (m_bCaret != bCaret)
+	{
+		m_bCaret = bCaret;
+		if (m_pTwh)
+			m_pTwh->TxShowCaret(m_bCaret);
+
+		Invalidate();
+	}
+}
+
+bool CRichEditUI::GetCaret()
+{
+	return m_bCaret;
 }
 
 LRESULT CRichEditUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled)
