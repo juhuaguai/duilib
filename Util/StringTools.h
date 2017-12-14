@@ -91,6 +91,27 @@ inline int jwStrncpy(char* pszDst, size_t nBufSize, const char * pszSrc)
 	return strncpy_s(pszDst, nBufSize, pszSrc, _TRUNCATE);
 }
 
+inline string UintToStr(unsigned int uiVal)
+{
+	string strRet;
+	char szBuff[20];
+
+	_snprintf_s(szBuff, _countof(szBuff), _TRUNCATE, "%I32u", uiVal);
+	strRet = szBuff;
+	return strRet;
+}
+
+
+inline string DblToStr(double dblVal)
+{
+	string strRet;
+	char szBuff[50];
+
+	_snprintf_s(szBuff, _countof(szBuff), _TRUNCATE, "%f", dblVal);
+	strRet = szBuff;
+	return strRet;
+}
+
 inline bool IsGB2312(const unsigned char *pszIn) 
 { 
 	if (*pszIn>=0xB0 && *pszIn<=0xF7 && *(pszIn+1)>=0xA0 && *(pszIn+1)<=0xFE) 

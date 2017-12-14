@@ -56,3 +56,6 @@ bool SaveIconFileFromExeFile(const xstring& strExe,const xstring& strDestFile);
 
 //由绝对路径获取文件名
 xstring GetAppNameFromPath(const xstring& strAppPath);
+
+//是否是有效的身份证号 (返回1表明有效,错误码为负数)
+int IsValidIdCardNumber(const xstring& strIdCardNumber);

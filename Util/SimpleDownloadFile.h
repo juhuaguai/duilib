@@ -7,7 +7,7 @@ using namespace std;
 
 #pragma comment(lib, "urlmon.lib")
 
-//pVoid-DownloadFile时传的第一个参数 pszUrl-要下载的文件的url pszPath-目标路径及文件名
+//pVoid-DownloadFile时传的第一个参数 pszUrl-要下载的文件的url pszPath-存放路径及文件名
 typedef void (*PDownloadResultCallback)(LPVOID pVoid,bool bDownloadOK,LPCTSTR pszPath);	//下载结果回调
 
 #ifdef _UNICODE
@@ -45,9 +45,10 @@ public:
 	CSimpleDownloadFile(void);
 	~CSimpleDownloadFile(void);
 
-	//参数:pVoid-回调时将带出该指针 pszUrl-目标url pszPath-目标路径及文件名
+	//参数:pVoid-回调时将带出该指针 pszUrl-源url pszPath-目标路径及文件名
 	void DownloadFile(LPVOID pVoid,LPCTSTR pszUrl,LPCTSTR pszPath,PDownloadResultCallback pCallback = NULL);
 
+public:
 	HRESULT STDMETHODCALLTYPE OnStartBinding(/* [in] */ DWORD dwReserved,/* [in] */ __RPC__in_opt IBinding *pib);
 	HRESULT STDMETHODCALLTYPE GetPriority(/* [out] */ __RPC__out LONG *pnPriority);
 	HRESULT STDMETHODCALLTYPE OnLowResource(/* [in] */ DWORD reserved);

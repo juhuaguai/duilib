@@ -552,3 +552,42 @@ xstring GetAppNameFromPath(const xstring& strAppPath)
 	}
 	return strRet;
 }
+
+int IsValidIdCardNumber(const xstring& strIdCardNumber)
+{
+	//身份证号长度
+	if (strIdCardNumber.length() != 18)
+		return -1;
+
+	//非法字符
+	xstring strValue1 = strIdCardNumber.substr(0,17);
+	if (strValue1.find_first_not_of(_T("0123456789"))!=strValue1.npos )
+		return -2;
+	xstring strValue2 = strIdCardNumber.substr(17,1);
+	if (strValue2.find_first_not_of(_T("0123456789xX"))!=strValue2.npos )
+		return -2;
+
+	//出生月份
+	int nMonth = _ttoi(strIdCardNumber.substr(10,2).c_str());
+	if (nMonth<1 || nMonth>12)
+		return -3;
+	//出生日期	//不再判断当月是否真的有31号
+	int nDay = _ttoi(strIdCardNumber.substr(12,2).c_str());
+	if (nDay<1 || nDay>31)
+		return -4;
+
+	//〖GB 11643-1999〗中规定，验证校验码
+	int weight[]={7,9,10,5,8,4,2,1,6,3,7,9,10,5,8,4,2};
+	xstring strValidate = _T("10X98765432");
+	int sum = 0;
+
+	for(unsigned int i=0;i<strValue1.length();i++)
+	{
+		sum = sum + (strValue1[i] - _T('0')) * weight[i];
+	}
+	int nIndex = sum % 11;
+	if (strValidate[nIndex] != strValue2[0])
+		return -5;
+	
+	return 1;
+}

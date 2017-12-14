@@ -8,6 +8,9 @@
 // See these sources for detailed information regarding the
 // Active Template Library product.
 #include "mstime.h"
+//#include <atldef.h>
+#include <assert.h>
+
 
 
 
@@ -165,12 +168,12 @@ CMSTime::CMSTime(int nYear, int nMonth, int nDay, int nHour, int nMin, int nSec,
 #pragma warning (push)
 #pragma warning (disable: 4127)  // conditional expression constant
 
-	ATLENSURE( nYear >= 1900 );
-	ATLENSURE( nMonth >= 1 && nMonth <= 12 );
-	ATLENSURE( nDay >= 1 && nDay <= 31 );
-	ATLENSURE( nHour >= 0 && nHour <= 23 );
-	ATLENSURE( nMin >= 0 && nMin <= 59 );
-	ATLENSURE( nSec >= 0 && nSec <= 59 );
+	assert( nYear >= 1900 );
+	assert( nMonth >= 1 && nMonth <= 12 );
+	assert( nDay >= 1 && nDay <= 31 );
+	assert( nHour >= 0 && nHour <= 23 );
+	assert( nMin >= 0 && nMin <= 59 );
+	assert( nSec >= 0 && nSec <= 59 );
 
 #pragma warning (pop)
 
@@ -185,11 +188,11 @@ CMSTime::CMSTime(int nYear, int nMonth, int nDay, int nHour, int nMin, int nSec,
 	atm.tm_isdst = nDST;
 
 	m_time = _mktime64(&atm);
-	ATLASSUME(m_time != -1);       // indicates an illegal input time
-	if(m_time == -1)
+	assert(m_time != -1);       // indicates an illegal input time
+	/*if(m_time == -1)
 	{
 		AtlThrow(E_INVALIDARG);
-	}
+	}*/
 }
 
 CMSTime::CMSTime(WORD wDosDate, WORD wDosTime, int nDST)
@@ -204,10 +207,10 @@ CMSTime::CMSTime(WORD wDosDate, WORD wDosTime, int nDST)
 	atm.tm_year = (wDosDate >> 9) + 80;
 	atm.tm_isdst = nDST;
 	m_time = _mktime64(&atm);
-	ATLASSUME(m_time != -1);       // indicates an illegal input time
+	assert(m_time != -1);       // indicates an illegal input time
 
-	if(m_time == -1)
-		AtlThrow(E_INVALIDARG);
+	/*if(m_time == -1)
+		AtlThrow(E_INVALIDARG);*/
 
 }
 
@@ -236,7 +239,7 @@ CMSTime::CMSTime(const FILETIME& fileTime, int nDST)
 	if (!FileTimeToLocalFileTime(&fileTime, &localTime))
 	{
 		m_time = 0;
-		AtlThrow(E_INVALIDARG);
+		//AtlThrow(E_INVALIDARG);
 		return;
 	}
 
@@ -245,7 +248,7 @@ CMSTime::CMSTime(const FILETIME& fileTime, int nDST)
 	if (!FileTimeToSystemTime(&localTime, &sysTime))
 	{
 		m_time = 0;
-		AtlThrow(E_INVALIDARG);		
+		//AtlThrow(E_INVALIDARG);		
 		return;
 	}
 
@@ -323,7 +326,7 @@ bool CMSTime::operator>=( CMSTime time ) const throw()
 struct tm* CMSTime::GetGmtTm(struct tm* ptm) const
 {
 	// Ensure ptm is valid
-	ATLENSURE( ptm != NULL );
+	assert( ptm != NULL );
 
 	if (ptm != NULL)
 	{
@@ -343,7 +346,7 @@ struct tm* CMSTime::GetGmtTm(struct tm* ptm) const
 struct tm* CMSTime::GetLocalTm(struct tm* ptm) const
 {
 	// Ensure ptm is valid
-	ATLENSURE( ptm != NULL );
+	assert( ptm != NULL );
 
 	if (ptm != NULL)
 	{

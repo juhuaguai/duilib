@@ -798,7 +798,7 @@ string escapeURL(const string &URL)
 	for ( unsigned int i=0; i<URL.size(); i++ ) 
 	{
 		char c = URL[i];
-		if ( ('0'<=c && c<='9')||('a'<=c && c<='z') || ('A'<=c && c<='Z') || c=='/' || c=='.' || c==':') 
+		if ( ('0'<=c && c<='9')||('a'<=c && c<='z') || ('A'<=c && c<='Z') || c=='/' || c=='.' || c==':' || c=='?' || c=='=') 
 		{
 			result += c;
 		} 

@@ -1,33 +1,10 @@
 //¸Ä±à×ÔÎ¢ÈíATLTIME
 
 #pragma once
+#include <time.h> 
+#include <string>
 
-//#pragma warning(push)
-//#pragma warning(disable : 4159 4127)
-//
-//#include <atldef.h>
-//
-#include <time.h>
-#include <atltime.h>
-//
-//#ifdef _AFX
-//#include <afxstr.h>
-//#else
-//#include <atlstr.h>
-//#endif
-//
-//#if defined(_M_IX86)
-//#pragma pack(push, 4)
-//#else
-//#pragma pack(push, ATL_PACKING)
-//#endif
-//
-//#ifndef __oledb_h__
-//struct tagDBTIMESTAMP;
-//typedef tagDBTIMESTAMP DBTIMESTAMP;
-//#endif
- 
- 
+using std::string;
 
 class CMSTimeSpan
 {
@@ -57,19 +34,6 @@ public:
 	bool operator<=( CMSTimeSpan span ) const throw();
 	bool operator>=( CMSTimeSpan span ) const throw();
 
-//public:
-//	CString Format( LPCTSTR pszFormat ) const;
-//	CString Format( UINT nID ) const;
-//
-//#if defined(_AFX) && defined(_UNICODE)
-//	// for compatibility with MFC 3.x
-//	CString Format(LPCSTR pFormat) const;
-//#endif
-//
-//#ifdef _AFX
-//	CArchive& Serialize64(CArchive& ar);
-//#endif
-
 private:
 	__time64_t m_timeSpan;
 };
@@ -87,9 +51,6 @@ public:
 	CMSTime( WORD wDosDate, WORD wDosTime, int nDST = -1 );
 	CMSTime( const SYSTEMTIME& st, int nDST = -1 );
 	CMSTime( const FILETIME& ft, int nDST = -1 );
-//#ifdef __oledb_h__
-//	CMSTime( const DBTIMESTAMP& dbts, int nDST = -1 ) throw();
-//#endif
 
 	CMSTime& operator=( __time64_t time ) throw();
 
@@ -111,7 +72,7 @@ public:
 	struct tm* GetLocalTm( struct tm* ptm ) const;
 
 	bool GetAsSystemTime( SYSTEMTIME& st ) const throw();
-	bool GetAsDBTIMESTAMP( DBTIMESTAMP& dbts ) const throw();
+	//bool GetAsDBTIMESTAMP( DBTIMESTAMP& dbts ) const throw();
 
 	__time64_t GetTime() const throw();
 
@@ -123,40 +84,26 @@ public:
 	int GetSecond() const throw();
 	int GetDayOfWeek() const throw();
 
-	inline void TimeStr(TCHAR *szTime)
+	inline void FormatTime(char *szTime) const
 	{
-		//_stprintf_s(szTime, 19, _T("%04d-%02d-%02d %02d:%02d:%02d"), GetYear(),GetMonth(),GetDay(), GetHour(),GetMinute(),GetSecond());
-		//szTime[19] = '\0';
-		_stprintf(szTime,_T("%04d-%02d-%02d %02d:%02d:%02d"), GetYear(),GetMonth(),GetDay(), GetHour(),GetMinute(),GetSecond());
+		sprintf_s(szTime, 20, "%04d-%02d-%02d %02d:%02d:%02d", GetYear(),GetMonth(),GetDay(), GetHour(),GetMinute(),GetSecond());
+		szTime[19] = '\0';
 	};
 
-	
-
-//	// formatting using "C" strftime
-//	CString Format( LPCTSTR pszFormat ) const;
-//	CString FormatGmt( LPCTSTR pszFormat ) const;
-//	CString Format( UINT nFormatID ) const;
-//	CString FormatGmt( UINT nFormatID ) const;
-//
-//#if defined(_AFX) && defined(_UNICODE)
-//	// for compatibility with MFC 3.x
-//	CString Format(LPCSTR pFormat) const;
-//	CString FormatGmt(LPCSTR pFormat) const;
-//#endif
-//
-//#ifdef _AFX
-//	CArchive& Serialize64(CArchive& ar);
-//#endif
+	inline void FormatTime(const char *pszFormat, char *pszTime) const
+	{
+		sprintf(pszTime, pszFormat, GetYear(), GetMonth(), GetDay(), GetHour(), GetMinute(), GetSecond());
+	};
 
 private:
 	__time64_t m_time;
 };
 
-inline CMSTime str2Time(const char *szTime) throw()
+inline CMSTime ParseTimeStr(const char *pszTime) throw()//str2Time
 {
 	int nYear, nMonth, nDay, nHour, nMinute, nSecond;
 
-    sscanf_s(szTime,"%d-%d-%d %d:%d:%d", &nYear, &nMonth, &nDay, &nHour, &nMinute, &nSecond);
+	sscanf_s(pszTime, "%d-%d-%d %d:%d:%d", &nYear, &nMonth, &nDay, &nHour, &nMinute, &nSecond);
 	if( nHour < 0 || nHour > 23 )
 	{
 		nHour = 0;
@@ -174,7 +121,7 @@ inline CMSTime str2Time(const char *szTime) throw()
 		return ( CMSTime(nYear, nMonth, nDay, nHour, nMinute, nSecond) );
 	}
 
-	sscanf_s(szTime,"%4d%02d%02d %d:%d:%d", &nYear, &nMonth, &nDay, &nHour, &nMinute, &nSecond);
+	sscanf_s(pszTime, "%4d%02d%02d %d:%d:%d", &nYear, &nMonth, &nDay, &nHour, &nMinute, &nSecond);
 	if( nHour < 0 || nHour > 23 )
 	{
 		nHour = 0;
@@ -194,9 +141,36 @@ inline CMSTime str2Time(const char *szTime) throw()
 	return (CMSTime());	
 }
 
+inline CMSTimeSpan ParseOnlyTimeStr(const char *pszTime) throw()//str2Time
+{
+	int nHour, nMinute, nSecond;
 
+	const char *pszFind = strchr(pszTime, ':');
+	if (pszFind != NULL)
+	{
+		sscanf(pszTime, "%d:%d:%d", &nHour, &nMinute, &nSecond);
+	}
+	else
+	{
+		sscanf(pszTime, "%02d%02d%02d", &nHour, &nMinute, &nSecond);
+	}
 
-
+	if (nHour < 0 || nHour > 23)
+	{
+		nHour = 0;
+	}
+	if (nMinute < 0 || nMinute > 59)
+	{
+		nMinute = 0;
+	}
+	if (nSecond < 0 || nSecond > 59)
+	{
+		nSecond = 0;
+	}
+	return CMSTimeSpan(0, nHour, nMinute, nSecond);
+	/*int nTime = nHour * 10000 + nMinute * 100 + nSecond;
+	return nTime;*/
+}
 
 
 class CMSFileTimeSpan
@@ -275,205 +249,76 @@ extern __declspec(selectany) const TCHAR * const szInvalidDateTimeSpan = _T("Inv
 const int maxTimeBufferSize = 128;
 const long maxDaysInSpan  =	3615897L;
 
+#define MAX_TIME_LEN	64	
+inline void GetPeriodTimeOfWeek(string &strStartTime)
+{
+	CMSTime tCurTime = CMSTime::GetCurrentTime();
+	int nWeekDay = tCurTime.GetDayOfWeek();
+	CMSTimeSpan tSpan = CMSTimeSpan(nWeekDay-1, 0, 0, 0);
+	tCurTime -= tSpan;
+
+	char szTime[MAX_TIME_LEN];
+	_snprintf_s(szTime, _countof(szTime), _TRUNCATE, "%04d-%02d-%02d %02d:%02d:%02d", tCurTime.GetYear(), tCurTime.GetMonth(), tCurTime.GetDay(), 0, 0, 0);
+	szTime[19] = '\0';
+	strStartTime = szTime;
+}
+
+inline void GetStartTimeOfCurMonth(string &strStartTime)
+{
+	CMSTime tCurTime = CMSTime::GetCurrentTime();
+
+	char szTime[MAX_TIME_LEN];
+	_snprintf_s(szTime, _countof(szTime), _TRUNCATE, "%04d-%02d-%02d %02d:%02d:%02d", tCurTime.GetYear(),tCurTime.GetMonth(), 1, 0, 0, 0);
+	szTime[19] = '\0';
+	strStartTime = szTime;
+}
+
+inline void GetStartTimeOfCurDay(string &strStartTime)
+{
+	CMSTime tCurTime = CMSTime::GetCurrentTime();
+
+	char szTime[MAX_TIME_LEN];
+	_snprintf_s(szTime, _countof(szTime), _TRUNCATE, "%04d-%02d-%02d %02d:%02d:%02d", tCurTime.GetYear(),tCurTime.GetMonth(), tCurTime.GetDay(), 0, 0, 0);
+	szTime[19] = '\0';
+	strStartTime = szTime;
+}
+
+inline int GetDayCountOfYear(int nYear, int nMonth)
+{
+	switch(nMonth)
+	{
+	case 1:
+	case 3:
+	case 5:
+	case 7:
+	case 8:
+	case 10:
+	case 12:
+		return 31;
+	case 4:
+	case 6:
+	case 9:
+	case 11:
+		return 30;
+	case 2:
+		{
+			if((((nYear%4)==0)&&(nYear%100)!=0) || (nYear%400==0))
+			{
+				return 29;
+			}
+			else
+			{
+				return 28;
+			}
+		}
+	default:
+		break;
+	}
+	return 0;
+}
 
 
 
-// 
-//
-//#ifndef _DEBUG
-//#define ATLTIME_INLINE inline
-//#include <atltime.inl>
-//#endif
-//
-//
-// 
-//namespace ATL
-//{
-//
-//enum _CMSTimeSpanFORMATSTEP
-//{
-//	_CTFS_NONE   = 0,	
-//	_CTFS_FORMAT = 1,
-//	_CTFS_NZ     = 2
-//};
-//#define _CMSTimeSpanFORMATS 3
-//
-//inline CString CMSTimeSpan::Format(LPCTSTR pFormat) const
-//// formatting timespans is a little trickier than formatting CTimes
-////  * we are only interested in relative time formats, ie. it is illegal
-////      to format anything dealing with absolute time (i.e. years, months,
-////         day of week, day of year, timezones, ...)
-////  * the only valid formats:
-////      %D - # of days
-////      %H - hour in 24 hour format
-////      %M - minute (0-59)
-////      %S - seconds (0-59)
-////      %% - percent sign
-////	%#<any_of_mods> - skip leading zeros
-//{
-//	ATLASSERT( pFormat != NULL );
-//	if( pFormat == NULL )
-//		AtlThrow( E_INVALIDARG );
-//
-//	CString strBuffer;
-//	CString hmsFormats [_CMSTimeSpanFORMATS] = {_T("%c"),_T("%02ld"),_T("%d")};
-//	CString dayFormats [_CMSTimeSpanFORMATS] = {_T("%c"),_T("%I64d"),_T("%I64d")};
-//	strBuffer.Preallocate(maxTimeBufferSize);
-//	TCHAR ch;
-//
-//	while ((ch = *pFormat++) != _T('\0'))
-//	{
-//		enum _CMSTimeSpanFORMATSTEP formatstep = _CTFS_NONE;
-//		if(ch == _T('%'))
-//		{
-//			formatstep = _CTFS_FORMAT;
-//			ch = *pFormat++;
-//			if(ch == _T('#'))
-//			{
-//					formatstep = _CTFS_NZ;
-//					ch = *pFormat++;
-//			}
-//		}
-//		switch (ch)
-//		{
-//			case '%':
-//				strBuffer += ch;
-//				break;
-//			case 'D':
-//				strBuffer.AppendFormat(dayFormats[formatstep], formatstep ? GetDays()    : ch);
-//				break;
-//			case 'H':
-//				strBuffer.AppendFormat(hmsFormats[formatstep], formatstep ? GetHours()   : ch);
-//				break;
-//			case 'M':
-//				strBuffer.AppendFormat(hmsFormats[formatstep], formatstep ? GetMinutes() : ch);
-//				break;
-//			case 'S':
-//				strBuffer.AppendFormat(hmsFormats[formatstep], formatstep ? GetSeconds() : ch);
-//				break;
-//			default:
-//				if(formatstep)
-//				{
-//#pragma warning (push)
-//#pragma warning (disable: 4127)  // conditional expression constant
-//					ATLENSURE(FALSE);      // probably a bad format character
-//#pragma warning (pop)
-//				}
-//				else
-//				{
-//					strBuffer += ch;
-//#ifdef _MBCS
-//					if (_istlead(ch))
-//					{
-//						strBuffer += *pFormat++;
-//					}
-//#endif
-//				}
-//				break;
-//			}
-//	}
-//
-//	return strBuffer;
-//}
-//
-//inline CString CMSTimeSpan::Format(UINT nFormatID) const
-//{
-//	CString strFormat;
-//	ATLENSURE(strFormat.LoadString(nFormatID));
-//	return Format(strFormat);
-//}
-//
-//#if defined(_AFX) && defined(_UNICODE)
-//inline CString CMSTimeSpan::Format(LPCSTR pFormat) const
-//{
-//	return Format(CString(pFormat));
-//}
-//#endif
-//
-//#ifdef __oledb_h__
-//inline CMSTime::CMSTime( const DBTIMESTAMP& dbts, int nDST ) throw()
-//{
-//	struct tm atm;
-//	atm.tm_sec = dbts.second;
-//	atm.tm_min = dbts.minute;
-//	atm.tm_hour = dbts.hour;
-//	atm.tm_mday = dbts.day;
-//	atm.tm_mon = dbts.month - 1;        // tm_mon is 0 based
-//	ATLASSERT(dbts.year >= 1900);
-//	atm.tm_year = dbts.year - 1900;     // tm_year is 1900 based
-//	atm.tm_isdst = nDST;
-//	m_time = _mktime64(&atm);
-//	ATLASSUME(m_time != -1);       // indicates an illegal input time
-//}
-//#endif
-//
-//inline CString CMSTime::Format(LPCTSTR pFormat) const
-//{
-//	if(pFormat == NULL)
-//	{
-//		return pFormat;
-//	}
-//
-//	TCHAR szBuffer[maxTimeBufferSize];
-//
-//	struct tm ptmTemp;
-//	errno_t err = _localtime64_s(&ptmTemp, &m_time);
-//	if (err != 0 || !_tcsftime(szBuffer, maxTimeBufferSize, pFormat, &ptmTemp))
-//	{
-//		szBuffer[0] = '\0';
-//	}
-//
-//	return szBuffer;
-//}
-//
-//inline CString CMSTime::FormatGmt(LPCTSTR pFormat) const
-//{
-//	if(pFormat == NULL)
-//	{
-//		return pFormat;
-//	}
-//
-//	TCHAR szBuffer[maxTimeBufferSize];
-//
-//	struct tm ptmTemp;
-//	errno_t err = _gmtime64_s(&ptmTemp, &m_time);
-//	if (err != 0 || !_tcsftime(szBuffer, maxTimeBufferSize, pFormat, &ptmTemp))
-//	{
-//		szBuffer[0] = '\0';
-//	}
-//
-//	return szBuffer;
-//}
-//
-//inline CString CMSTime::Format(UINT nFormatID) const
-//{
-//	CString strFormat;
-//	ATLENSURE(strFormat.LoadString(nFormatID));
-//	return Format(strFormat);
-//}
-//
-//inline CString CMSTime::FormatGmt(UINT nFormatID) const
-//{
-//	CString strFormat;
-//	ATLENSURE(strFormat.LoadString(nFormatID));
-//	return FormatGmt(strFormat);
-//}
-//
-//#if defined (_AFX) && defined(_UNICODE)
-//inline CString CMSTime::Format(LPCSTR pFormat) const
-//{
-//	return Format(CString(pFormat));
-//}
-//
-//inline CString CMSTime::FormatGmt(LPCSTR pFormat) const
-//{
-//	return FormatGmt(CString(pFormat));
-//}
-//#endif // _AFX && _UNICODE
-//
-//}	// namespace ATL
-//#pragma pack(pop)
-//
-//#pragma warning(pop)
-//
-//#endif  // __ATLTIME_H__
+
+
+
