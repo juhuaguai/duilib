@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<Window size="800,600" caption="0,0,0,45">
+  <Font shared="true" id="0" name="微软雅黑" size="14" default="true"/>
+  <VerticalLayout bordersize="1" bordercolor="#FF4B4B4B" inset="1,0,1,1" bkcolor="#FFFFFFFF">     
+	<HorizontalLayout height="45" bkcolor="#FF507ED3">
+      <Control />
+      <Button name="minBtn" tooltip="最小化" normalimage="res='103' restype='png' source='0,0,18,18'" hotimage="res='103' restype='png' source='18,0,36,18'" width="18" padding="40,13,0,14"/>     
+      <Button name="closeBtn" tooltip="关闭" normalimage="res='102' restype='png' source='0,0,18,18'" hotimage="res='102' restype='png' source='18,0,36,18'" width="18" padding="10,13,10,14"/>
+    </HorizontalLayout>
+  </VerticalLayout>
+</Window>
