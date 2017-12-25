@@ -43,6 +43,8 @@ namespace DuiLib
 		void SetHotForeImage(LPCTSTR pStrImage);
 		CDuiString GetCursor();
 		void SetCursor(LPCTSTR pStrCursor);
+		
+		UINT GetButtonState() {return m_uButtonState;};
 
 		// 对应按钮的5个状态图
 		void SetFiveStatusImage(LPCTSTR pStrImage);
