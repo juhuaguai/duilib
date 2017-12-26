@@ -531,16 +531,13 @@ void CTxtWinHost::TxViewChange(BOOL fUpdate)
 
 BOOL CTxtWinHost::TxCreateCaret(HBITMAP hbmp, INT xWidth, INT yHeight)
 {
-	if (!fShowCaret)
-		xWidth = 0;
-
-    iCaretWidth = xWidth;
-    iCaretHeight = yHeight;
-	if (fShowCaret)
+	if (m_re->GetCaret())
 	{
+		iCaretWidth = xWidth;
+		iCaretHeight = yHeight;
 		return ::CreateCaret(m_re->GetManager()->GetPaintWindow(), hbmp, xWidth, yHeight);
 	}
-	
+
 	return FALSE;
 }
 
