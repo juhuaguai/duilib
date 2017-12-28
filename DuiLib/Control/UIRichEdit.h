@@ -137,10 +137,16 @@ public:
 	void Move(SIZE szOffset, bool bNeedInvalidate = true);
     void DoEvent(TEventUI& event);
     bool DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
+	void PaintStatusImage(HDC hDC);
 
     void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 	void SetCaret(bool bCaret);
 	bool GetCaret();
+
+	LPCTSTR GetFocusedImage();
+	void SetFocusedImage(LPCTSTR pStrImage);
+	LPCTSTR GetDisabledImage();
+	void SetDisabledImage(LPCTSTR pStrImage);
 
     LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled);
 
@@ -166,6 +172,9 @@ protected:
 	bool m_bDrawCaret;
 	bool m_bInited;
 	RECT	m_rcTextPadding;
+
+	TDrawInfo m_diFocused;
+	TDrawInfo m_diDisabled;
 };
 
 } // namespace DuiLib

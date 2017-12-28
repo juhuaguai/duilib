@@ -1446,6 +1446,32 @@ void CRichEditUI::SetText(LPCTSTR pstrText)
     ReplaceSel(pstrText, FALSE);
 }
 
+LPCTSTR CRichEditUI::GetFocusedImage()
+{
+	return m_diFocused.sDrawString;	
+}
+
+void CRichEditUI::SetFocusedImage(LPCTSTR pStrImage)
+{
+	if( m_diFocused.sDrawString == pStrImage && m_diFocused.pImageInfo != NULL ) return;
+	m_diFocused.Clear();
+	m_diFocused.sDrawString = pStrImage;
+	Invalidate();
+}
+
+LPCTSTR CRichEditUI::GetDisabledImage()
+{
+	return m_diDisabled.sDrawString;	
+}
+
+void CRichEditUI::SetDisabledImage(LPCTSTR pStrImage)
+{
+	if( m_diDisabled.sDrawString == pStrImage && m_diDisabled.pImageInfo != NULL ) return;
+	m_diDisabled.Clear();
+	m_diDisabled.sDrawString = pStrImage;
+	Invalidate();
+}
+
 bool CRichEditUI::IsModify() const
 { 
     if( !m_pTwh ) return false;
@@ -2542,6 +2568,21 @@ bool CRichEditUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl
     return true;
 }
 
+void CRichEditUI::PaintStatusImage(HDC hDC)
+{
+	if( IsFocused() ) 
+	{
+		if ( DrawImage(hDC, m_diFocused) )
+			return ;
+	}
+
+	if( !IsEnabled() )
+	{
+		if ( DrawImage(hDC, m_diDisabled) )
+			return ;
+	}
+}
+
 void CRichEditUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
     if( _tcscmp(pstrName, _T("vscrollbar")) == 0 ) 
@@ -2629,6 +2670,8 @@ void CRichEditUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		SetTextPadding(rcTextPadding);
 	}
 	else if( _tcscmp(pstrName, _T("maxchar")) == 0 ) SetLimitText(_ttoi(pstrValue));
+	else if( _tcscmp(pstrName, _T("focusedimage")) == 0 ) SetFocusedImage(pstrValue);
+	else if( _tcscmp(pstrName, _T("disabledimage")) == 0 ) SetDisabledImage(pstrValue);
     else CContainerUI::SetAttribute(pstrName, pstrValue);
 }
 
