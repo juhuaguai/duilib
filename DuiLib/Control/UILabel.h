@@ -37,6 +37,8 @@ namespace DuiLib
 		DWORD GetTextColor() const;
 		void SetDisabledTextColor(DWORD dwTextColor);
 		DWORD GetDisabledTextColor() const;
+		void SetDisabledBkColor(DWORD dwBkColor);
+		DWORD GetDisabledBkColor() const;
 		void SetFont(int index);
 		int GetFont() const;
 		RECT GetTextPadding() const;
@@ -48,6 +50,7 @@ namespace DuiLib
 		void DoEvent(TEventUI& event);
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
+		void PaintBkColor(HDC hDC);
 		void PaintText(HDC hDC);
 
 #ifdef _USE_GDIPLUS
@@ -81,6 +84,7 @@ namespace DuiLib
 		LPWSTR  m_pWideText;
 		DWORD	m_dwTextColor;
 		DWORD	m_dwDisabledTextColor;
+		DWORD   m_dwDisabledBkColor;
 		int		m_iFont;
 		UINT	m_uTextStyle;
 		RECT	m_rcTextPadding;

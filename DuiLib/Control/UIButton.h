@@ -59,10 +59,13 @@ namespace DuiLib
 		DWORD GetPushedTextColor() const;
 		void SetFocusedTextColor(DWORD dwColor);
 		DWORD GetFocusedTextColor() const;
+		void SetFocusedBkColor(DWORD dwColor);
+		DWORD GetFocusedBkColor() const;
 		SIZE EstimateSize(SIZE szAvailable);
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
 		void PaintText(HDC hDC);
+		void PaintBkColor(HDC hDC);
 		void PaintStatusImage(HDC hDC);
 
 	protected:
@@ -79,6 +82,8 @@ namespace DuiLib
 		DWORD m_dwHotTextColor;
 		DWORD m_dwPushedTextColor;
 		DWORD m_dwFocusedTextColor;
+		DWORD m_dwFocusedBkColor;
+		
 		BYTE m_uFadeAlpha;
 		BYTE m_uFadeAlphaDelta;
 

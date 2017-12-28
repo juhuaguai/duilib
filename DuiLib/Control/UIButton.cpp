@@ -10,6 +10,7 @@ namespace DuiLib
 		, m_dwHotTextColor(0)
 		, m_dwPushedTextColor(0)
 		, m_dwFocusedTextColor(0)
+		, m_dwFocusedBkColor(0)
 		, m_dwHotBkColor(0)
 		, m_uFadeAlphaDelta(0)
 		, m_uFadeAlpha(255)
@@ -210,6 +211,16 @@ namespace DuiLib
 	DWORD CButtonUI::GetFocusedTextColor() const
 	{
 		return m_dwFocusedTextColor;
+	}
+
+	void CButtonUI::SetFocusedBkColor(DWORD dwColor)
+	{
+		m_dwFocusedBkColor = dwColor;
+	}
+
+	DWORD CButtonUI::GetFocusedBkColor() const
+	{
+		return m_dwFocusedBkColor;
 	}
 
 	LPCTSTR CButtonUI::GetNormalImage()
@@ -431,6 +442,13 @@ namespace DuiLib
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetFocusedTextColor(clrColor);
 		}
+		else if( _tcscmp(pstrName, _T("focusedbkcolor")) == 0 )
+		{
+			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+			LPTSTR pstr = NULL;
+			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			SetFocusedBkColor(clrColor);
+		}
 		else if (_tcscmp(pstrName, _T("cursor")) == 0)	SetCursor(pstrValue);
 		else CLabelUI::SetAttribute(pstrName, pstrValue);
 	}
@@ -505,6 +523,86 @@ namespace DuiLib
 			nGraphics.DrawString(m_pWideText,iLen,&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
 #endif	//_UNICODE
 #endif	//_USE_GDIPLUS
+		}
+	}
+
+	void CButtonUI::PaintBkColor(HDC hDC)
+	{
+		if ( IsEnabled() )
+		{
+			if ( IsFocused() )
+			{
+				if (m_dwFocusedBkColor == 0)
+				{
+					if( m_dwBackColor != 0 ) {
+						if( m_dwBackColor2 != 0 ) {
+							if( m_dwBackColor3 != 0 ) {
+								RECT rc = m_rcItem;
+								rc.bottom = (rc.bottom + rc.top) / 2;
+								CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 8);
+								rc.top = rc.bottom;
+								rc.bottom = m_rcItem.bottom;
+								CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor2), GetAdjustColor(m_dwBackColor3), true, 8);
+							}
+							else 
+								CRenderEngine::DrawGradient(hDC, m_rcItem, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 16);
+						}
+						else if( m_dwBackColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwBackColor));
+						else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwBackColor));
+					}
+				}
+				else
+				{
+					if( m_dwFocusedBkColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwFocusedBkColor));
+					else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwFocusedBkColor));
+				}
+			}
+			else
+			{
+				if( m_dwBackColor != 0 ) {
+					if( m_dwBackColor2 != 0 ) {
+						if( m_dwBackColor3 != 0 ) {
+							RECT rc = m_rcItem;
+							rc.bottom = (rc.bottom + rc.top) / 2;
+							CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 8);
+							rc.top = rc.bottom;
+							rc.bottom = m_rcItem.bottom;
+							CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor2), GetAdjustColor(m_dwBackColor3), true, 8);
+						}
+						else 
+							CRenderEngine::DrawGradient(hDC, m_rcItem, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 16);
+					}
+					else if( m_dwBackColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwBackColor));
+					else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwBackColor));
+				}
+			}
+		}
+		else
+		{
+			if (m_dwDisabledBkColor == 0)
+			{
+				if( m_dwBackColor != 0 ) {
+					if( m_dwBackColor2 != 0 ) {
+						if( m_dwBackColor3 != 0 ) {
+							RECT rc = m_rcItem;
+							rc.bottom = (rc.bottom + rc.top) / 2;
+							CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 8);
+							rc.top = rc.bottom;
+							rc.bottom = m_rcItem.bottom;
+							CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor2), GetAdjustColor(m_dwBackColor3), true, 8);
+						}
+						else 
+							CRenderEngine::DrawGradient(hDC, m_rcItem, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 16);
+					}
+					else if( m_dwBackColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwBackColor));
+					else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwBackColor));
+				}
+			}
+			else
+			{
+				if( m_dwDisabledBkColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwDisabledBkColor));
+				else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwDisabledBkColor));
+			}
 		}
 	}
 

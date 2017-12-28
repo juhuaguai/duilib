@@ -13,6 +13,7 @@ namespace DuiLib
 		m_uTextStyle(DT_VCENTER|DT_SINGLELINE), 
 		m_dwTextColor(0), 
 		m_dwDisabledTextColor(0),
+		m_dwDisabledBkColor(0),
 		m_iFont(-1),
 		m_bShowHtml(false),
         m_bNeedEstimateSize(true),
@@ -143,6 +144,17 @@ namespace DuiLib
 	DWORD CLabelUI::GetDisabledTextColor() const
 	{
 		return m_dwDisabledTextColor;
+	}
+
+	void CLabelUI::SetDisabledBkColor(DWORD dwBkColor)
+	{
+		m_dwDisabledBkColor = dwBkColor;
+		Invalidate();
+	}
+
+	DWORD CLabelUI::GetDisabledBkColor() const
+	{
+		return m_dwDisabledBkColor;
 	}
 
 	void CLabelUI::SetFont(int index)
@@ -302,6 +314,12 @@ namespace DuiLib
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetDisabledTextColor(clrColor);
 		}
+		else if( _tcscmp(pstrName, _T("disabledbkcolor")) == 0 ) {
+			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+			LPTSTR pstr = NULL;
+			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			SetDisabledBkColor(clrColor);
+		}
 		else if( _tcscmp(pstrName, _T("textpadding")) == 0 ) {
 			RECT rcTextPadding = { 0 };
 			LPTSTR pstr = NULL;
@@ -351,6 +369,56 @@ namespace DuiLib
 			SetStrokeColor(clrColor);
 		}
 		else CControlUI::SetAttribute(pstrName, pstrValue);
+	}
+
+	void CLabelUI::PaintBkColor(HDC hDC)
+	{
+		if ( IsEnabled() )
+		{
+			if( m_dwBackColor != 0 ) {
+				if( m_dwBackColor2 != 0 ) {
+					if( m_dwBackColor3 != 0 ) {
+						RECT rc = m_rcItem;
+						rc.bottom = (rc.bottom + rc.top) / 2;
+						CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 8);
+						rc.top = rc.bottom;
+						rc.bottom = m_rcItem.bottom;
+						CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor2), GetAdjustColor(m_dwBackColor3), true, 8);
+					}
+					else 
+						CRenderEngine::DrawGradient(hDC, m_rcItem, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 16);
+				}
+				else if( m_dwBackColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwBackColor));
+				else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwBackColor));
+			}
+		}
+		else
+		{
+			if (m_dwDisabledBkColor == 0)
+			{
+				if( m_dwBackColor != 0 ) {
+					if( m_dwBackColor2 != 0 ) {
+						if( m_dwBackColor3 != 0 ) {
+							RECT rc = m_rcItem;
+							rc.bottom = (rc.bottom + rc.top) / 2;
+							CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 8);
+							rc.top = rc.bottom;
+							rc.bottom = m_rcItem.bottom;
+							CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor2), GetAdjustColor(m_dwBackColor3), true, 8);
+						}
+						else 
+							CRenderEngine::DrawGradient(hDC, m_rcItem, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 16);
+					}
+					else if( m_dwBackColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwBackColor));
+					else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwBackColor));
+				}
+			}
+			else
+			{
+				if( m_dwDisabledBkColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwDisabledBkColor));
+				else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwDisabledBkColor));
+			}
+		}
 	}
 
 	void CLabelUI::PaintText(HDC hDC)
