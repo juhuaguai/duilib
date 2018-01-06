@@ -10,7 +10,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR lpC
 	CDuiString* filepath = new CDuiString(_W(lpCmdLine));
 #else
 	CDuiString* filepath = new CDuiString(lpCmdLine);
-#endif	
+#endif
+	//CDuiString* filepath = new CDuiString(_T("C:\\Users\\rwh\\Desktop\\新建文件夹\\test1.xml"));
+
 	if(filepath->IsEmpty()) return ShowHelpInfo();
 	int n = filepath->ReverseFind('\\')+1;
 	if(filepath->Right(4)!= _T(".xml")) return ShowHelpInfo();
