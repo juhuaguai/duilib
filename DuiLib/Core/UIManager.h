@@ -459,7 +459,7 @@ private:
     bool m_bFirstLayout;
     bool m_bUpdateNeeded;
     bool m_bFocusNeeded;
-    bool m_bOffscreenPaint;
+    //bool m_bOffscreenPaint;
 
 	BYTE m_nOpacity;
 	bool m_bLayered;

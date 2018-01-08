@@ -207,6 +207,8 @@ HRESULT InitDefaultCharFormat(CRichEditUI* re, CHARFORMAT2W* pcf, HFONT hfont)
     ::GetObject(hfont, sizeof(LOGFONT), &lf);
 
     DWORD dwColor = re->GetTextColor();
+	if (dwColor == 0 || dwColor == 0xFF000000)
+		dwColor = 0xFF000001;
     pcf->cbSize = sizeof(CHARFORMAT2W);
     pcf->crTextColor = RGB(GetBValue(dwColor), GetGValue(dwColor), GetRValue(dwColor));
     LONG yPixPerInch = GetDeviceCaps(re->GetManager()->GetPaintDC(), LOGPIXELSY);
@@ -959,6 +961,8 @@ void CTxtWinHost::SetFont(HFONT hFont)
 
 void CTxtWinHost::SetColor(DWORD dwColor)
 {
+	if (dwColor == 0 || dwColor == 0xFF000000)
+		dwColor = 0xFF000001;
     cf.crTextColor = RGB(GetBValue(dwColor), GetGValue(dwColor), GetRValue(dwColor));
     pserv->OnTxPropertyBitsChange(TXTBIT_CHARFORMATCHANGE, 
         TXTBIT_CHARFORMATCHANGE);

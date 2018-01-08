@@ -159,11 +159,15 @@ namespace DuiLib
 				m_pOwner->GetManager()->AddNativeWindow(m_pOwner, m_hWnd);
 			}
 			DWORD clrColor = m_pOwner->GetNativeEditBkColor();
-			if( clrColor == 0xFFFFFFFF ) return 0;
+			if (clrColor == 0xFF000000)
+				clrColor = 0xFF000001;
+			if( clrColor == 0xFFFFFFFF ) 
+				return 0;
 			::SetBkMode((HDC)wParam, TRANSPARENT);
-			//DWORD dwTextColor = m_pOwner->GetTextColor();
-			//::SetTextColor((HDC)wParam, RGB(GetBValue(dwTextColor),GetGValue(dwTextColor),GetRValue(dwTextColor)));
-			::SetTextColor((HDC)wParam, RGB(255-GetRValue(clrColor),255-GetGValue(clrColor),255-GetBValue(clrColor)));
+			DWORD dwTextColor = m_pOwner->GetTextColor();
+			if (dwTextColor == 0 || dwTextColor == 0xFF000000)
+				dwTextColor = 0xFF000001;
+			::SetTextColor((HDC)wParam, RGB(GetBValue(dwTextColor),GetGValue(dwTextColor),GetRValue(dwTextColor)));
 			if (clrColor < 0xFF000000) {
 				if (m_hBkBrush != NULL) ::DeleteObject(m_hBkBrush);
 				RECT rcWnd = m_pOwner->GetManager()->GetNativeWindowRect(m_hWnd);
@@ -193,9 +197,7 @@ namespace DuiLib
 					POINT ptCaret;
 					::GetCaretPos(&ptCaret);
 					RECT rcCaret = { ptCaret.x, ptCaret.y+1, ptCaret.x, ptCaret.y+rcClient.bottom-rcClient.top-1 };
-					//CRenderEngine::DrawLine((HDC)wParam, rcCaret, 1, 0xFF000000);
-					DWORD clrColor = m_pOwner->GetNativeEditBkColor();
-					CRenderEngine::DrawLine((HDC)wParam, rcCaret, 1, RGB(255-GetRValue(clrColor),255-GetGValue(clrColor),255-GetBValue(clrColor)));					
+					CRenderEngine::DrawLine((HDC)wParam, rcCaret, 1, 0xFF000000);				
 				}
 				return lRes;
 			}
@@ -280,7 +282,7 @@ namespace DuiLib
 	}
 
 	void CEditUI::DoEvent(TEventUI& event)
-	{//CDuiString szLog;szLog.Format(_T("Type=%d,pSenderName=%s\n"),event.Type,event.pSender->GetName());OutputDebugString(szLog);
+	{
 		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
 			if( m_pParent != NULL ) m_pParent->DoEvent(event);
 			else CLabelUI::DoEvent(event);

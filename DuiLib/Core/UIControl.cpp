@@ -759,8 +759,8 @@ void CControlUI::Invalidate()
     RECT invalidateRc = m_rcItem;
 
     CControlUI* pParent = this;
-    RECT rcTemp;
-    RECT rcParent;
+	RECT rcTemp={0,0,0,0};
+    RECT rcParent={0,0,0,0};
     while( pParent = pParent->GetParent() )
     {
         rcTemp = invalidateRc;

@@ -1179,6 +1179,12 @@ void CRenderEngine::DrawGradient(HDC hDC, const RECT& rc, DWORD dwFirst, DWORD d
         ASSERT(hPaintBitmap);
         hOldPaintBitmap = (HBITMAP) ::SelectObject(hPaintDC, hPaintBitmap);
     }
+	
+	if (dwFirst == 0 || dwFirst == 0xFF000000)
+		dwFirst = 0xFF000001;
+	if (dwSecond == 0 || dwSecond == 0xFF000000)
+		dwSecond = 0xFF000001;
+
     if( lpGradientFill != NULL ) 
     {
         TRIVERTEX triv[2] = 
@@ -1233,6 +1239,9 @@ void CRenderEngine::DrawLine( HDC hDC, const RECT& rc, int nSize, DWORD dwPenCol
 {
 	ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
 
+	if (dwPenColor == 0 || dwPenColor == 0xFF000000)
+		dwPenColor = 0xFF000001;
+
 	LOGPEN lg;
 	lg.lopnColor = RGB(GetBValue(dwPenColor), GetGValue(dwPenColor), GetRValue(dwPenColor));
 	lg.lopnStyle = nStyle;
@@ -1249,6 +1258,9 @@ void CRenderEngine::DrawLine( HDC hDC, const RECT& rc, int nSize, DWORD dwPenCol
 void CRenderEngine::DrawRect(HDC hDC, const RECT& rc, int nSize, DWORD dwPenColor, int nStyle)
 {
     ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
+	if (dwPenColor == 0 || dwPenColor == 0xFF000000)
+		dwPenColor = 0xFF000001;
+
     HPEN hPen = ::CreatePen(nStyle | PS_INSIDEFRAME, nSize, RGB(GetBValue(dwPenColor), GetGValue(dwPenColor), GetRValue(dwPenColor)));
     HPEN hOldPen = (HPEN)::SelectObject(hDC, hPen);
     ::SelectObject(hDC, ::GetStockObject(HOLLOW_BRUSH));
@@ -1260,6 +1272,9 @@ void CRenderEngine::DrawRect(HDC hDC, const RECT& rc, int nSize, DWORD dwPenColo
 void CRenderEngine::DrawRoundRect(HDC hDC, const RECT& rc, int nSize, int width, int height, DWORD dwPenColor, int nStyle)
 {
     ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
+	if (dwPenColor == 0 || dwPenColor == 0xFF000000)
+		dwPenColor = 0xFF000001;
+
     HPEN hPen = ::CreatePen(nStyle | PS_INSIDEFRAME, nSize, RGB(GetBValue(dwPenColor), GetGValue(dwPenColor), GetRValue(dwPenColor)));
     HPEN hOldPen = (HPEN)::SelectObject(hDC, hPen);
     ::SelectObject(hDC, ::GetStockObject(HOLLOW_BRUSH));
@@ -1276,6 +1291,9 @@ void CRenderEngine::DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTS
 	CDuiString sText = pstrText;
 	CPaintManagerUI::ProcessMultiLanguageTokens(sText);
 	pstrText = sText;
+
+	if (dwTextColor == 0 || dwTextColor == 0xFF000000)
+		dwTextColor = 0xFF000001;
 
     ::SetBkMode(hDC, TRANSPARENT);
     ::SetTextColor(hDC, RGB(GetBValue(dwTextColor), GetGValue(dwTextColor), GetRValue(dwTextColor)));
@@ -1424,6 +1442,9 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
 	CDuiString sText = pstrText;
 	CPaintManagerUI::ProcessMultiLanguageTokens(sText);
 	pstrText = sText;
+
+	if (dwTextColor == 0 || dwTextColor == 0xFF000000)
+		dwTextColor = 0xFF000001;
 
     TEXTMETRIC* pTm = &pManager->GetFontInfo(iDefaultFont)->tm;
     HFONT hOldFont = (HFONT) ::SelectObject(hDC, pManager->GetFontInfo(iDefaultFont)->hFont);
@@ -1575,6 +1596,9 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     //        clrColor = pManager->GetDefaultLinkHoverFontColor();
                     //}
                     aColorArray.Add((LPVOID)clrColor);
+					if (clrColor == 0 || clrColor == 0xFF000000)
+						clrColor = 0xFF000001;
+
                     ::SetTextColor(hDC,  RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
                     TFontInfo* pFontInfo = pManager->GetFontInfo(iDefaultFont);
                     if( aFontArray.GetSize() > 0 ) pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
@@ -1620,6 +1644,8 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     if( *pstrText == _T('#')) pstrText++;
                     DWORD clrColor = _tcstol(pstrText, const_cast<LPTSTR*>(&pstrText), 16);
                     aColorArray.Add((LPVOID)clrColor);
+					if (clrColor == 0 || clrColor == 0xFF000000)
+						clrColor = 0xFF000001;
                     ::SetTextColor(hDC, RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
                 }
                 break;
@@ -1912,6 +1938,8 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     aColorArray.Remove(aColorArray.GetSize() - 1);
                     DWORD clrColor = dwTextColor;
                     if( aColorArray.GetSize() > 0 ) clrColor = (int)aColorArray.GetAt(aColorArray.GetSize() - 1);
+					if (clrColor == 0 || clrColor == 0xFF000000)
+						clrColor = 0xFF000001;
                     ::SetTextColor(hDC, RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
                 }
                 break;
@@ -1944,6 +1972,8 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     aColorArray.Remove(aColorArray.GetSize() - 1);
                     DWORD clrColor = dwTextColor;
                     if( aColorArray.GetSize() > 0 ) clrColor = (int)aColorArray.GetAt(aColorArray.GetSize() - 1);
+					if (clrColor == 0 || clrColor == 0xFF000000)
+						clrColor = 0xFF000001;
                     ::SetTextColor(hDC, RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
                     bInLink = false;
                 }
@@ -2130,6 +2160,8 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
 
                 DWORD clrColor = dwTextColor;
                 if( aColorArray.GetSize() > 0 ) clrColor = (int)aColorArray.GetAt(aColorArray.GetSize() - 1);
+				if (clrColor == 0 || clrColor == 0xFF000000)
+					clrColor = 0xFF000001;
                 ::SetTextColor(hDC, RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
                 TFontInfo* pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
                 if( pFontInfo == NULL ) pFontInfo = pManager->GetFontInfo(iDefaultFont);
