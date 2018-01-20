@@ -3,6 +3,8 @@
 
 namespace DuiLib
 {
+	extern Color ARGB2Color(DWORD dwColor);
+
 	COptionUI::COptionUI() : m_bSelected(false), m_dwSelectedBkColor(0), m_dwSelectedTextColor(0)
 	{
 	}
@@ -239,12 +241,43 @@ Label_ForeImage:
 			rc.top += m_rcTextPadding.top;
 			rc.bottom -= m_rcTextPadding.bottom;
 
-			if( m_bShowHtml )
-				CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, IsEnabled()?m_dwTextColor:m_dwDisabledTextColor, \
-				NULL, NULL, nLinks, m_iFont, m_uTextStyle);
+			if(!GetEnabledEffect())
+			{
+				if( m_bShowHtml )
+					CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, IsEnabled()?m_dwTextColor:m_dwDisabledTextColor, \
+					NULL, NULL, nLinks, m_iFont, m_uTextStyle);
+				else
+					CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, IsEnabled()?m_dwTextColor:m_dwDisabledTextColor, \
+					m_iFont, m_uTextStyle);
+			}
 			else
-				CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, IsEnabled()?m_dwTextColor:m_dwDisabledTextColor, \
-				m_iFont, m_uTextStyle);
+			{
+#ifdef _USE_GDIPLUS
+				Font	nFont(hDC,m_pManager->GetFont(m_iFont));
+				Graphics nGraphics(hDC);
+				nGraphics.SetTextRenderingHint(TextRenderingHintAntiAlias);
+
+				StringFormat format;
+				StringAlignment sa = StringAlignment::StringAlignmentNear;
+				if ((m_uTextStyle & DT_VCENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
+				else if( (m_uTextStyle & DT_BOTTOM) != 0) sa = StringAlignment::StringAlignmentFar;
+				format.SetLineAlignment((StringAlignment)sa);
+				sa = StringAlignment::StringAlignmentNear;
+				if ((m_uTextStyle & DT_CENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
+				else if( (m_uTextStyle & DT_RIGHT) != 0) sa = StringAlignment::StringAlignmentFar;
+				format.SetAlignment((StringAlignment)sa);
+				if ((m_uTextStyle & DT_SINGLELINE) != 0) format.SetFormatFlags(StringFormatFlagsNoWrap);
+
+				SolidBrush nSolidBrush(ARGB2Color(IsEnabled()?m_dwTextColor:m_dwDisabledTextColor));
+
+#ifdef _UNICODE
+				nGraphics.DrawString(m_sText,m_sText.GetLength(),&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
+#else
+				int iLen = wcslen(m_pWideText);
+				nGraphics.DrawString(m_pWideText,iLen,&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
+#endif	//_UNICODE
+#endif	//_USE_GDIPLUS
+			}
 
 			m_dwTextColor = oldTextColor;
 		}
