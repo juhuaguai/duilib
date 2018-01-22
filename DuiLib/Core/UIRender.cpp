@@ -1144,6 +1144,12 @@ void CRenderEngine::DrawColor(HDC hDC, const RECT& rc, DWORD color)
         HBITMAP hBitmap = ::CreateDIBSection(hDC, &bmi, DIB_RGB_COLORS, (LPVOID*) &pDest, NULL, 0);
         if( !hBitmap ) return;
 
+		BYTE A = (BYTE)(color >> 24) ;
+		BYTE R = (BYTE)(color >> 16) * A / 255;
+		BYTE G = (BYTE)(color >> 8) * A / 255;
+		BYTE B = (BYTE)color * A / 255;
+		color= RGB(B, G, R) + ((DWORD)A << 24);
+
         *pDest = color;
 
         RECT rcBmpPart = {0, 0, 1, 1};
