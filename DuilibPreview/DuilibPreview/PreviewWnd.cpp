@@ -40,6 +40,8 @@ LRESULT CPreviewWnd::OnKeyDown( UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	if(wParam==VK_ESCAPE){
 		Close();
 	}
+	else
+		bHandled = FALSE;
 
 	return 0;
 }
