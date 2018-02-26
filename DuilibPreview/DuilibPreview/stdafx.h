@@ -20,6 +20,12 @@
 
 using namespace DuiLib;
 
+#ifdef UILIB_STATIC
+
+#pragma comment(lib, "..\\..\\Lib\\Duilib_uStatic.lib")
+
+#else
+
 #ifdef _DEBUG 
 #   ifdef _UNICODE 
 #       pragma comment(lib, "..\\..\\Lib\\Duilib_ud.lib") 
@@ -33,3 +39,6 @@ using namespace DuiLib;
 #       pragma comment(lib, "..\\..\\Lib\\Duilib.lib") 
 #   endif 
 #endif
+
+#endif
+
