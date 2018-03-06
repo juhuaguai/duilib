@@ -122,13 +122,12 @@ void CWriteLogFile::WriteLog(bool bPrintToConsole,LPCTSTR format, ...)
 		strLog.append(_T("\r\n"));
 		//Êä³ö
 		FILE* fp = NULL;
-#ifdef UNICODE
-		fopen_s(&fp,_A(m_strFileName),"a+");
-#else
-		fopen_s(&fp,m_strFileName.c_str(),"a+");
-#endif		
+		_tfopen_s(&fp,m_strFileName.c_str(),_T("a+"));	
 		if (fp)
 		{
+#ifdef UNICODE
+			_wsetlocale(0, L"chs");
+#endif
 			_ftprintf(fp,strLog.c_str());
 			fclose(fp);
 		}
