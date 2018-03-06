@@ -2,7 +2,9 @@
 #include <Shlwapi.h>
 #include <WinBase.h>
 #include <string>
+#include <deque>
 #include <IPHlpApi.h>
+#pragma comment(lib,"Iphlpapi.lib") //需要添加Iphlpapi.lib库  
 #include <ShlObj.h>
 #pragma comment(lib,"Shell32.lib")
 #ifndef xstring
@@ -38,6 +40,8 @@ xstring GetAppPath(HMODULE hModul=NULL);
 
 //获取本机IP
 string GetLocalIp();
+//获取本机多个网卡的信息
+void GetIpAdapterInfoList(deque<IP_ADAPTER_INFO>& theIpAdapterList);
 
 //获取本机MAC
 string GetMAC();
@@ -59,3 +63,12 @@ xstring GetAppNameFromPath(const xstring& strAppPath);
 
 //是否是有效的身份证号 (返回1表明有效,错误码为负数)
 int IsValidIdCardNumber(const xstring& strIdCardNumber);
+
+//加入开机启动		//strName注册表启动项中的键名 strFile-启动项中的键值,需要绝对路径
+bool AddFollowSystemStart(const xstring& strName,const xstring& strFile);
+//删除开机启动		//strName注册表启动项中的键名 strFile-启动项中的键值,需要绝对路径,可以为空
+bool DelFollowSystemStart(const xstring& strName,const xstring& strFile);
+
+//获取guid字符串 bUpper-是否大写
+xstring GetGUID(bool bUpper=true);
+

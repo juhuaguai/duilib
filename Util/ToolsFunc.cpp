@@ -132,6 +132,9 @@ void PrintfLog(const TCHAR * format, ...)
 
 BOOL IsPathExist(const TCHAR* szPath)
 {
+	if (szPath==NULL || _tcslen(szPath)==0)
+		return FALSE;
+
 	WIN32_FILE_ATTRIBUTE_DATA attrs = {0};
 	return GetFileAttributesEx(szPath, GetFileExInfoStandard, &attrs);
 }
@@ -279,6 +282,46 @@ string GetMAC()
 	} 
 	free(pAddresses);
 	return strMac;
+}
+
+void GetIpAdapterInfoList(deque<IP_ADAPTER_INFO>& theIpAdapterList)
+{
+	//PIP_ADAPTER_INFO结构体指针存储本机网卡信息  
+	PIP_ADAPTER_INFO pIpAdapterInfo = new IP_ADAPTER_INFO();  
+	//得到结构体大小,用于GetAdaptersInfo参数  
+	unsigned long stSize = sizeof(IP_ADAPTER_INFO);  
+	//调用GetAdaptersInfo函数,填充pIpAdapterInfo指针变量;其中stSize参数既是一个输入量也是一个输出量  
+	int nRel = GetAdaptersInfo(pIpAdapterInfo,&stSize);  
+	if (ERROR_BUFFER_OVERFLOW == nRel)  
+	{  
+		//如果函数返回的是ERROR_BUFFER_OVERFLOW  
+		//则说明GetAdaptersInfo参数传递的内存空间不够,同时其传出stSize,表示需要的空间大小  
+		//这也是说明为什么stSize既是一个输入量也是一个输出量  
+		//释放原来的内存空间  
+		delete pIpAdapterInfo;  
+		//重新申请内存空间用来存储所有网卡信息  
+		pIpAdapterInfo = (PIP_ADAPTER_INFO)new BYTE[stSize];  
+		//再次调用GetAdaptersInfo函数,填充pIpAdapterInfo指针变量  
+		nRel=GetAdaptersInfo(pIpAdapterInfo,&stSize);   
+		if (ERROR_SUCCESS == nRel)  
+		{  
+			//输出网卡信息  
+			//可能有多网卡,因此通过循环去判断
+			while (pIpAdapterInfo)  
+			{  
+				theIpAdapterList.push_back(*pIpAdapterInfo);
+				pIpAdapterInfo = pIpAdapterInfo->Next;  
+			}  
+		}  
+		//释放内存空间   
+		delete []pIpAdapterInfo;   
+	} 
+	else if(ERROR_SUCCESS == nRel)
+	{
+		theIpAdapterList.push_back(*pIpAdapterInfo);	
+		//释放内存空间   
+		delete pIpAdapterInfo; 
+	} 	
 }
 
 #ifndef __INCLUDE__STRINGTOOLS__H
@@ -590,4 +633,92 @@ int IsValidIdCardNumber(const xstring& strIdCardNumber)
 		return -5;
 	
 	return 1;
+}
+
+bool AddFollowSystemStart(const xstring& strName,const xstring& strFile)
+{
+	HKEY   hKey;   
+	//找到系统的启动项   
+	LPCTSTR lpszRun = _T("Software\\Microsoft\\Windows\\CurrentVersion\\Run");   
+	if(::RegOpenKeyEx(HKEY_LOCAL_MACHINE,lpszRun,0,KEY_READ|KEY_WRITE,&hKey)==ERROR_SUCCESS)  
+	{  
+		wchar_t lpData[512] = {0};
+		DWORD cbData=512;   
+		DWORD dwType = REG_SZ;   
+		if(::RegQueryValueEx(hKey,strName.c_str(),0,&dwType,(LPBYTE)lpData,&cbData) == ERROR_SUCCESS) //已存在  
+		{  
+			if (_tcsicmp(strFile.c_str(),lpData) == 0)	//确实是要启动的程序
+			{
+				::RegCloseKey(hKey);
+				return true;
+			}			
+		}  
+
+		//不存在注册自启动项或同名键的值不对时
+#ifdef UNICODE
+		if( ::RegSetValueEx(hKey,strName.c_str(),0,REG_SZ,(const unsigned char*)(LPCTSTR)strFile.c_str(),strFile.length()*2) == ERROR_SUCCESS)
+#else
+		if( ::RegSetValueEx(hKey,strName.c_str(),0,REG_SZ,(const unsigned char*)(LPCTSTR)strFile.c_str(),strFile.length()) == ERROR_SUCCESS)
+#endif		  
+		{
+			::RegCloseKey(hKey); 
+			return true;
+		}			
+		::RegCloseKey(hKey); 
+	}
+	return false;  
+}
+
+bool DelFollowSystemStart(const xstring& strName,const xstring& strFile)
+{
+	HKEY   hKey;   
+	//找到系统的启动项   
+	LPCTSTR lpszRun = _T("Software\\Microsoft\\Windows\\CurrentVersion\\Run");   
+	if(::RegOpenKeyEx(HKEY_LOCAL_MACHINE,lpszRun,0,KEY_READ|KEY_WRITE,&hKey)==ERROR_SUCCESS)  
+	{  
+		wchar_t lpData[512] = {0};
+		DWORD cbData=512;   
+		DWORD dwType = REG_SZ;   
+		if(::RegQueryValueEx(hKey,strName.c_str(),0,&dwType,(LPBYTE)lpData,&cbData) == ERROR_SUCCESS) //已存在  
+		{  
+			if (_tcsicmp(strFile.c_str(),lpData) == 0 || strFile.empty())	//确实是要启动的程序,或者只是想删除指定的键
+			{
+				if( RegDeleteValue(hKey,strName.c_str()) != ERROR_SUCCESS)	//删除失败
+				{
+					::RegCloseKey(hKey);
+					return false;
+				}			
+			}
+		}  
+		::RegCloseKey(hKey);
+	}
+	return true;
+}
+
+//获取guid字符串
+xstring GetGUID(bool bUpper/*=true*/)
+{
+	GUID guid;
+	CoCreateGuid(&guid); 
+	TCHAR szValue[256] = {0};  
+	if (bUpper)
+	{
+		_sntprintf_s(szValue,_countof(szValue),_TRUNCATE,_T("%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X"), 
+			guid.Data1, guid.Data2, guid.Data3,  
+			guid.Data4[0], guid.Data4[1],  
+			guid.Data4[2], guid.Data4[3],  
+			guid.Data4[4], guid.Data4[5],  
+			guid.Data4[6], guid.Data4[7]);  
+	}
+	else
+	{
+		_sntprintf_s(szValue,_countof(szValue),_TRUNCATE,_T("%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x"), 
+			guid.Data1, guid.Data2, guid.Data3,  
+			guid.Data4[0], guid.Data4[1],  
+			guid.Data4[2], guid.Data4[3],  
+			guid.Data4[4], guid.Data4[5],  
+			guid.Data4[6], guid.Data4[7]);  
+	}
+
+	return szValue; 
 }

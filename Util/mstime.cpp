@@ -7,6 +7,8 @@
 // electronic documentation provided with the library.
 // See these sources for detailed information regarding the
 // Active Template Library product.
+#include <Windows.h>
+#include <tchar.h>
 #include "mstime.h"
 //#include <atldef.h>
 #include <assert.h>
