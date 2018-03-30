@@ -102,6 +102,7 @@ namespace DuiLib
                         Invalidate();
                     }
                 }
+				m_pManager->SendNotify(this,DUI_MSGTYPE_MOUSEENTER);
             }
 			if ( GetFadeAlphaDelta() > 0 ) {
 				m_pManager->SetTimer(this, FADE_TIMERID, FADE_ELLAPSE);
@@ -116,6 +117,7 @@ namespace DuiLib
                         Invalidate();
                     }
                 }
+				m_pManager->SendNotify(this,DUI_MSGTYPE_MOUSELEAVE);
                 if (m_pManager) m_pManager->RemoveMouseLeaveNeeded(this);
                 if ( GetFadeAlphaDelta() > 0 ) {
                     m_pManager->SetTimer(this, FADE_TIMERID, FADE_ELLAPSE);
