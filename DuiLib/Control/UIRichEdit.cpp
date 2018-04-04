@@ -2055,6 +2055,10 @@ void CRichEditUI::DoInit()
         m_pManager->AddMessageFilter(this);
 		if( m_pManager->IsLayered() ) 
 			m_pManager->SetTimer(this, DEFAULT_TIMERID, ::GetCaretBlinkTime());
+
+		TxSendMessage(EM_GETEVENTMASK, 0, 0, &lResult);
+		lResult |= ENM_CHANGE;			
+		TxSendMessage(EM_SETEVENTMASK, 0,lResult, &lResult);	
     }
 
 	m_bInited= true;
