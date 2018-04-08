@@ -18,6 +18,7 @@ public:
 	void SetLogFilePathName(const xstring& strLogFileName,int nLogFileMaxSize = 1024);
 	//写日志 bPrintToConsole-是否输出到控制台
 	void WriteLog(bool bPrintToConsole,LPCTSTR format, ...);
+	void WriteLogA(bool bPrintToConsole,LPCSTR format, ...);
 
 protected:
 	//获取日志文件当前大小

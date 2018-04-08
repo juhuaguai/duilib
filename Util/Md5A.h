@@ -1,17 +1,10 @@
 // Md5A.h: interface for the CMd5A class.
-//
-//////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_MD5A_H__56BDAD81_1478_11D5_80AC_0000E8810675__INCLUDED_)
-#define AFX_MD5A_H__56BDAD81_1478_11D5_80AC_0000E8810675__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-
 #include <stdio.h>
 #include <time.h>
-#include <string.h>
+#include <string>
+using namespace std;
 
 #define MD 5
 
@@ -115,12 +108,9 @@ public:
 	virtual ~CMd5A();
 
 public:
-	char* MDString (const char*);
-	//char* MDFile (CString filename);
-	//CString MDFile(CString filename);
-	char* hmac_md5(char* text, char* key);
-	//char* MDString PROTO_LIST ((char *));
-	//char* MDFile PROTO_LIST ((char *));
+	string MDString (const string& strSource);
+	string hmac_md5(char* text, char* key);
+	string MD5file(const string& strFilename);
 
 private:
 	void MD5Init (MD5_CTX *context);
@@ -131,9 +121,4 @@ private:
 	void Decode (UINT4 *,const unsigned char *, unsigned int);
 	void MD5_memcpy(POINTER, POINTER, unsigned int);
 	void MD5_memset(POINTER, int, unsigned int);
-
-	//LONG MD5_Os2ip(char* pstr);
-
 };
-
-#endif // !defined(AFX_MD5A_H__56BDAD81_1478_11D5_80AC_0000E8810675__INCLUDED_)

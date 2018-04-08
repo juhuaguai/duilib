@@ -31,7 +31,7 @@ public:
 
 	int  Source2File(const char* sFname, HMODULE hModule, DWORD dwID, const char* sType);
 
-	BOOL  Is64Bit_OS();
+	BOOL Is64Bit_OS();
 	void GetSystemName(char* pszRet, unsigned uSize);
 	BOOL CheckIEVer(int& nVerNum);
 

@@ -78,18 +78,36 @@ HRESULT STDMETHODCALLTYPE CSimpleDownloadFile::OnProgress(/* [in] */ ULONG ulPro
 	return E_NOTIMPL;
 }
 
-void CSimpleDownloadFile::DownloadFile(LPVOID pVoid,LPCTSTR pszUrl,LPCTSTR pszPath,PDownloadResultCallback pCallback /* = NULL */)
+void CSimpleDownloadFile::DownloadFile(LPVOID pVoid,LPCTSTR pszUrl,LPCTSTR pszPath,PDownloadResultCallback pCallback /* = NULL */,bool bDeleteOld /* = true */)
 {
 	TCHAR szUrl[1024] = {0};
 	_sntprintf_s(szUrl,_countof(szUrl),_TRUNCATE,_T("%s?skq=%ld"),pszUrl,GetTickCount());
-
-	SDownloadInfo tInfo;
-	tInfo.strUrl = szUrl;
-	tInfo.strPath = pszPath;
-	tInfo.pCallback = pCallback;
-	tInfo.pVoid = pVoid;
-	AddTailToDownloadDeque(tInfo);
-	SetEvent(m_hEvent);
+	
+	if (pszPath && _tcslen(pszPath)>0)
+	{
+		WIN32_FILE_ATTRIBUTE_DATA attrs = {0};
+		if (GetFileAttributesEx(pszPath, GetFileExInfoStandard, &attrs))
+		{
+			if (bDeleteOld)
+				DeleteFile(pszPath);
+			else
+			{
+				pCallback(pVoid,true,pszPath);
+				return ;
+			}
+		}
+		SDownloadInfo tInfo;
+		tInfo.strUrl = szUrl;
+		tInfo.strPath = pszPath;
+		tInfo.pCallback = pCallback;
+		tInfo.pVoid = pVoid;
+		AddTailToDownloadDeque(tInfo);
+		SetEvent(m_hEvent);		
+	}	
+	else
+	{
+		pCallback(pVoid,false,pszPath);
+	}
 }
 
 void CSimpleDownloadFile::AddTailToDownloadDeque(SDownloadInfo& tInfo)

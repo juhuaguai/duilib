@@ -266,7 +266,6 @@ bool CSysServiceHandler::UninstallService(const string& strServiceName)
 				// Now remove the service by calling DeleteService.
 				if (DeleteService(schService))
 				{
-					OutputDebugStringA("\n11111111111111111111111\n");
 					bSucess = true;
 				}
 			}

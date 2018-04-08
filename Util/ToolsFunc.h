@@ -31,9 +31,17 @@ void PrintfLog(const TCHAR * format, ...);
 
 //文件或文件夹是否存在
 BOOL IsPathExist(const TCHAR* szPath);
+//文件或文件夹是否存在
+BOOL IsPathExistA(const string& strPath);
 
 //读取注册表
 bool ReadRegString(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,const DWORD& dwType ,xstring& strValue);
+//写注册表
+bool WriteRegValue(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,const DWORD& dwType ,const BYTE* lpData,DWORD cbData);
+//删除注册表键值
+bool DeleteRegKeyValue(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName);
+//删除注册表的项以及下面的所有子项
+bool DeleteRegSubKey(HKEY hKey,const xstring& strSubKey);
 
 //获取App所在目录(结尾没有'/'或者'\\')
 xstring GetAppPath(HMODULE hModul=NULL);
@@ -72,3 +80,21 @@ bool DelFollowSystemStart(const xstring& strName,const xstring& strFile);
 //获取guid字符串 bUpper-是否大写
 xstring GetGUID(bool bUpper=true);
 
+//从文件中读取全部内容
+string ReadAllFromFile(const xstring& strFile);
+string ReadAllFromFileA(const string& strFile);
+
+//是否是64位OS
+bool Is64BitOS();
+
+//复制目录 //如果是目录不要以"\\"或者"/"结尾
+int CopyFolder(const xstring& strSource,const xstring& strDest);
+int CopyFolderA(const string& strSource,const string& strDest);
+
+//查找进程ID (32位进程只能查找32位进程)
+int GetProcesssIdFromName(const xstring& strPorcessName);
+void GetProcesssIdFromName(const xstring& strPorcessName,deque<int>& dequeOutID);
+
+//获取文件大小(字节) //最大2G
+long GetFileSizeByte(const xstring& strFile);
+long GetFileSizeByteA(const string& strFile);

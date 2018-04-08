@@ -15,14 +15,10 @@
 // DATE:		2001 December v1.00
 //
 //---------------------------------------------------------------------------
-#if !defined(_LIMITSINGLEINSTANCE_H_)
-#define _LIMITSINGLEINSTANCE_H_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-
 #include <Windows.h>
+#include <string>
+using namespace std;
 
 class CSingleInstance
 {
@@ -31,9 +27,9 @@ protected:
 	HANDLE m_hMutex;
 
 public:
-	CSingleInstance(char* pszMutexName);
+	CSingleInstance(const string& strMutexName);
 	~CSingleInstance();
 	BOOL IsAnotherInstanceRunning();
 };
 
-#endif // !defined(_LIMITSINGLEINSTANCE_H_)
+

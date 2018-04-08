@@ -223,29 +223,58 @@ void CMd5A::MD5_memset (POINTER output,int value,unsigned int len)
 	 ((char *)output)[i] = (char)value;
 }
 
+static char hb2hex(unsigned char hb) {
+	hb = hb & 0xF;
+	return hb < 10 ? '0' + hb : hb - 10 + 'a';
+}
 /* Digests a string and prints the result. */
-char* CMd5A::MDString (const char *string)
+string CMd5A::MDString(const string& strSource)
 {
-  MD5_CTX context;
-  unsigned char digest[16];
-  char output1[33];
-  static  char output[33]={"\0"};
-  unsigned int len = strlen (string);
-  int i;
-  MD5Init (&context);
-  MD5Update (&context, (unsigned char*)string, len);
-  MD5Final (digest, &context);
+	MD5_CTX context;
+	unsigned char digest[16]={0};
+	char output1[33] = {0};
+	char output[33]={0};
+	unsigned int len = strSource.length();
+	int i=0;
+	MD5Init (&context);
+	MD5Update (&context, (unsigned char*)strSource.c_str(), len);
+	MD5Final (digest, &context);
 
-  for (i = 0; i < 16; i++)
-  {
-	  sprintf(&(output1[2*i]),"%02x",(unsigned char)digest[i]);
-	  //sprintf(&(output1[2*i+1]),"%02x",(unsigned char)(digest[i]<<4));
-  }
-  for(i=0;i<32;i++)
-  output[i]=output1[i];
-  return output;
+	for (i = 0; i < 16; i++)
+	{
+		sprintf(&(output1[2*i]),"%02x",(unsigned char)digest[i]);
+	}
+	for(i=0;i<32;i++)
+		output[i]=output1[i];
+	return output;
 }
 
+string CMd5A::MD5file(const string& strFilename)
+{
+	std::FILE* file = std::fopen(strFilename.c_str(), "rb");
+
+	MD5_CTX context;
+	MD5Init(&context);
+
+	char buff[BUFSIZ] = {0};
+	unsigned char out[16]={0};
+	size_t len = 0;
+	while( ( len = std::fread(buff ,sizeof(char), BUFSIZ, file) ) > 0) 
+	{
+		MD5Update(&context, (unsigned char*)buff, len);
+	}
+	MD5Final(out, &context);
+
+	string res;
+	for(size_t i = 0; i < 16; ++ i) 
+	{
+		res.push_back(hb2hex(out[i] >> 4));
+		res.push_back(hb2hex(out[i]));
+	}
+
+	std::fclose(file);
+	return res;
+}
   
 /* Digests a file and prints the result. */
 //char* CMd5A::MDFile (CString filename)
@@ -285,99 +314,99 @@ char* CMd5A::MDString (const char *string)
 //       }
 //}
 
-char* CMd5A::hmac_md5(char* text,char*  key)
+string CMd5A::hmac_md5(char* text,char*  key)
 {
-        char   digest[16];
-        char   output1[32];
-        static char output[33]={"\0"};
-        MD5_CTX context;
-        unsigned char k_ipad[65];    /* inner padding -
-                                      * key XORd with ipad
-                                      */
-        unsigned char k_opad[65];    /* outer padding -
-                                      * key XORd with opad
-                                      */
-        unsigned char tk[16];
-        int i;
-        int text_len = strlen (text);
-        int key_len=strlen(key);
-        /* if key is longer than 64 bytes reset it to key=MD5(key) */
-        if (key_len > 64) 
-		{
-                MD5_CTX      tctx;
+	char   digest[16]={0};
+	char   output1[32]={0};
+	char output[33]={0};
+	MD5_CTX context;
+	unsigned char k_ipad[65];    /* inner padding -
+								 * key XORd with ipad
+								 */
+	unsigned char k_opad[65];    /* outer padding -
+								 * key XORd with opad
+								 */
+	unsigned char tk[16];
+	int i;
+	int text_len = strlen (text);
+	int key_len=strlen(key);
+	/* if key is longer than 64 bytes reset it to key=MD5(key) */
+	if (key_len > 64) 
+	{
+		MD5_CTX      tctx;
 
-                MD5Init(&tctx);
-                MD5Update(&tctx,(unsigned char*) key, key_len);
-                MD5Final(tk, &tctx);
+		MD5Init(&tctx);
+		MD5Update(&tctx,(unsigned char*) key, key_len);
+		MD5Final(tk, &tctx);
 
-                key = (char*)tk;
-                key_len = 16;
-        }
+		key = (char*)tk;
+		key_len = 16;
+	}
 
-        /*
-         * the HMAC_MD5 transform looks like:
-         *
-         * MD5(K XOR opad, MD5(K XOR ipad, text))
-         *
-         * where K is an n byte key
-         * ipad is the byte 0x36 repeated 64 times
-         * opad is the byte 0x5c repeated 64 times
-         * and text is the data being protected
-         */
+	/*
+	* the HMAC_MD5 transform looks like:
+	*
+	* MD5(K XOR opad, MD5(K XOR ipad, text))
+	*
+	* where K is an n byte key
+	* ipad is the byte 0x36 repeated 64 times
+	* opad is the byte 0x5c repeated 64 times
+	* and text is the data being protected
+	*/
 
-        /* start out by storing key in pads */
-        
-        /*bzero( k_ipad, sizeof k_ipad);
-          bzero( k_opad, sizeof k_opad);
-        */
+	/* start out by storing key in pads */
 
-        for(i=0;i<65;i++)
-	        k_ipad[i]=(unsigned char)0;
-        for(i=0;i<65;i++)
-		    k_opad[i]=(unsigned char)0;
+	/*bzero( k_ipad, sizeof k_ipad);
+	bzero( k_opad, sizeof k_opad);
+	*/
 
-        /*bcopy( key, k_ipad, key_len);
-          bcopy( key, k_opad, key_len);
-         */
-         for(i=0;i<key_len;i++)
-         {
-			k_ipad[i]=(unsigned char)key[i];
-			k_opad[i]=(unsigned char)key[i];
-         }
+	for(i=0;i<65;i++)
+		k_ipad[i]=(unsigned char)0;
+	for(i=0;i<65;i++)
+		k_opad[i]=(unsigned char)0;
 
-        /* XOR key with ipad and opad values */
-        for (i=0; i<64; i++) 
-		{
-                k_ipad[i] ^= 0x36;
-                k_opad[i] ^= 0x5c;
-        }
-        /*
-         * perform inner MD5
-         */
-        MD5Init(&context);                   /* init context for 1st
-                                              * pass */
-        MD5Update(&context, k_ipad, 64);      /* start with inner pad */
-        MD5Update(&context, (unsigned char*)text, text_len); /* then text of datagram 
+	/*bcopy( key, k_ipad, key_len);
+	bcopy( key, k_opad, key_len);
+	*/
+	for(i=0;i<key_len;i++)
+	{
+		k_ipad[i]=(unsigned char)key[i];
+		k_opad[i]=(unsigned char)key[i];
+	}
 
-*/
-        MD5Final((unsigned char*)digest, &context);          /* finish up 1st pass */
-        /*
-         * perform outer MD5
-         */
-        MD5Init(&context);                   /* init context for 2nd
-                                              * pass */
-        MD5Update(&context, k_opad, 64);     /* start with outer pad */
-        MD5Update(&context,(unsigned char*) digest, 16);     /* then results of 1st
-                                              * hash */
-        MD5Final((unsigned char*)digest, &context);          /* finish up 2nd pass */
-        for (i = 0; i < 16; i++)
-        {
-			sprintf(&(output1[2*i]),"%02x",(unsigned char)digest[i]);
-			sprintf(&(output1[2*i+1]),"%02x",(unsigned char)(digest[i]<<4));
-        }
-        for(i=0;i<32;i++)
-			output[i]=output1[i]; 
-        return output;     
+	/* XOR key with ipad and opad values */
+	for (i=0; i<64; i++) 
+	{
+		k_ipad[i] ^= 0x36;
+		k_opad[i] ^= 0x5c;
+	}
+	/*
+	* perform inner MD5
+	*/
+	MD5Init(&context);                   /* init context for 1st
+										 * pass */
+	MD5Update(&context, k_ipad, 64);      /* start with inner pad */
+	MD5Update(&context, (unsigned char*)text, text_len); /* then text of datagram 
+
+														 */
+	MD5Final((unsigned char*)digest, &context);          /* finish up 1st pass */
+	/*
+	* perform outer MD5
+	*/
+	MD5Init(&context);                   /* init context for 2nd
+										 * pass */
+	MD5Update(&context, k_opad, 64);     /* start with outer pad */
+	MD5Update(&context,(unsigned char*) digest, 16);     /* then results of 1st
+														 * hash */
+	MD5Final((unsigned char*)digest, &context);          /* finish up 2nd pass */
+	for (i = 0; i < 16; i++)
+	{
+		sprintf(&(output1[2*i]),"%02x",(unsigned char)digest[i]);
+		sprintf(&(output1[2*i+1]),"%02x",(unsigned char)(digest[i]<<4));
+	}
+	for(i=0;i<32;i++)
+		output[i]=output1[i]; 
+	return output;     
 }
  
 /*extern "C" __declspec(dllexport) char* MD5String(char * pointer)

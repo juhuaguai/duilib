@@ -6,6 +6,8 @@
 #include <commoncontrols.h>
 #include <OleCtl.h>
 #include <ShellAPI.h>
+#include <TlHelp32.h>
+#include <io.h>
 #include "ToolsFunc.h"
 #pragma comment(lib,"shlwapi.lib")
 #pragma comment(lib, "iphlpapi.lib")
@@ -139,6 +141,15 @@ BOOL IsPathExist(const TCHAR* szPath)
 	return GetFileAttributesEx(szPath, GetFileExInfoStandard, &attrs);
 }
 
+BOOL IsPathExistA(const string& strPath)
+{
+	if ( strPath.empty() )
+		return FALSE;
+
+	WIN32_FILE_ATTRIBUTE_DATA attrs = {0};
+	return GetFileAttributesExA(strPath.c_str(), GetFileExInfoStandard, &attrs);
+}
+
 bool ReadRegString(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,const DWORD& dwType ,xstring& strValue)
 {
 	strValue.clear();
@@ -149,7 +160,8 @@ bool ReadRegString(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,
 	TCHAR szData[1024] = {0};
 	DWORD dwSize = 1024;
 	DWORD dwTp = dwType;
-	if (RegQueryValueEx(hKeyHander,strKeyName.c_str(),NULL,&dwTp,(LPBYTE)szData,&dwSize) == ERROR_SUCCESS)
+	LSTATUS lret = RegQueryValueEx(hKeyHander,strKeyName.c_str(),NULL,&dwTp,(LPBYTE)szData,&dwSize);
+	if (lret == ERROR_SUCCESS)
 	{
 		if (dwType == REG_SZ)
 			strValue = szData;
@@ -162,8 +174,78 @@ bool ReadRegString(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,
 		RegCloseKey(hKeyHander);
 		return true;
 	}
+	else if (lret == ERROR_FILE_NOT_FOUND)	//打开失败则从非Wow6432Node下面找
+	{
+		if (RegOpenKeyEx(hKey,strSubKey.c_str(),NULL,KEY_QUERY_VALUE | KEY_WOW64_64KEY,&hKeyHander) != ERROR_SUCCESS)
+			return false;
+		lret = RegQueryValueEx(hKeyHander,strKeyName.c_str(),NULL,&dwTp,(LPBYTE)szData,&dwSize);
+		if (lret == ERROR_SUCCESS)
+		{
+			if (dwType == REG_SZ)
+				strValue = szData;
+			else if (dwType==REG_DWORD||dwType==REG_BINARY)
+			{
+				_sntprintf_s(szData,_countof(szData),_TRUNCATE,_T("%ld"),(long)*(long *)szData);
+				strValue = szData;
+			}
+
+			RegCloseKey(hKeyHander);
+			return true;
+		}
+	}
 
 	RegCloseKey(hKeyHander);
+	return false;
+}
+
+bool WriteRegValue(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,const DWORD& dwType ,const BYTE* lpData,DWORD cbData)
+{
+	HKEY   hKeyHander = NULL;   
+	//找到系统的启动项   
+	long lRet = ::RegOpenKeyEx(hKey,strSubKey.c_str(),0,KEY_READ|KEY_WRITE,&hKeyHander);
+	if(lRet != ERROR_SUCCESS)  
+	{
+		DWORD dwDisposition;
+		lRet = RegCreateKeyEx(hKey,strSubKey.c_str(),0,NULL,REG_OPTION_NON_VOLATILE,KEY_ALL_ACCESS,NULL, &hKeyHander, &dwDisposition);
+	}
+	if (lRet == ERROR_SUCCESS)
+	{
+		lRet = RegSetValueEx(hKeyHander,strKeyName.c_str(),0,dwType,lpData,cbData);
+	}
+	if (hKeyHander != NULL)
+		RegCloseKey(hKeyHander);
+
+	if (lRet == ERROR_SUCCESS)
+		return true;
+
+	return false;  
+}
+
+bool DeleteRegKeyValue(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName)
+{
+	HKEY hKeyHandle = NULL;                             
+	LONG lRet = RegOpenKeyEx(hKey, strSubKey.c_str(), 0, KEY_QUERY_VALUE|KEY_WRITE, &hKeyHandle );                                
+	if( lRet == ERROR_SUCCESS )    
+	{
+		lRet = RegDeleteValue(hKeyHandle, strKeyName.c_str());
+		RegCloseKey(hKeyHandle);
+		if (lRet == ERROR_SUCCESS)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool DeleteRegSubKey(HKEY hKey,const xstring& strSubKey)
+{
+	LONG lRet = SHDeleteKey(hKey,strSubKey.c_str());  
+	if (lRet == ERROR_SUCCESS)
+	{
+		return true;
+	}
+
 	return false;
 }
 
@@ -721,4 +803,235 @@ xstring GetGUID(bool bUpper/*=true*/)
 	}
 
 	return szValue; 
+}
+
+string ReadAllFromFile(const xstring& strFile)
+{
+	string strRet;
+	try
+	{
+		HANDLE hFile = CreateFile(strFile.c_str(),GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,NULL,NULL);
+		if (hFile == INVALID_HANDLE_VALUE)
+		{
+			OutputDebugStringA("文件打开失败\n");
+		}
+		else
+		{
+			int nSize = GetFileSize(hFile, NULL)+4;		//加4避免申请的堆内存刚好被文件内容填满后,字符串末尾没有'\0'了
+			char* szBuf = (char*)malloc(nSize);
+			memset(szBuf,0,nSize);
+			DWORD dwReadSize=0;
+			ReadFile(hFile, szBuf, nSize, &dwReadSize, NULL);
+			strRet = szBuf;
+			free(szBuf);
+			CloseHandle(hFile);
+		}
+	}
+	catch (...)
+	{
+		OutputDebugStringA("文件读写异常\n");
+	}
+	return strRet;
+}
+string ReadAllFromFileA(const string& strFile)
+{
+	string strRet;
+	try
+	{
+		HANDLE hFile = CreateFileA(strFile.c_str(),GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,NULL,NULL);
+		if (hFile == INVALID_HANDLE_VALUE)
+		{
+			OutputDebugStringA("文件打开失败\n");
+		}
+		else
+		{
+			int nSize = GetFileSize(hFile, NULL)+4;		//加4避免申请的堆内存刚好被文件内容填满后,字符串末尾没有'\0'了
+			char* szBuf = (char*)malloc(nSize);
+			memset(szBuf,0,nSize);
+			DWORD dwReadSize=0;
+			ReadFile(hFile, szBuf, nSize, &dwReadSize, NULL);
+			strRet = szBuf;
+			free(szBuf);
+			CloseHandle(hFile);
+		}
+	}
+	catch (...)
+	{
+		OutputDebugStringA("文件读写异常\n");
+	}
+	return strRet;
+}
+
+typedef void (WINAPI *LPFN_PGNSI)(LPSYSTEM_INFO);
+bool Is64BitOS()
+{
+	SYSTEM_INFO si = { 0 };
+	LPFN_PGNSI pGNSI = (LPFN_PGNSI) GetProcAddress(GetModuleHandle(_T("kernel32.dll")), "GetNativeSystemInfo");
+	if (pGNSI)
+	{
+		pGNSI(&si);
+		if (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64 || si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_IA64 )
+		{
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+int CopyFolder(const xstring& strSource,const xstring& strDest)
+{
+	SHFILEOPSTRUCT FileOp;   
+	//根据MSDN上，ZeryMerory在当缓冲区的字符串超出生命周期的时候，  
+	//会被编译器优化，从而缓冲区的内容会被恶意软件捕捉到。  
+	//引起软件安全问题，特别是对于密码这些比较敏感的信息而说。  
+	//而SecureZeroMemory则不会引发此问题，保证缓冲区的内容会被正确的清零。  
+	//如果涉及到比较敏感的内容，尽量使用SecureZeroMemory函数。 
+	xstring strFrom = strSource + _T('\0');
+	xstring strTo = strDest + _T('\0');
+	SecureZeroMemory((void*)&FileOp, sizeof(SHFILEOPSTRUCT));//secureZeroMemory和ZeroMerory的区别  
+ 
+	FileOp.fFlags = FOF_NOCONFIRMATION|FOF_NOCONFIRMMKDIR;		//操作与确认标志   
+	FileOp.hNameMappings = NULL;			//文件映射  
+	FileOp.hwnd = NULL;						//消息发送的窗口句柄；  
+	FileOp.lpszProgressTitle = NULL;		//文件操作进度窗口标题   
+	FileOp.pFrom = strFrom.c_str();			//源文件及路径    //必须要以“\0\0”结尾，不然删除不了  
+	FileOp.pTo = strTo.c_str();				//目标文件及路径
+	FileOp.wFunc = FO_COPY;					//操作类型   
+	return SHFileOperation(&FileOp); 
+}
+int CopyFolderA(const string& strSource,const string& strDest)
+{
+	SHFILEOPSTRUCTA FileOp;   
+	//根据MSDN上，ZeryMerory在当缓冲区的字符串超出生命周期的时候，  
+	//会被编译器优化，从而缓冲区的内容会被恶意软件捕捉到。  
+	//引起软件安全问题，特别是对于密码这些比较敏感的信息而说。  
+	//而SecureZeroMemory则不会引发此问题，保证缓冲区的内容会被正确的清零。  
+	//如果涉及到比较敏感的内容，尽量使用SecureZeroMemory函数。 
+	SecureZeroMemory((void*)&FileOp, sizeof(SHFILEOPSTRUCTA));//secureZeroMemory和ZeroMerory的区别  
+
+	string strFrom = strSource + '\0';
+	string strTo = strDest + '\0';
+	SecureZeroMemory((void*)&FileOp, sizeof(SHFILEOPSTRUCT));//secureZeroMemory和ZeroMerory的区别  
+
+	FileOp.fFlags = FOF_NOCONFIRMATION|FOF_NOCONFIRMMKDIR;		//操作与确认标志   
+	FileOp.hNameMappings = NULL;			//文件映射  
+	FileOp.hwnd = NULL;						//消息发送的窗口句柄；  
+	FileOp.lpszProgressTitle = NULL;		//文件操作进度窗口标题   
+	FileOp.pFrom = strFrom.c_str();			//源文件及路径    //必须要以“\0\0”结尾，不然删除不了  
+	FileOp.pTo = strTo.c_str();				//目标文件及路径
+	FileOp.wFunc = FO_COPY;					//操作类型   
+	return SHFileOperationA(&FileOp); 
+}
+
+int GetProcesssIdFromName(const xstring& strPorcessName)
+{
+	HANDLE hProcess = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	if( hProcess == INVALID_HANDLE_VALUE )
+	{
+		return -1;
+	}
+
+	TCHAR szShortPath[MAX_PATH*2] = { 0 };
+	PROCESSENTRY32 pinfo; 
+	MODULEENTRY32 minfo;
+	pinfo.dwSize = sizeof(PROCESSENTRY32);
+	minfo.dwSize = sizeof( MODULEENTRY32);
+
+	BOOL report = Process32First(hProcess, &pinfo); 
+	while(report) 
+	{ 
+		HANDLE hModule = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, pinfo.th32ProcessID); 
+		if( hModule != INVALID_HANDLE_VALUE )
+		{
+			if( Module32First( hModule, &minfo ) )
+			{
+				xstring strCurExeName = minfo.szExePath;
+				int nPos = strCurExeName.rfind(_T('\\'));
+				strCurExeName = strCurExeName.substr(nPos+1);
+				if (strPorcessName == strCurExeName)
+				{
+					CloseHandle( hModule );
+					CloseHandle( hProcess );
+					return pinfo.th32ProcessID;
+				}
+			}
+
+			CloseHandle( hModule );
+		}
+		report = Process32Next(hProcess, &pinfo);
+	}
+
+	CloseHandle( hProcess );
+	return -1;
+	
+}
+void GetProcesssIdFromName(const xstring& strPorcessName,deque<int>& dequeOutID)
+{
+	dequeOutID.clear();
+	HANDLE hProcess = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	if( hProcess == INVALID_HANDLE_VALUE )
+	{
+		return ;
+	}
+
+	TCHAR szShortPath[MAX_PATH*2] = { 0 };
+	PROCESSENTRY32 pinfo; 
+	MODULEENTRY32 minfo;
+	pinfo.dwSize = sizeof(PROCESSENTRY32);
+	minfo.dwSize = sizeof( MODULEENTRY32);
+
+	BOOL report = Process32First(hProcess, &pinfo); 
+	while(report) 
+	{ 
+		HANDLE hModule = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, pinfo.th32ProcessID); 
+		if( hModule != INVALID_HANDLE_VALUE )
+		{
+			if( Module32First( hModule, &minfo ) )
+			{
+				xstring strCurExeName = minfo.szExePath;
+				int nPos = strCurExeName.rfind(_T('\\'));
+				strCurExeName = strCurExeName.substr(nPos+1);
+				if (strPorcessName == strCurExeName)
+				{
+					dequeOutID.push_back(pinfo.th32ProcessID);
+				}
+			}
+
+			CloseHandle( hModule );
+		}
+		report = Process32Next(hProcess, &pinfo);
+	}
+
+	CloseHandle( hProcess );
+}
+
+long GetFileSizeByte(const xstring& strFile)
+{
+	FILE* file = NULL;
+#ifdef UNICODE
+	fopen_s(&file,_A(strFile), "r");
+#else
+	fopen_s(&file,strFile.c_str(), "r");
+#endif		
+	if (file)
+	{
+		long nSize = _filelength(_fileno(file));
+		fclose(file);
+		return nSize;
+	}
+	return -1;
+}
+
+long GetFileSizeByteA(const string& strFile)
+{
+	FILE* file = NULL;
+	fopen_s(&file,strFile.c_str(), "r");
+	if (file)
+	{
+		long nSize = _filelength(_fileno(file));
+		fclose(file);
+		return nSize;
+	}
+	return -1;
 }

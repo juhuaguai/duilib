@@ -45,8 +45,8 @@ public:
 	CSimpleDownloadFile(void);
 	~CSimpleDownloadFile(void);
 
-	//参数:pVoid-回调时将带出该指针 pszUrl-源url pszPath-目标路径及文件名
-	void DownloadFile(LPVOID pVoid,LPCTSTR pszUrl,LPCTSTR pszPath,PDownloadResultCallback pCallback = NULL);
+	//参数:pVoid-回调时将带出该指针 pszUrl-源url pszPath-目标路径及文件名 false-是否删除已经存在的同名文件(不删除有可能导致文件内容不会更新)
+	void DownloadFile(LPVOID pVoid,LPCTSTR pszUrl,LPCTSTR pszPath,PDownloadResultCallback pCallback = NULL,bool bDeleteOld = true);
 
 public:
 	HRESULT STDMETHODCALLTYPE OnStartBinding(/* [in] */ DWORD dwReserved,/* [in] */ __RPC__in_opt IBinding *pib);
