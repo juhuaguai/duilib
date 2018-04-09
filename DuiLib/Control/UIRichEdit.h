@@ -143,6 +143,8 @@ public:
 	void SetCaret(bool bCaret);
 	bool GetCaret();
 
+	void SetPasswordChar(TCHAR chPasswordChar);
+
 	LPCTSTR GetFocusedImage();
 	void SetFocusedImage(LPCTSTR pStrImage);
 	LPCTSTR GetDisabledImage();

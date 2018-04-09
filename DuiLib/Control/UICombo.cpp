@@ -167,7 +167,7 @@ void CComboWnd::Init(CComboUI* pOwner)
         SIZE sz = pControl->EstimateSize(szAvailable);
         cyFixed += sz.cy;
     }
-    cyFixed += 4; // CVerticalLayoutUI 默认的Inset 调整
+    //cyFixed += 4; // CVerticalLayoutUI 默认的Inset 调整
     rc.bottom = rc.top + MIN(cyFixed, szDrop.cy);
 
     ::MapWindowRect(pOwner->GetManager()->GetPaintWindow(), HWND_DESKTOP, &rc);
@@ -227,10 +227,11 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         if( pDefaultAttributes ) {
             m_pLayout->SetAttributeList(pDefaultAttributes);
         }
-        m_pLayout->SetInset(CDuiRect(1, 1, 1, 1));
-        m_pLayout->SetBkColor(0xFFFFFFFF);
-        m_pLayout->SetBorderColor(0xFFC6C7D2);
-        m_pLayout->SetBorderSize(1);
+        //m_pLayout->SetInset(CDuiRect(1, 1, 1, 1));
+        //m_pLayout->SetBkColor(0xFFFFFFFF);
+        //m_pLayout->SetBorderColor(0xFFC6C7D2);
+        //m_pLayout->SetBorderSize(1);
+		m_pLayout->SetBkColor(m_pOwner->GetItemBkColor());
         m_pLayout->SetAutoDestroy(false);
         m_pLayout->EnableScrollBar();
         m_pLayout->SetAttributeList(m_pOwner->GetDropBoxAttributeList());

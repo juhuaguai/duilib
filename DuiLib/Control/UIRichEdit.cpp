@@ -2706,6 +2706,23 @@ void CRichEditUI::SetCaret(bool bCaret)
 	}
 }
 
+void CRichEditUI::SetPasswordChar(TCHAR chPasswordChar)
+{
+#ifdef UNICODE
+	if (m_pTwh)
+		m_pTwh->SetPasswordChar(chPasswordChar);
+#else
+	char szValue[16] = {};
+	szValue[0] = chPasswordChar;
+	int length = strlen(szValue)+1;
+	wchar_t wszValue[32] = {0};
+	MultiByteToWideChar(CP_ACP,0,szValue,strlen(szValue),wszValue,31);
+
+	if (m_pTwh)
+		m_pTwh->SetPasswordChar(wszValue[0]);
+#endif	
+}
+
 bool CRichEditUI::GetCaret()
 {
 	return m_bCaret;
