@@ -47,7 +47,7 @@ public:
     CPing();
     ~CPing();
     BOOL Ping(DWORD dwDestIP, PingReply *pPingReply = NULL, DWORD dwTimeout = 2000);
-    BOOL Ping(char *szDestIP, PingReply *pPingReply = NULL, DWORD dwTimeout = 2000);
+    BOOL Ping(const char *szDestIP, PingReply *pPingReply = NULL, DWORD dwTimeout = 2000);
 private:
     BOOL PingCore(DWORD dwDestIP, PingReply *pPingReply, DWORD dwTimeout);
     USHORT CalCheckSum(USHORT *pBuffer, int nSize);

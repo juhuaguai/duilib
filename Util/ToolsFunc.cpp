@@ -862,6 +862,125 @@ string ReadAllFromFileA(const string& strFile)
 	return strRet;
 }
 
+string GetOSName()
+{
+	SYSTEM_INFO info;
+	GetSystemInfo(&info);
+	OSVERSIONINFOEX os;
+	os.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+
+	std::string strOsName = "unknown";
+
+	if (GetVersionEx((OSVERSIONINFO*)&os))
+	{
+		switch (os.dwMajorVersion)
+		{
+		case 4:
+			switch (os.dwMinorVersion)
+			{
+			case 0:
+				if (os.dwPlatformId == VER_PLATFORM_WIN32_NT)
+				{
+					strOsName = "Windows NT 4.0";
+				}
+				else if (os.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
+				{
+					strOsName = "Windows 95";
+				}
+				break;
+			case 10:
+				{
+					strOsName = "Windows 98";
+				}
+				break;
+			case 90:
+				{
+					strOsName = "Windows Me";
+				}
+				break;
+			}
+			break;
+
+		case 5:
+			switch (os.dwMinorVersion)
+			{
+			case 0:
+				strOsName = "Windows 2000";
+				break;
+			case 1:
+				strOsName = "Windows XP";
+				break;
+			case 2:
+				if (os.wProductType == VER_NT_WORKSTATION
+					&& info.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64)
+				{
+					strOsName = "Windows XP Professional x64 Edition";
+				}
+				else if (GetSystemMetrics(SM_SERVERR2) == 0)
+				{
+					strOsName = "Windows Server 2003";
+				}
+				else if (GetSystemMetrics(SM_SERVERR2) != 0)
+				{
+					strOsName = "Windows Server 2003 R2";
+				}
+				break;
+			}
+			break;
+
+		case 6:
+			switch (os.dwMinorVersion)
+			{
+			case 0:
+				if (os.wProductType == VER_NT_WORKSTATION)
+				{
+					strOsName = "Windows Vista";
+				}
+				else
+				{
+					strOsName = "Windows Server 2008";
+				}
+				break;
+			case 1:
+				if (os.wProductType == VER_NT_WORKSTATION)
+				{
+					strOsName = "Windows 7";
+				}
+				else
+				{
+					strOsName = "Windows Server 2008 R2";
+				}
+				break;
+			case 2:
+				strOsName = "Windows 8";
+				break;
+			}
+			break;
+		case 10:
+			{
+				switch (os.dwMinorVersion)
+				{
+				case 0:
+					{
+						if (os.wProductType == VER_NT_WORKSTATION)
+						{
+							strOsName = "Windows 10";
+						}
+						else
+						{
+							strOsName = "Windows Server 2016";
+						}
+					}
+					break;
+				}
+			}
+			break;
+		}
+	}
+
+	return strOsName;
+}
+
 typedef void (WINAPI *LPFN_PGNSI)(LPSYSTEM_INFO);
 bool Is64BitOS()
 {

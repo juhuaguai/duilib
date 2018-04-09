@@ -1,4 +1,5 @@
 #include "ping.h"
+#include <string>
 
 USHORT CPing::s_usPacketSeq = 0;
 
@@ -42,11 +43,30 @@ BOOL CPing::Ping(DWORD dwDestIP, PingReply *pPingReply, DWORD dwTimeout)
     return PingCore(dwDestIP, pPingReply, dwTimeout);
 }
 
-BOOL CPing::Ping(char *szDestIP, PingReply *pPingReply, DWORD dwTimeout)
+BOOL CPing::Ping(const char *szDestIP, PingReply *pPingReply, DWORD dwTimeout)
 {
     if (NULL != szDestIP)
     {
-        return PingCore(inet_addr(szDestIP), pPingReply, dwTimeout);
+		std::string strDest = szDestIP;
+		char szIp[32] = {0};
+		if (strDest.find_first_not_of("0123456789.") != std::string::npos)	//说明不是IP,而是域名
+		{
+			HOSTENT* host_entry = gethostbyname(strDest.c_str());  
+			if(host_entry != 0)  
+			{
+				sprintf(szIp,"%d.%d.%d.%d",
+					(host_entry->h_addr_list[0][0]&0x00ff),  
+					(host_entry->h_addr_list[0][1]&0x00ff),  
+					(host_entry->h_addr_list[0][2]&0x00ff),  
+					(host_entry->h_addr_list[0][3]&0x00ff));  
+			}  
+			else
+				return FALSE;
+		}
+		else
+			strncpy(szIp,szDestIP,31);
+
+        return PingCore(inet_addr(szIp), pPingReply, dwTimeout);
     }
     return FALSE;
 }

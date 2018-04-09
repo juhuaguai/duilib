@@ -84,6 +84,8 @@ xstring GetGUID(bool bUpper=true);
 string ReadAllFromFile(const xstring& strFile);
 string ReadAllFromFileA(const string& strFile);
 
+//获取当前操作系统名字
+string GetOSName();
 //是否是64位OS
 bool Is64BitOS();
 
