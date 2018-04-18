@@ -458,7 +458,7 @@ bool CComboUI::SelectItem(int iIndex, bool bTakeFocus, bool bTriggerEvent)
     if( m_items.GetSize() == 0 ) return false;
     if( iIndex >= m_items.GetSize() ) iIndex = m_items.GetSize() - 1;
     CControlUI* pControl = static_cast<CControlUI*>(m_items[iIndex]);
-    if( !pControl || !pControl->IsVisible() || !pControl->IsEnabled() ) return false;
+    if( !pControl || !pControl->IsEnabled() ) return false;
     IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(DUI_CTR_ILISTITEM));
     if( pListItem == NULL ) return false;
     m_iCurSel = iIndex;
