@@ -7,6 +7,10 @@
 #pragma comment(lib,"Iphlpapi.lib") //需要添加Iphlpapi.lib库  
 #include <ShlObj.h>
 #pragma comment(lib,"Shell32.lib")
+
+#define MY_ENCODING_TYPE (PKCS_7_ASN_ENCODING | X509_ASN_ENCODING)
+#pragma comment(lib,"crypt32.lib") 
+
 #ifndef xstring
 #ifdef _UNICODE
 #define xstring		std::wstring
@@ -33,6 +37,10 @@ void PrintfLog(const TCHAR * format, ...);
 BOOL IsPathExist(const TCHAR* szPath);
 //文件或文件夹是否存在
 BOOL IsPathExistA(const string& strPath);
+//文件是否存在
+bool IsDirOrFileExist(const TCHAR* szPath);
+//文件是否存在
+bool IsDirOrFileExistA(const char* szPath);
 
 //读取注册表
 bool ReadRegString(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,const DWORD& dwType ,xstring& strValue);
@@ -45,6 +53,9 @@ bool DeleteRegSubKey(HKEY hKey,const xstring& strSubKey);
 
 //获取App所在目录(结尾没有'/'或者'\\')
 xstring GetAppPath(HMODULE hModul=NULL);
+
+//检查端口是否被占用 返回值:-1-表示未被使用,否则返回使用的进程PID
+int CheckPortUsed(int nPort);
 
 //获取本机IP
 string GetLocalIp();
@@ -80,12 +91,14 @@ bool DelFollowSystemStart(const xstring& strName,const xstring& strFile);
 //获取guid字符串 bUpper-是否大写
 xstring GetGUID(bool bUpper=true);
 
-//从文件中读取全部内容
-string ReadAllFromFile(const xstring& strFile);
-string ReadAllFromFileA(const string& strFile);
+//从文件中读取全部内容(utf8写则读取出来就是utf8,为了兼容非简体中文的操作系统,最好使用Unicode版本函数)
+string ReadAllFromFile(const wstring& strFile);
+//以Utf8编码格式写入文件
+int WriteUtf8File(const string& strUtf8,const wstring& strFile);
+int WriteUtf8FileW(const wstring& strUnicode,const wstring& strFile);
 
 //获取当前操作系统名字
-string GetOSName();
+xstring GetOSName();
 //是否是64位OS
 bool Is64BitOS();
 
@@ -100,3 +113,23 @@ void GetProcesssIdFromName(const xstring& strPorcessName,deque<int>& dequeOutID)
 //获取文件大小(字节) //最大2G
 long GetFileSizeByte(const xstring& strFile);
 long GetFileSizeByteA(const string& strFile);
+
+//获取系统当前时区
+xstring GetTimeZoneNow();
+//设置时区
+//调用为 SetTimeZone(_T("Korea Standard Time"));
+//Korea Standard Time (UTC+09:00)首尔
+//Tokyo Standard Time (UTC+09:00)大阪，札幌，东京
+//China Standard Time 北京时间
+bool SetTimeZone(const xstring& subKey);
+	
+#if 0	//有问题，待排查
+//静默执行命令行
+bool DealExecCmd(const xstring& strCommandLine);
+//添加程序到防火墙
+bool AddFSystemFireWallRuler(const xstring& strfileName, const xstring& strName);
+#endif
+
+//导入证书 返回0表示成功
+int ImportCACertFile(const xstring& strFileName);
+int ImportCACertString(const string& strTxt);

@@ -149,6 +149,20 @@ BOOL IsPathExistA(const string& strPath)
 	WIN32_FILE_ATTRIBUTE_DATA attrs = {0};
 	return GetFileAttributesExA(strPath.c_str(), GetFileExInfoStandard, &attrs);
 }
+bool IsDirOrFileExist(const TCHAR* szPath)
+{
+	if ( (_taccess(szPath,0)) == -1 )
+		return false;
+
+	return true;
+}
+bool IsDirOrFileExistA(const char* szPath)
+{
+	if ( (_access(szPath,0)) == -1 )
+		return false;
+	
+	return true;
+}
 
 bool ReadRegString(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,const DWORD& dwType ,xstring& strValue)
 {
@@ -157,8 +171,8 @@ bool ReadRegString(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,
 	if (RegOpenKeyEx(hKey,strSubKey.c_str(),NULL,KEY_QUERY_VALUE,&hKeyHander) != ERROR_SUCCESS)
 		return false;
 
-	TCHAR szData[1024] = {0};
-	DWORD dwSize = 1024;
+	TCHAR szData[1024*10] = {0};
+	DWORD dwSize = 1024*10;
 	DWORD dwTp = dwType;
 	LSTATUS lret = RegQueryValueEx(hKeyHander,strKeyName.c_str(),NULL,&dwTp,(LPBYTE)szData,&dwSize);
 	if (lret == ERROR_SUCCESS)
@@ -266,6 +280,142 @@ xstring GetAppPath(HMODULE hModul)
 	return strApp;
 }
 
+void SplitStringA(const string& strSource, std::deque<std::string>& deq, const string& strDelim)
+{
+	string strSrc = strSource;
+	deq.clear();
+	if (strSrc.empty())
+	{
+		return ;
+	}
+	if (strDelim.empty())
+	{
+		deq.push_back(strSrc);
+		return ;
+	}
+
+	int nPos = strSrc.find(strDelim);
+	if (nPos == string::npos)
+	{
+		return ;
+	}
+	else
+	{
+		while (nPos != string::npos)
+		{
+			deq.push_back(strSrc.substr(0,nPos));
+			strSrc.erase(0,nPos+strDelim.length());
+
+			nPos = strSrc.find(strDelim);
+		}
+
+		if (strSrc.empty() == false)
+		{
+			deq.push_back(strSrc);
+		}
+	}	
+}
+
+int CheckPortUsed(int nPort)
+{
+	try
+	{
+		OutputDebugStringW(L"开始检查端口\n");
+		//创建匿名管道
+		SECURITY_ATTRIBUTES sa;  
+		HANDLE hRead=NULL,hWrite=NULL;  
+		sa.nLength = sizeof(SECURITY_ATTRIBUTES);  
+		sa.lpSecurityDescriptor = NULL;  
+		sa.bInheritHandle = TRUE;  
+		if (!CreatePipe(&hRead,&hWrite,&sa,0))   
+		{
+			OutputDebugStringW(L"匿名管道创建失败\n");
+			return -1;  
+		}   
+		wchar_t szCmd[128] = {0};
+		swprintf(szCmd,L"cmd.exe /C netstat -ano | find \"%d\"",nPort);
+		STARTUPINFOW si;  
+		PROCESS_INFORMATION pi;   
+		si.cb = sizeof(STARTUPINFOW);  
+		GetStartupInfoW(&si);   
+		si.hStdError = hWrite;            //把创建进程的标准错误输出重定向到管道输入  
+		si.hStdOutput = hWrite;           //把创建进程的标准输出重定向到管道输入  
+		si.wShowWindow = SW_HIDE;  
+		si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;  
+		OutputDebugStringW(L"检查端口22222222\n");
+		if (!CreateProcess(NULL, szCmd,NULL,NULL,TRUE,NULL,NULL,NULL,&si,&pi))
+		{  
+			CloseHandle(hWrite);  
+			CloseHandle(hRead);  
+			OutputDebugStringW(L"查询端口cmd执行失败,CreateProcess失败\n");
+			return -1;  
+		}  
+		OutputDebugStringW(L"检查端口333333333\n");
+		
+		if (WaitForSingleObject(pi.hProcess,2000) == WAIT_TIMEOUT)
+		{
+			CloseHandle(hWrite);  
+			CloseHandle(hRead);
+			CloseHandle(pi.hProcess);
+			OutputDebugStringW(L"查询端口cmd执行超时失败\n");
+			return -1;  
+		}
+
+		CloseHandle(hWrite);  
+		CloseHandle(pi.hProcess);
+
+		OutputDebugStringW(L"检查端口444444444\n");
+		string strResult;
+		if (hRead)
+		{
+			int nSize = GetFileSize(hRead, NULL)+4;		//加4避免申请的堆内存刚好被文件内容填满后,字符串末尾没有'\0'了
+			char* szBuf = (char*)malloc(nSize);
+			memset(szBuf,0,nSize);
+			DWORD dwReadSize=0;
+			
+			char szLog[128] = {0};
+			sprintf(szLog,"数据大小:%d\n",nSize);
+			OutputDebugStringA(szLog);
+
+			ReadFile(hRead, szBuf, nSize, &dwReadSize, NULL);
+			strResult = szBuf;
+			free(szBuf);
+			CloseHandle(hRead);
+			OutputDebugStringA(strResult.c_str());
+		}
+		else
+			return -1;
+
+		deque<string> theDeq;
+		SplitStringA(strResult,theDeq,"\r\n");
+
+		for (deque<string>::iterator itrAll = theDeq.begin();itrAll != theDeq.end();itrAll++)
+		{
+			OutputDebugStringW(L"检查端口555555555\n");
+			deque<string> theDetailDeq;
+			SplitStringA(*itrAll,theDetailDeq,"    ");
+			deque<string> deqIpPort;
+			if (theDetailDeq.size()>1)
+			{
+				SplitStringA(theDetailDeq.at(1),deqIpPort,":");
+				if (deqIpPort.size() > 0)
+				{
+					string strPort = deqIpPort.back();
+					if (atoi(strPort.c_str()) == nPort)
+					{
+						OutputDebugStringW(L"检查端口66666666\n");
+						string strPid = theDetailDeq.back();
+						return atoi(strPid.c_str());
+					}
+				}
+			}
+		}
+	}
+	catch (...)
+	{}	
+ 
+	return -1;
+}
 
 string GetLocalIp()
 {
@@ -805,15 +955,15 @@ xstring GetGUID(bool bUpper/*=true*/)
 	return szValue; 
 }
 
-string ReadAllFromFile(const xstring& strFile)
+string ReadAllFromFile(const wstring& strFile)
 {
 	string strRet;
 	try
 	{
-		HANDLE hFile = CreateFile(strFile.c_str(),GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,NULL,NULL);
+		HANDLE hFile = CreateFileW(strFile.c_str(),GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,NULL,NULL);
 		if (hFile == INVALID_HANDLE_VALUE)
 		{
-			OutputDebugStringA("文件打开失败\n");
+			OutputDebugStringW(L"文件打开失败\n");
 		}
 		else
 		{
@@ -829,173 +979,75 @@ string ReadAllFromFile(const xstring& strFile)
 	}
 	catch (...)
 	{
-		OutputDebugStringA("文件读写异常\n");
+		OutputDebugStringW(L"文件读写异常\n");
 	}
 	return strRet;
 }
-string ReadAllFromFileA(const string& strFile)
+int WriteUtf8File(const string& strUtf8,const wstring& strFile)
 {
-	string strRet;
-	try
+	if (strUtf8.empty() || strFile.empty())
+		return -1;
+
+	FILE* fp = NULL;
+	_wfopen_s(&fp,strFile.c_str(),L"wb");
+	if (fp)
 	{
-		HANDLE hFile = CreateFileA(strFile.c_str(),GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,NULL,NULL);
-		if (hFile == INVALID_HANDLE_VALUE)
-		{
-			OutputDebugStringA("文件打开失败\n");
-		}
-		else
-		{
-			int nSize = GetFileSize(hFile, NULL)+4;		//加4避免申请的堆内存刚好被文件内容填满后,字符串末尾没有'\0'了
-			char* szBuf = (char*)malloc(nSize);
-			memset(szBuf,0,nSize);
-			DWORD dwReadSize=0;
-			ReadFile(hFile, szBuf, nSize, &dwReadSize, NULL);
-			strRet = szBuf;
-			free(szBuf);
-			CloseHandle(hFile);
-		}
-	}
-	catch (...)
-	{
-		OutputDebugStringA("文件读写异常\n");
-	}
-	return strRet;
-}
-
-string GetOSName()
-{
-	SYSTEM_INFO info;
-	GetSystemInfo(&info);
-	OSVERSIONINFOEX os;
-	os.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-
-	std::string strOsName = "unknown";
-
-	if (GetVersionEx((OSVERSIONINFO*)&os))
-	{
-		switch (os.dwMajorVersion)
-		{
-		case 4:
-			switch (os.dwMinorVersion)
-			{
-			case 0:
-				if (os.dwPlatformId == VER_PLATFORM_WIN32_NT)
-				{
-					strOsName = "Windows NT 4.0";
-				}
-				else if (os.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
-				{
-					strOsName = "Windows 95";
-				}
-				break;
-			case 10:
-				{
-					strOsName = "Windows 98";
-				}
-				break;
-			case 90:
-				{
-					strOsName = "Windows Me";
-				}
-				break;
-			}
-			break;
-
-		case 5:
-			switch (os.dwMinorVersion)
-			{
-			case 0:
-				strOsName = "Windows 2000";
-				break;
-			case 1:
-				strOsName = "Windows XP";
-				break;
-			case 2:
-				if (os.wProductType == VER_NT_WORKSTATION
-					&& info.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64)
-				{
-					strOsName = "Windows XP Professional x64 Edition";
-				}
-				else if (GetSystemMetrics(SM_SERVERR2) == 0)
-				{
-					strOsName = "Windows Server 2003";
-				}
-				else if (GetSystemMetrics(SM_SERVERR2) != 0)
-				{
-					strOsName = "Windows Server 2003 R2";
-				}
-				break;
-			}
-			break;
-
-		case 6:
-			switch (os.dwMinorVersion)
-			{
-			case 0:
-				if (os.wProductType == VER_NT_WORKSTATION)
-				{
-					strOsName = "Windows Vista";
-				}
-				else
-				{
-					strOsName = "Windows Server 2008";
-				}
-				break;
-			case 1:
-				if (os.wProductType == VER_NT_WORKSTATION)
-				{
-					strOsName = "Windows 7";
-				}
-				else
-				{
-					strOsName = "Windows Server 2008 R2";
-				}
-				break;
-			case 2:
-				strOsName = "Windows 8";
-				break;
-			}
-			break;
-		case 10:
-			{
-				switch (os.dwMinorVersion)
-				{
-				case 0:
-					{
-						if (os.wProductType == VER_NT_WORKSTATION)
-						{
-							strOsName = "Windows 10";
-						}
-						else
-						{
-							strOsName = "Windows Server 2016";
-						}
-					}
-					break;
-				}
-			}
-			break;
-		}
-	}
-
-	return strOsName;
-}
-
-typedef void (WINAPI *LPFN_PGNSI)(LPSYSTEM_INFO);
-bool Is64BitOS()
-{
-	SYSTEM_INFO si = { 0 };
-	LPFN_PGNSI pGNSI = (LPFN_PGNSI) GetProcAddress(GetModuleHandle(_T("kernel32.dll")), "GetNativeSystemInfo");
-	if (pGNSI)
-	{
-		pGNSI(&si);
-		if (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64 || si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_IA64 )
-		{
-			return true;
-		}
+		fwrite( strUtf8.c_str(),1,strUtf8.length(),fp);
+		fclose(fp);
+		return 1;
 	}
 	
-	return false;
+	return 0;
+}
+int WriteUtf8FileW(const wstring& strUnicode,const wstring& strFile)
+{
+	if (strUnicode.empty() || strFile.empty())
+		return -1;
+
+	FILE* fp = NULL;
+	_wfopen_s(&fp,strFile.c_str(),L"wb");
+	if (fp)
+	{
+		int nLength = ::WideCharToMultiByte(CP_UTF8, 0, strUnicode.data(), -1, NULL, 0, NULL, FALSE);
+		if (nLength < 1)
+			return -2;
+		std::string strResult(nLength, 0);
+		::WideCharToMultiByte(CP_UTF8, 0, strUnicode.data(), -1, &strResult[0], nLength, NULL, FALSE);
+
+		string strUtf8(strResult.data(), nLength - 1);
+		fwrite( strUtf8.c_str(),1,strUtf8.length(),fp);
+		fclose(fp);
+		return 1;
+	}
+
+	return 0;
+}
+
+xstring GetOSName()
+{
+	xstring strProductName,strCSDVersion,strBit;
+	ReadRegString(HKEY_LOCAL_MACHINE,_T("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"),_T("ProductName"),REG_SZ,strProductName);
+	ReadRegString(HKEY_LOCAL_MACHINE,_T("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"),_T("CSDVersion"),REG_SZ,strCSDVersion);
+	if (Is64BitOS())
+		strBit = _T(" 64Bit");
+	else
+		strBit = _T(" 32Bit");
+
+	xstring strRet = strProductName + strBit;
+	return strRet;
+}
+
+bool Is64BitOS()
+{
+	BOOL bIsWow64 = FALSE;
+	typedef BOOL (WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
+	LPFN_ISWOW64PROCESS fnIsWow64Process = (LPFN_ISWOW64PROCESS) GetProcAddress(GetModuleHandle(_T("kernel32")),"IsWow64Process");
+	if(NULL!=fnIsWow64Process)
+	{
+		if(!fnIsWow64Process(GetCurrentProcess(),&bIsWow64))
+		{}
+	}
+	return bIsWow64;  
 }
 
 int CopyFolder(const xstring& strSource,const xstring& strDest)
@@ -1153,4 +1205,263 @@ long GetFileSizeByteA(const string& strFile)
 		return nSize;
 	}
 	return -1;
+}
+
+
+xstring GetTimeZoneNow()
+{
+	//其中UTC=localtime+bias（UTC时间=本地时间+bias），具体含义参看MSDN例子：
+	TIME_ZONE_INFORMATION tzi;
+	GetSystemTime(&tzi.StandardDate);  
+	GetTimeZoneInformation(&tzi);  
+#ifdef UNICODE
+	xstring strStandName = tzi.StandardName; 
+	xstring strDaylightName = tzi.DaylightName;  
+#else
+	xstring strStandName = UnicodeToAnsi(tzi.StandardName); 
+	xstring strDaylightName = UnicodeToAnsi(tzi.DaylightName);  
+#endif
+	
+	int zone = tzi.Bias/ -60; //时区，如果是中国标准时间则得到8 
+
+	xstring strRetName;
+
+	TCHAR    achKey[1024] = {0};	 // buffer for subkey name  
+	DWORD    cbName = 0;                   // size of name string   
+	TCHAR    achClass[MAX_PATH] = {0};  // buffer for class name   
+	DWORD    cchClassName = MAX_PATH;  // size of class string   
+	DWORD    cSubKeys=0;               // number of subkeys   
+	DWORD    cbMaxSubKey;              // longest subkey size   
+	DWORD    cchMaxClass;              // longest class string   
+	DWORD    cValues;              // number of values for key   
+	DWORD    cchMaxValue;          // longest value name   
+	DWORD    cbMaxValueData;       // longest value data   
+	DWORD    cbSecurityDescriptor; // size of security descriptor   
+	FILETIME ftLastWriteTime;      // last write time   
+
+	DWORD i, retCode;   
+
+	TCHAR  achValue[1024] = {0};   
+	DWORD cchValue = 1024;   
+	HKEY hDestKey = NULL;
+	if( RegOpenKeyEx( HKEY_LOCAL_MACHINE, _T("Software\\Microsoft\\Windows NT\\CurrentVersion\\Time Zones"),0,KEY_READ, &hDestKey) == ERROR_SUCCESS )  
+	{  
+		// Get the class name and the value count.   
+		retCode = RegQueryInfoKey(  
+			hDestKey,                    // key handle   
+			achClass,                // buffer for class name   
+			&cchClassName,           // size of class string   
+			NULL,                    // reserved   
+			&cSubKeys,               // number of subkeys   
+			&cbMaxSubKey,            // longest subkey size   
+			&cchMaxClass,            // longest class string   
+			&cValues,                // number of values for this key   
+			&cchMaxValue,            // longest value name   
+			&cbMaxValueData,         // longest value data   
+			&cbSecurityDescriptor,   // security descriptor   
+			&ftLastWriteTime);       // last write time   
+
+		for (i=0; i<cSubKeys; i++)   
+		{   
+			cbName = 1024;  
+			retCode = RegEnumKeyEx(hDestKey, i,  achKey,&cbName, NULL, NULL, NULL, &ftLastWriteTime);   
+			if (retCode == ERROR_SUCCESS)   
+			{  
+				xstring strSubKsy = _T("Software\\Microsoft\\Windows NT\\CurrentVersion\\Time Zones\\");
+				strSubKsy += achKey;
+				xstring strName;
+				ReadRegString(HKEY_LOCAL_MACHINE,strSubKsy,_T("Std"),REG_SZ,strName);
+				if (strName == strStandName)
+				{
+					strRetName = achKey;
+					break;
+				}
+			}  
+		}  
+
+		RegCloseKey(hDestKey);
+	}  
+
+	return strRetName; 
+}
+
+bool SetTimeZone(const xstring& subKey)
+{
+	//提升进程权限
+	HANDLE hToken = NULL;
+	TOKEN_PRIVILEGES tkp; 
+	if ( OpenProcessToken(GetCurrentProcess(),TOKEN_ADJUST_PRIVILEGES|TOKEN_QUERY, &hToken) )
+	{
+		if ( LookupPrivilegeValue(NULL, TEXT("SeTimeZonePrivilege"), &tkp.Privileges[0].Luid) )
+		{
+			tkp.PrivilegeCount = 1;
+			tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+
+			if ( AdjustTokenPrivileges(hToken, FALSE, &tkp, 0, (PTOKEN_PRIVILEGES)NULL, 0) )
+			{
+				//提权完毕,进行修改
+				HKEY hKey = NULL;
+				TIME_ZONE_INFORMATION tziNew;
+				typedef struct tagREG_TZI_FORMAT
+				{
+					LONG Bias;
+					LONG StandardBias;
+					LONG DaylightBias;
+					SYSTEMTIME StandardDate;
+					SYSTEMTIME DaylightDate;
+				}REG_TZI_FORMAT;
+				REG_TZI_FORMAT regTZI;
+				DWORD dwBufLen=sizeof(regTZI);
+				LONG lRet;
+				xstring strKeyName = _T("Software\\Microsoft\\Windows NT\\CurrentVersion\\Time Zones\\") + subKey;
+				xstring strStd = _T("");//标准时间名称
+
+				xstring strDlt = _T("");//夏令时名称
+				unsigned char szData[512] = {0};
+				DWORD dwDataType, dwBufSize;
+				dwBufSize = 512;
+				lRet = RegOpenKeyEx(HKEY_LOCAL_MACHINE,strKeyName.c_str(),    0, KEY_QUERY_VALUE, &hKey ); 
+				if( lRet != ERROR_SUCCESS )
+					return false;
+
+				lRet = RegQueryValueEx( hKey, TEXT("TZI"), NULL, NULL,(LPBYTE)&regTZI, &dwBufLen);
+
+				if(RegQueryValueEx(hKey, _T("Dlt"), 0, &dwDataType, szData, &dwBufSize) == ERROR_SUCCESS)
+					strDlt = (LPCTSTR)szData;
+				dwBufSize = 512;
+				if(RegQueryValueEx(hKey, _T("Std"), 0, &dwDataType, szData, &dwBufSize) == ERROR_SUCCESS)
+					strStd = (LPCTSTR)szData;
+				RegCloseKey(hKey);
+				if( (lRet != ERROR_SUCCESS) || (dwBufLen > sizeof(regTZI)) )
+					return false;
+				//设置值
+				ZeroMemory(&tziNew, sizeof(tziNew));
+				tziNew.Bias = regTZI.Bias;
+				tziNew.StandardDate = regTZI.StandardDate;
+				wcscpy(tziNew.StandardName, strStd.c_str());
+				wcscpy(tziNew.DaylightName, strDlt.c_str());
+				tziNew.DaylightDate = regTZI.DaylightDate;
+				tziNew.DaylightBias = regTZI.DaylightBias;
+
+				if( !SetTimeZoneInformation( &tziNew ) )
+				{
+					RegFlushKey(HKEY_LOCAL_MACHINE);
+					return false;
+				}
+
+				RegFlushKey(HKEY_LOCAL_MACHINE);
+				tkp.Privileges[0].Attributes = 0;
+				AdjustTokenPrivileges(hToken, FALSE, &tkp, 0, (PTOKEN_PRIVILEGES) NULL, 0);
+				return true;
+			}	
+			else
+			{
+				
+			}
+		}	
+		else
+		{
+			
+		}
+	}
+	else
+	{
+		
+	}
+	return false;
+}
+
+
+void FreeHandles(HCERTSTORE hFileStore, PCCERT_CONTEXT pctx,     HCERTSTORE pfxStore, HCERTSTORE myStore )
+{
+	if (myStore)
+		CertCloseStore(myStore, 0);
+
+	if (pfxStore)
+		CertCloseStore(pfxStore, CERT_CLOSE_STORE_FORCE_FLAG);
+
+	if(pctx)
+		CertFreeCertificateContext(pctx);
+
+	if (hFileStore)
+		CertCloseStore(hFileStore, 0);
+}
+int ImportCACert(BYTE* pBinByte , unsigned long binBytes)
+{
+	HCERTSTORE pfxStore = 0;
+	HCERTSTORE myStore = 0;
+	HCERTSTORE hFileStore = 0;
+	PCCERT_CONTEXT pctx = NULL;
+	DWORD err = 0;
+
+	pctx = CertCreateCertificateContext(MY_ENCODING_TYPE, (BYTE*)pBinByte , binBytes );
+	if(pctx == NULL)
+	{
+		DWORD err = GetLastError();
+		FreeHandles(hFileStore,pctx, pfxStore, myStore);   
+		return err;
+	}
+
+	// we open the store for the CA
+	hFileStore = CertOpenStore(CERT_STORE_PROV_SYSTEM, 0, 0, CERT_STORE_OPEN_EXISTING_FLAG | CERT_SYSTEM_STORE_LOCAL_MACHINE, L"Root" );
+	if (!hFileStore)
+	{
+		DWORD err = GetLastError();
+		FreeHandles(hFileStore,pctx, pfxStore, myStore);   
+		return err;
+	}
+
+	if( !CertAddCertificateContextToStore(hFileStore, pctx, CERT_STORE_ADD_NEW, 0) )
+	{
+		err = GetLastError();
+		if( CRYPT_E_EXISTS == err )
+		{
+			{
+				if( !CertAddCertificateContextToStore(hFileStore, pctx , CERT_STORE_ADD_REPLACE_EXISTING, 0))
+				{
+					err = GetLastError();
+					FreeHandles(hFileStore,pctx, pfxStore, myStore);                     
+					return err;
+				}
+			}
+		}
+		else
+		{
+			FreeHandles(hFileStore, pctx , pfxStore , myStore);
+
+			return err;
+		}
+	}
+	FreeHandles(hFileStore,pctx, pfxStore, myStore);
+
+	return 0;
+}
+int ImportCACertFile(const xstring& strFileName)
+{
+	HANDLE hfile = INVALID_HANDLE_VALUE;
+
+	BYTE pByte[4096] = {0} , pBinByte[8192]={0};
+	unsigned long bytesRead = 0;
+	unsigned long binBytes = 4096;
+
+	// Open it...
+	hfile = CreateFile(strFileName.c_str(), FILE_READ_DATA, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
+	if (INVALID_HANDLE_VALUE == hfile)
+		return -1;
+
+	ReadFile( hfile , pByte, 4096, &bytesRead ,NULL );
+	CloseHandle(hfile);
+
+	CryptStringToBinaryA( (LPCSTR)pByte , bytesRead ,CRYPT_STRING_BASE64HEADER , pBinByte , &binBytes ,NULL,NULL);
+
+	return ImportCACert(pBinByte , binBytes );
+}
+int ImportCACertString(const string& strTxt)
+{
+	BYTE pBinByte[8192]={0};
+	unsigned long binBytes = 4096;
+
+	CryptStringToBinaryA( strTxt.c_str(), strTxt.length() ,CRYPT_STRING_BASE64HEADER , pBinByte , &binBytes ,NULL,NULL);
+
+	return ImportCACert(pBinByte , binBytes);
 }

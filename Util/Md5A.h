@@ -110,7 +110,7 @@ public:
 public:
 	string MDString (const string& strSource);
 	string hmac_md5(char* text, char* key);
-	string MD5file(const string& strFilename);
+	string MD5file(const wstring& strFilename);
 
 private:
 	void MD5Init (MD5_CTX *context);

@@ -249,9 +249,13 @@ string CMd5A::MDString(const string& strSource)
 	return output;
 }
 
-string CMd5A::MD5file(const string& strFilename)
+string CMd5A::MD5file(const wstring& strFilename)
 {
-	std::FILE* file = std::fopen(strFilename.c_str(), "rb");
+	std::FILE* file = _wfopen(strFilename.c_str(), L"rb");
+	if (file==NULL)
+	{
+		return "";
+	}
 
 	MD5_CTX context;
 	MD5Init(&context);

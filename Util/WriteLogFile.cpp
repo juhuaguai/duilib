@@ -91,6 +91,7 @@ DWORD CWriteLogFile::GetLogFileCurSize(const xstring& strLogFileName)
 	}
 }
 
+#if 0
 void CWriteLogFile::WriteLog(bool bPrintToConsole,LPCTSTR format, ...)
 {
 	WaitForSingleObject(m_hEvent,3000);
@@ -145,6 +146,7 @@ void CWriteLogFile::WriteLog(bool bPrintToConsole,LPCTSTR format, ...)
 	{}
 	SetEvent(m_hEvent);
 }
+#endif
 
 void CWriteLogFile::WriteLogA(bool bPrintToConsole,LPCSTR format, ...)
 {
@@ -157,7 +159,7 @@ void CWriteLogFile::WriteLogA(bool bPrintToConsole,LPCSTR format, ...)
 		if ( GetLogFileCurSize(m_strFileName)>m_dwLogFileMaxSize*1024)
 			DeleteFile(m_strFileName.c_str());
 
-		char sLogOutput[4096] = {0};
+		char sLogOutput[10240] = {0};
 		string strLog;
 		//时间前缀
 		time_t nTime;  
@@ -177,7 +179,11 @@ void CWriteLogFile::WriteLogA(bool bPrintToConsole,LPCSTR format, ...)
 		strLog.append("\r\n");
 		//输出
 		FILE* fp = NULL;
-		_tfopen_s(&fp,m_strFileName.c_str(),_T("a+"));	
+		int nLength = ::WideCharToMultiByte(CP_ACP, 0, m_strFileName.data(), -1, NULL, 0, NULL, FALSE);
+		std::vector<char> vecResult(nLength);
+		::WideCharToMultiByte(CP_ACP, 0, m_strFileName.data(), -1, &vecResult[0], nLength, NULL, FALSE);
+		string strFile = std::string(vecResult.begin(), vecResult.end()-1);
+		fopen_s(&fp,strFile.c_str(),"ab+");	
 		if (fp)
 		{
 			//setlocale(0, "chs");
@@ -186,6 +192,54 @@ void CWriteLogFile::WriteLogA(bool bPrintToConsole,LPCSTR format, ...)
 		}
 		if (bPrintToConsole)
 			OutputDebugStringA(strLog.c_str());
+	}
+	catch (...)
+	{}
+	SetEvent(m_hEvent);
+}
+
+void CWriteLogFile::WriteLogW(bool bPrintToConsole,LPCWSTR format, ...)
+{
+	WaitForSingleObject(m_hEvent,3000);
+	if (m_hEvent == INVALID_HANDLE_VALUE)
+		return ;
+	ResetEvent(m_hEvent);
+	try
+	{
+		if ( GetLogFileCurSize(m_strFileName)>m_dwLogFileMaxSize*1024)
+			DeleteFile(m_strFileName.c_str());
+
+		WIN32_FILE_ATTRIBUTE_DATA attrs = {0};
+		BOOL bHave = GetFileAttributesEx(m_strFileName.c_str(), GetFileExInfoStandard, &attrs);
+
+		//输出
+		FILE* fp = NULL;
+		_wfopen_s(&fp,m_strFileName.c_str(),L"ab+");	
+		if (fp)
+		{
+			
+			if ( !bHave )  
+			{  
+				// 新创建的日志文件，则写入Unicode头  
+				BYTE chUnicodeHead[2] = { 0xff, 0xfe }; // Unicode头  
+				fwrite( chUnicodeHead, sizeof(BYTE), sizeof(chUnicodeHead), fp );  
+			}  
+
+			//内容
+			wchar_t sLogOutput[10240] = {0};
+			va_list arg_ptr;  
+			va_start(arg_ptr,format);
+			_vsnwprintf_s(sLogOutput,_countof(sLogOutput),_TRUNCATE, format, arg_ptr);
+			va_end(arg_ptr);
+
+			SYSTEMTIME time;  
+			::GetLocalTime( &time );  
+			fwprintf(fp, L"[%04d-%02d-%02d %02d:%02d:%02d]%s\r\n", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, sLogOutput );  
+			fclose( fp );  
+
+			if (bPrintToConsole)
+				OutputDebugString(sLogOutput);
+		}
 	}
 	catch (...)
 	{}

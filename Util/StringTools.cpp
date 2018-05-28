@@ -15,7 +15,6 @@ std::string UnicodeToAnsi(const std::wstring& strSource)
     return std::string(vecResult.begin(), vecResult.end()-1);
 }
 
-
 std::wstring AnsiToUnicode(const std::string& strSource)
 {
     int nLength = ::MultiByteToWideChar(CP_ACP, 0, strSource.data(), -1, NULL, 0);
@@ -292,17 +291,22 @@ std::string URLEncodeGB2312Forspace(const char* szSrc/*, char* pBuf, int cbBufLe
 	return sOut;
 };
 
-char* Utf8ToGBK(const char* strUtf8)
+string Utf8ToGBK(const string& strUtf8)
 {
-    int len=MultiByteToWideChar(CP_UTF8, 0, /*(LPCTSTR)*/strUtf8, -1, NULL,0); 
+    int len=MultiByteToWideChar(CP_UTF8, 0, /*(LPCTSTR)*/strUtf8.c_str(), -1, NULL,0); 
     unsigned short * wszGBK = new unsigned short[len+1];       
     memset(wszGBK, 0, len * 2 + 2); 
-    MultiByteToWideChar(CP_UTF8, 0, /*(LPCTSTR)*/strUtf8, -1, (LPWSTR)wszGBK, len);
+    MultiByteToWideChar(CP_UTF8, 0, /*(LPCTSTR)*/strUtf8.c_str(), -1, (LPWSTR)wszGBK, len);
     len = WideCharToMultiByte(CP_ACP, 0, (LPCWSTR)wszGBK, -1, NULL, 0, NULL, NULL);
     char *szGBK=new char[len + 1]; 
     memset(szGBK, 0, len + 1); 
     WideCharToMultiByte (CP_ACP, 0, (LPCWSTR)wszGBK, -1, (LPSTR)szGBK, len, NULL,NULL);
-    return szGBK; 
+
+	string strGbk = szGBK;
+	delete []szGBK;
+	delete []wszGBK;
+
+    return strGbk; 
 }
 
 char* GBKToUtf8(const char* strGBK)
