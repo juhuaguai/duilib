@@ -9,9 +9,9 @@ CSysServiceHandler::~CSysServiceHandler(void)
 }
 
 
-int CSysServiceHandler::InstallService(const string& strServiceName, const string& strServicePath, const string& strDesc, bool bIsAutoStart /* = true */ )
+int CSysServiceHandler::InstallService(const wstring& strServiceName, const wstring& strServicePath, const wstring& strDesc, bool bIsAutoStart /* = true */ )
 {
-	SC_HANDLE scm = OpenSCManagerA(0, 0, SC_MANAGER_CREATE_SERVICE);
+	SC_HANDLE scm = OpenSCManagerW(0, 0, SC_MANAGER_CREATE_SERVICE);
 	if (!scm) 
 	{
 		return -1;
@@ -19,10 +19,10 @@ int CSysServiceHandler::InstallService(const string& strServiceName, const strin
 
 	//"Provides secure remote desktop sharing"
 	//"Tcpip\0\0"   //指定启动该服务前必须先启动的服务或服务组
-	SC_HANDLE service = CreateServiceA(scm, strServiceName.c_str(), strServiceName.c_str(), SERVICE_ALL_ACCESS,
+	SC_HANDLE service = CreateServiceW(scm, strServiceName.c_str(), strServiceName.c_str(), SERVICE_ALL_ACCESS,
 		SERVICE_WIN32_OWN_PROCESS,
 		bIsAutoStart ? SERVICE_AUTO_START : SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL, strServicePath.c_str(),
-		NULL, NULL, "Tcpip\0\0", NULL, NULL);	
+		NULL, NULL, L"Tcpip\0\0", NULL, NULL);	
 	if (!service) 
 	{
 		DWORD myerror = GetLastError();
@@ -52,19 +52,25 @@ int CSysServiceHandler::InstallService(const string& strServiceName, const strin
 }
 
 
-void CSysServiceHandler::SetServiceDescription(const string& strServiceName, const string& strDesc)
+void CSysServiceHandler::SetServiceDescription(const wstring& strServiceName, const wstring& strDesc)
 {
-	// Add service description 
-	DWORD	dw=0;
-	HKEY hKey = NULL;
-	char tempName[512] = {0};
-	_snprintf(tempName,  sizeof tempName, "SYSTEM\\CurrentControlSet\\Services\\%s", strServiceName.c_str());
-	if ( RegCreateKeyExA(HKEY_LOCAL_MACHINE, tempName, 0, REG_NONE, REG_OPTION_NON_VOLATILE, KEY_READ|KEY_WRITE, NULL, &hKey, &dw) == ERROR_SUCCESS )
+	// Add service description
+	HKEY   hKeyHander = NULL;   
+	wchar_t tempName[1024] = {0};
+	_snwprintf_s(tempName,  _countof(tempName),_TRUNCATE,L"SYSTEM\\CurrentControlSet\\Services\\%s", strServiceName.c_str());
+	//找到  
+	long lRet = ::RegOpenKeyExW(HKEY_LOCAL_MACHINE,tempName,0,KEY_READ|KEY_WRITE,&hKeyHander);
+	if(lRet != ERROR_SUCCESS)  
 	{
-		RegSetValueExA(hKey, "Description", 0, REG_SZ, (const BYTE *)strDesc.c_str(), strDesc.length()+1);
+		DWORD dwDisposition;
+		lRet = RegCreateKeyExW(HKEY_LOCAL_MACHINE,tempName,0,NULL,REG_OPTION_NON_VOLATILE,KEY_ALL_ACCESS,NULL, &hKeyHander, &dwDisposition);
 	}
-	
-	RegCloseKey(hKey);
+	if (lRet == ERROR_SUCCESS)
+	{
+		lRet = RegSetValueExW(hKeyHander,L"Description",0,REG_SZ,(const BYTE*)strDesc.c_str(),strDesc.length()*2);
+	}
+	if (hKeyHander != NULL)
+		RegCloseKey(hKeyHander);
 }
 
 bool CSysServiceHandler::IsServiceInstalled(const string& strServiceName)
@@ -201,7 +207,7 @@ bool CSysServiceHandler::StopServerBySCM(const string& strerviceName)
 			// Try to stop the service
 			if (ControlService(schService, SERVICE_CONTROL_STOP, &ssSvcStatus))
 			{
-				Sleep(1000);
+				Sleep(500);
 				while (QueryServiceStatus(schService, &ssSvcStatus))
 				{
 					if (ssSvcStatus.dwCurrentState == SERVICE_STOP_PENDING)
@@ -249,25 +255,30 @@ bool CSysServiceHandler::UninstallService(const string& strServiceName)
 		schService = OpenServiceA(schSCManager, strServiceName.c_str(), SERVICE_STOP | SERVICE_QUERY_STATUS | DELETE);
 		if (schService)
 		{
-			// Try to stop the service
-			if (ControlService(schService, SERVICE_CONTROL_STOP, &ssSvcStatus))
+			if (QueryServiceStatus(schService, &ssSvcStatus))
 			{
-				Sleep(1000);
-				while (QueryServiceStatus(schService, &ssSvcStatus))
+				if (ssSvcStatus.dwCurrentState!=SERVICE_STOPPED && ssSvcStatus.dwCurrentState!=SERVICE_STOP_PENDING)
 				{
-					if (ssSvcStatus.dwCurrentState == SERVICE_STOP_PENDING)
+					// Try to stop the service
+					if (ControlService(schService, SERVICE_CONTROL_STOP, &ssSvcStatus))
 					{
-						Sleep(1000);
+						Sleep(500);
+						while (QueryServiceStatus(schService, &ssSvcStatus))
+						{
+							if (ssSvcStatus.dwCurrentState == SERVICE_STOP_PENDING)
+							{
+								Sleep(1000);
+							}
+							else 
+								break;
+						}
 					}
-					else 
-						break;
 				}
-
-				// Now remove the service by calling DeleteService.
-				if (DeleteService(schService))
-				{
-					bSucess = true;
-				}
+			}
+			// Now remove the service by calling DeleteService.
+			if (DeleteService(schService))
+			{
+				bSucess = true;
 			}
 		}
 	}

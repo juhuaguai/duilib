@@ -20,9 +20,6 @@
 using namespace std;
 #endif
 
-//创建一个目录,若存在也会返回true,当不存在且创建失败时返回false 注意：不能一次创建多级目录
-BOOL CreateDir(const xstring& strDir);
-
 //居中到屏幕中央
 void CenterWindowToScreen(HWND hWnd);
 //自动居中窗口。hParent-父窗口,hWnd-要居中的窗口,父窗口最小化或者为NULL时将居中到屏幕
@@ -41,6 +38,14 @@ BOOL IsPathExistA(const string& strPath);
 bool IsDirOrFileExist(const TCHAR* szPath);
 //文件是否存在
 bool IsDirOrFileExistA(const char* szPath);
+//创建一个目录,若存在也会返回true,当不存在且创建失败时返回false 注意：不能一次创建多级目录
+BOOL CreateDir(const xstring& strDir);
+//复制目录 //如果是目录不要以"\\"或者"/"结尾
+int CopyFolder(const xstring& strSource,const xstring& strDest);
+int CopyFolderA(const string& strSource,const string& strDest);
+//删除文件夹及其里面的文件。成功返回0
+int DeleteFolder(const xstring& strDest);
+
 
 //读取注册表
 bool ReadRegString(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,const DWORD& dwType ,xstring& strValue);
@@ -100,15 +105,11 @@ int WriteUtf8FileW(const wstring& strUnicode,const wstring& strFile);
 //获取当前操作系统名字
 xstring GetOSName();
 //是否是64位OS
-bool Is64BitOS();
-
-//复制目录 //如果是目录不要以"\\"或者"/"结尾
-int CopyFolder(const xstring& strSource,const xstring& strDest);
-int CopyFolderA(const string& strSource,const string& strDest);
+BOOL Is64BitOS();
 
 //查找进程ID (32位进程只能查找32位进程)
-int GetProcesssIdFromName(const xstring& strPorcessName);
-void GetProcesssIdFromName(const xstring& strPorcessName,deque<int>& dequeOutID);
+int GetProcesssIdFromName(const xstring& strPorcessName,bool bCaseSensitive = false);
+void GetProcesssIdFromName(const xstring& strPorcessName,deque<int>& dequeOutID,bool bCaseSensitive = false);
 
 //获取文件大小(字节) //最大2G
 long GetFileSizeByte(const xstring& strFile);

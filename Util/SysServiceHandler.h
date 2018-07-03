@@ -15,13 +15,13 @@ public:
 	~CSysServiceHandler(void);
 
 private:
-	void SetServiceDescription(const string& strServiceName, const string& strDesc);
+	void SetServiceDescription(const wstring& strServiceName, const wstring& strDesc);
 	BOOL RunExec(const string& strCmd, const string& strPara, DWORD dwMilliseconds = INFINITE);
 
 public:
 	void make_upper(std::string& str);
 
-	int InstallService(const string& strServiceName, const string& strServicePath, const string& strDesc, bool bIsAutoStart = true );
+	int InstallService(const wstring& strServiceName, const wstring& strServicePath, const wstring& strDesc, bool bIsAutoStart = true );
 	bool IsServiceInstalled(const string& strServiceName);
 	int IsServiceRunned(const string& strServiceName);
 	bool StartServerBySCM(const string& strServiceName);

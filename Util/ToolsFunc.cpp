@@ -215,7 +215,7 @@ bool ReadRegString(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,
 bool WriteRegValue(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,const DWORD& dwType ,const BYTE* lpData,DWORD cbData)
 {
 	HKEY   hKeyHander = NULL;   
-	//找到系统的启动项   
+	//找到  
 	long lRet = ::RegOpenKeyEx(hKey,strSubKey.c_str(),0,KEY_READ|KEY_WRITE,&hKeyHander);
 	if(lRet != ERROR_SUCCESS)  
 	{
@@ -342,7 +342,6 @@ int CheckPortUsed(int nPort)
 		si.hStdOutput = hWrite;           //把创建进程的标准输出重定向到管道输入  
 		si.wShowWindow = SW_HIDE;  
 		si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;  
-		OutputDebugStringW(L"检查端口22222222\n");
 		if (!CreateProcess(NULL, szCmd,NULL,NULL,TRUE,NULL,NULL,NULL,&si,&pi))
 		{  
 			CloseHandle(hWrite);  
@@ -350,7 +349,6 @@ int CheckPortUsed(int nPort)
 			OutputDebugStringW(L"查询端口cmd执行失败,CreateProcess失败\n");
 			return -1;  
 		}  
-		OutputDebugStringW(L"检查端口333333333\n");
 		
 		if (WaitForSingleObject(pi.hProcess,2000) == WAIT_TIMEOUT)
 		{
@@ -361,10 +359,12 @@ int CheckPortUsed(int nPort)
 			return -1;  
 		}
 
-		CloseHandle(hWrite);  
+		CloseHandle(pi.hThread);
 		CloseHandle(pi.hProcess);
 
-		OutputDebugStringW(L"检查端口444444444\n");
+		if (hWrite)
+			CloseHandle(hWrite);  
+
 		string strResult;
 		if (hRead)
 		{
@@ -391,7 +391,6 @@ int CheckPortUsed(int nPort)
 
 		for (deque<string>::iterator itrAll = theDeq.begin();itrAll != theDeq.end();itrAll++)
 		{
-			OutputDebugStringW(L"检查端口555555555\n");
 			deque<string> theDetailDeq;
 			SplitStringA(*itrAll,theDetailDeq,"    ");
 			deque<string> deqIpPort;
@@ -403,7 +402,6 @@ int CheckPortUsed(int nPort)
 					string strPort = deqIpPort.back();
 					if (atoi(strPort.c_str()) == nPort)
 					{
-						OutputDebugStringW(L"检查端口66666666\n");
 						string strPid = theDetailDeq.back();
 						return atoi(strPid.c_str());
 					}
@@ -815,17 +813,11 @@ bool SaveIconFileFromExeFile(const xstring& strExe,const xstring& strDestFile)
 //由绝对路径获取文件名
 xstring GetAppNameFromPath(const xstring& strAppPath)
 {
-	xstring strRet = strAppPath;
-	int nPos = strRet.rfind(_T('\\'));
-	if (nPos == string::npos)
-	{
-		nPos = strRet.rfind(_T('/'));
-	}
-	if (nPos != string::npos)
-	{
-		strRet = strRet.substr(nPos+1);
-	}
-	return strRet;
+	TCHAR szDrive[32] = {0},szDir[512] = {0},szFname[512]={0},szExt[512]={0};
+	_tsplitpath_s(strAppPath.c_str(),szDrive,szDir,szFname,szExt);
+	xstring strAppName = szFname;
+	strAppName += szExt;
+	return strAppName;
 }
 
 int IsValidIdCardNumber(const xstring& strIdCardNumber)
@@ -1037,7 +1029,7 @@ xstring GetOSName()
 	return strRet;
 }
 
-bool Is64BitOS()
+BOOL Is64BitOS()
 {
 	BOOL bIsWow64 = FALSE;
 	typedef BOOL (WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
@@ -1058,11 +1050,16 @@ int CopyFolder(const xstring& strSource,const xstring& strDest)
 	//引起软件安全问题，特别是对于密码这些比较敏感的信息而说。  
 	//而SecureZeroMemory则不会引发此问题，保证缓冲区的内容会被正确的清零。  
 	//如果涉及到比较敏感的内容，尽量使用SecureZeroMemory函数。 
-	xstring strFrom = strSource + _T('\0');
-	xstring strTo = strDest + _T('\0');
+	xstring strFrom = strSource;
+	strFrom.append(1,_T('\0'));
+	strFrom.append(1,_T('\0'));
+	xstring strTo = strDest;
+	strTo.append(1,_T('\0'));
+	strTo.append(1,_T('\0'));
+
 	SecureZeroMemory((void*)&FileOp, sizeof(SHFILEOPSTRUCT));//secureZeroMemory和ZeroMerory的区别  
  
-	FileOp.fFlags = FOF_NOCONFIRMATION|FOF_NOCONFIRMMKDIR;		//操作与确认标志   
+	FileOp.fFlags = FOF_NOCONFIRMATION|FOF_NOCONFIRMMKDIR|FOF_NOERRORUI|FOF_NO_UI;		//操作与确认标志   
 	FileOp.hNameMappings = NULL;			//文件映射  
 	FileOp.hwnd = NULL;						//消息发送的窗口句柄；  
 	FileOp.lpszProgressTitle = NULL;		//文件操作进度窗口标题   
@@ -1081,11 +1078,13 @@ int CopyFolderA(const string& strSource,const string& strDest)
 	//如果涉及到比较敏感的内容，尽量使用SecureZeroMemory函数。 
 	SecureZeroMemory((void*)&FileOp, sizeof(SHFILEOPSTRUCTA));//secureZeroMemory和ZeroMerory的区别  
 
-	string strFrom = strSource + '\0';
-	string strTo = strDest + '\0';
+	string strFrom = strSource;
+	strFrom.append(1,'\0');
+	string strTo = strDest;
+	strTo.append(1,'\0');
 	SecureZeroMemory((void*)&FileOp, sizeof(SHFILEOPSTRUCT));//secureZeroMemory和ZeroMerory的区别  
 
-	FileOp.fFlags = FOF_NOCONFIRMATION|FOF_NOCONFIRMMKDIR;		//操作与确认标志   
+	FileOp.fFlags = FOF_NOCONFIRMATION|FOF_NOCONFIRMMKDIR|FOF_NOERRORUI|FOF_NO_UI;		//操作与确认标志   
 	FileOp.hNameMappings = NULL;			//文件映射  
 	FileOp.hwnd = NULL;						//消息发送的窗口句柄；  
 	FileOp.lpszProgressTitle = NULL;		//文件操作进度窗口标题   
@@ -1094,8 +1093,32 @@ int CopyFolderA(const string& strSource,const string& strDest)
 	FileOp.wFunc = FO_COPY;					//操作类型   
 	return SHFileOperationA(&FileOp); 
 }
+int DeleteFolder(const xstring& strDest)
+{
+	SHFILEOPSTRUCT FileOp;   
+	//根据MSDN上，ZeryMerory在当缓冲区的字符串超出生命周期的时候，  
+	//会被编译器优化，从而缓冲区的内容会被恶意软件捕捉到。  
+	//引起软件安全问题，特别是对于密码这些比较敏感的信息而说。  
+	//而SecureZeroMemory则不会引发此问题，保证缓冲区的内容会被正确的清零。  
+	//如果涉及到比较敏感的内容，尽量使用SecureZeroMemory函数。 
+	SecureZeroMemory((void*)&FileOp, sizeof(SHFILEOPSTRUCT));//secureZeroMemory和ZeroMerory的区别  
 
-int GetProcesssIdFromName(const xstring& strPorcessName)
+	xstring strFrom = strDest;
+	strFrom.append(1,_T('\0'));
+	strFrom.append(1,_T('\0'));
+
+	//FileOp.fFlags = FOF_ALLOWUNDO|FOF_NOCONFIRMATION|FOF_NOERRORUI|FOF_NO_UI;		//操作与确认标志
+	FileOp.fFlags = FOF_NOCONFIRMATION|FOF_NOERRORUI|FOF_NO_UI;		//操作与确认标志   
+	FileOp.hNameMappings = NULL;			//文件映射  
+	FileOp.hwnd = NULL;						//消息发送的窗口句柄；  
+	FileOp.lpszProgressTitle = NULL;		//文件操作进度窗口标题   
+	FileOp.pFrom = strFrom.c_str();			//源文件及路径    //必须要以“\0\0”结尾，不然删除不了  
+	FileOp.pTo = NULL;						//目标文件及路径
+	FileOp.wFunc = FO_DELETE;				//操作类型   
+	return SHFileOperation(&FileOp); 
+}
+
+int GetProcesssIdFromName(const xstring& strPorcessName,bool bCaseSensitive/* = false*/)
 {
 	HANDLE hProcess = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	if( hProcess == INVALID_HANDLE_VALUE )
@@ -1120,11 +1143,23 @@ int GetProcesssIdFromName(const xstring& strPorcessName)
 				xstring strCurExeName = minfo.szExePath;
 				int nPos = strCurExeName.rfind(_T('\\'));
 				strCurExeName = strCurExeName.substr(nPos+1);
-				if (strPorcessName == strCurExeName)
+				if (bCaseSensitive)
 				{
-					CloseHandle( hModule );
-					CloseHandle( hProcess );
-					return pinfo.th32ProcessID;
+					if (strPorcessName == strCurExeName)
+					{
+						CloseHandle( hModule );
+						CloseHandle( hProcess );
+						return pinfo.th32ProcessID;
+					}
+				}
+				else
+				{
+					if (_tcsicmp(strPorcessName.c_str(),strCurExeName.c_str()) == 0)
+					{
+						CloseHandle( hModule );
+						CloseHandle( hProcess );
+						return pinfo.th32ProcessID;
+					}
 				}
 			}
 
@@ -1137,7 +1172,7 @@ int GetProcesssIdFromName(const xstring& strPorcessName)
 	return -1;
 	
 }
-void GetProcesssIdFromName(const xstring& strPorcessName,deque<int>& dequeOutID)
+void GetProcesssIdFromName(const xstring& strPorcessName,deque<int>& dequeOutID,bool bCaseSensitive/* = false*/)
 {
 	dequeOutID.clear();
 	HANDLE hProcess = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
@@ -1163,10 +1198,21 @@ void GetProcesssIdFromName(const xstring& strPorcessName,deque<int>& dequeOutID)
 				xstring strCurExeName = minfo.szExePath;
 				int nPos = strCurExeName.rfind(_T('\\'));
 				strCurExeName = strCurExeName.substr(nPos+1);
-				if (strPorcessName == strCurExeName)
+				if (bCaseSensitive)
 				{
-					dequeOutID.push_back(pinfo.th32ProcessID);
+					if (strPorcessName == strCurExeName)
+					{
+						dequeOutID.push_back(pinfo.th32ProcessID);
+					}
 				}
+				else
+				{
+					if (_tcsicmp(strPorcessName.c_str(),strCurExeName.c_str()) == 0)
+					{
+						dequeOutID.push_back(pinfo.th32ProcessID);
+					}
+				}
+
 			}
 
 			CloseHandle( hModule );
