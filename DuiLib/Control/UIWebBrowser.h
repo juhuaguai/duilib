@@ -8,6 +8,36 @@
 
 namespace DuiLib
 {
+	//js调用c++时,c++的函数类型声明
+	/*
+		pDispParams:js传递过来的参数数组,cArgs是参数的数量,rgvarg是参数数组的指针。注意,js里面的参数顺序和c++这个参数数组里面的顺序刚好是相反的
+		pVarResult:作为Js函数的返回值.要注意判断指针是否为空.另外,如果要返回给js字符串,那么要使用SysAllocString,并且不用SysFreeString
+		pExcepInfo:返回给js的异常信息,一般不用
+		puArgErr:错误索引,一般不用
+	*/
+	class CWebBrowserUI;
+
+	typedef void (*PJSCall)(CWebBrowserUI* pBrowser, DISPPARAMS *pDispParams,/* [out] */ VARIANT *pVarResult,/* [out] */ EXCEPINFO *pExcepInfo,/* [out] */ UINT *puArgErr);
+	typedef struct tagJSCallInfo
+	{
+		tagJSCallInfo()
+		{
+			lDspId=-1;
+			strFuncName.Empty();
+			pFunc = NULL;
+		};
+		tagJSCallInfo& operator=(const tagJSCallInfo& value)
+		{
+			lDspId = value.lDspId;
+			strFuncName = value.strFuncName;
+			pFunc = value.pFunc;
+			return *this;
+		};
+		DISPID lDspId;
+		CDuiString strFuncName;
+		PJSCall pFunc;
+	}JSCallInfo;
+
 	class DUILIB_API CWebBrowserUI
 		: public CActiveXUI
 		, public IDocHostUIHandler
@@ -39,11 +69,22 @@ namespace DuiLib
 		IWebBrowser2* GetWebBrowser2(void);
 		IDispatch*		   GetHtmlWindow();
 		static DISPID FindId(IDispatch *pObj, LPOLESTR pName);
+		//这个函数用于c++调用js
+		/*
+			pObj:一般来讲,传递GetHtmlWindow()的返回值即可,调用的是全局js函数,详细了解请自行搜索
+			pMehtod:wchar_t*的指针,js函数名.
+			pVarResult:用来接收js函数执行结果.
+			ps:参数数组指针.这个参数顺序与js接收到的参数顺序是相反的,另外如果要传递字符串,请使用SysAllocString,在调用js函数结束后,要对应使用SysFreeString。
+			cArgs:参数数组的大小
+		*/
 		static HRESULT InvokeMethod(IDispatch *pObj, LPOLESTR pMehtod, VARIANT *pVarResult, VARIANT *ps, int cArgs);
 		static HRESULT GetProperty(IDispatch *pObj, LPOLESTR pName, VARIANT *pValue);
 		static HRESULT SetProperty(IDispatch *pObj, LPOLESTR pName, VARIANT *pValue);
+		//js调用c++, 调用方法为window.external.strJSFuncName() //strJSFuncName-js中调用的函数名 pCallback-函数名对应的函数指针
+		void BindJSWindowExternalFunc(const CDuiString& strJSFuncName,PJSCall pCallback);
 
 	protected:
+		CDuiPtrArray m_aJsCallInfo;			//js调用c++时,函数信息
 		IWebBrowser2*			m_pWebBrowser2; //浏览器指针
 		IHTMLWindow2*		_pHtmlWnd2;
 		LONG m_dwRef;

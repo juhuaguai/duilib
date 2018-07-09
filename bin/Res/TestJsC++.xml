@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<Window size="640,480" caption="0,0,0,20">
+    <HorizontalLayout>
+		<WebBrowser name="web"/>
+    </HorizontalLayout>
+</Window>

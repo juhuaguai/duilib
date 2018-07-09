@@ -29,7 +29,7 @@ LRESULT CMainWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 
 	m_PM.Init(m_hWnd);
 	CDialogBuilder builder; 
-	CControlUI* pRoot = builder.Create(_T("CustomMain.xml"), (UINT)0,  this, &m_PM);		//直接修改Res目录下面的MainWnd - 副本.xml为这个文件名,即可看到另外一个效果了
+	CControlUI* pRoot = builder.Create(_T("TestJsC++.xml"), (UINT)0,  this, &m_PM);		//直接修改Res目录下面的MainWnd - 副本.xml为这个文件名,即可看到另外一个效果了
 	ASSERT(pRoot && "Failed to parse XML");
 	m_PM.AttachDialog(pRoot);
 	m_PM.AddNotifier(this);
@@ -37,8 +37,26 @@ LRESULT CMainWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 	return 0;
 }
 
+void JSCallTest(CWebBrowserUI* pBrowser, DISPPARAMS *pDispParams,/* [out] */ VARIANT *pVarResult,/* [out] */ EXCEPINFO *pExcepInfo,/* [out] */ UINT *puArgErr)
+{
+	CDuiString strMsg;
+	strMsg.Format(L"%d,%d,%s",pDispParams->rgvarg[0].boolVal,pDispParams->rgvarg[1].intVal,pDispParams->rgvarg[2].bstrVal);
+	MessageBox(NULL,strMsg,L"测试",MB_OK);
+	if (pVarResult)
+	{
+		BSTR bstrRet = SysAllocString(L"c++传递的返回值");
+		pVarResult->bstrVal = bstrRet;
+		pVarResult->vt = VT_BSTR;
+	}
+
+}
+
 void CMainWnd::InitDlg()
 {
+	CWebBrowserUI* pWeb = static_cast<CWebBrowserUI*>(m_PM.FindControl(_T("web")));
+	pWeb->BindJSWindowExternalFunc(L"testjscallcplusplus",JSCallTest);
+	pWeb->Navigate2(L"about:blank");
+	pWeb->Navigate2(L"file:///E:\\0rwh\\duilib\\bin\\testjs.html");
 }
 
 LRESULT CMainWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -76,6 +94,17 @@ void CMainWnd::Notify(TNotifyUI& msg)
 	}
 	if ( msg.sType == DUI_MSGTYPE_CLICK)
 	{
+		if (msg.pSender->GetName()==_T("test_btn"))
+		{
+			CTabLayoutUI* pLay = (CTabLayoutUI*)m_PM.FindControl(_T("test_tab"));
+			if (pLay->GetCurSel() == 0)
+			{
+				pLay->SelectItem(1);
+			}
+			else
+				pLay->SelectItem(0);
+			
+		}
 	}
 	else if (msg.sType == DUI_MSGTYPE_TIMER)
 	{

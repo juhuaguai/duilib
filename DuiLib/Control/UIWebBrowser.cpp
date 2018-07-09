@@ -58,6 +58,18 @@ STDMETHODIMP CWebBrowserUI::GetTypeInfo( UINT iTInfo, LCID lcid, ITypeInfo **ppT
 
 STDMETHODIMP CWebBrowserUI::GetIDsOfNames( REFIID riid, OLECHAR **rgszNames, UINT cNames, LCID lcid,DISPID *rgDispId )
 {
+	CDuiString strCallName = rgszNames[0];
+	JSCallInfo* pInfo = NULL;
+	for( int i=0; i<m_aJsCallInfo.GetSize(); i++ )
+	{
+		pInfo = (JSCallInfo*)(m_aJsCallInfo.GetAt(i));
+		if (pInfo->strFuncName == strCallName)
+		{
+			*rgDispId = pInfo->lDspId;
+			return S_OK;
+		}
+	}
+
 	return E_NOTIMPL;
 }
 
@@ -125,7 +137,20 @@ STDMETHODIMP CWebBrowserUI::Invoke( DISPID dispIdMember, REFIID riid, LCID lcid,
 			);
 		break;
 	default:
-		return DISP_E_MEMBERNOTFOUND;
+		{
+			JSCallInfo* pInfo = NULL;
+			for (int i=0;i<m_aJsCallInfo.GetSize();i++)
+			{
+				pInfo = (JSCallInfo*)(m_aJsCallInfo.GetAt(i));
+				if (pInfo->lDspId == dispIdMember)
+				{
+					pInfo->pFunc(this,pDispParams,pVarResult,pExcepInfo,puArgErr);
+					return S_OK;
+				}
+			}
+			return DISP_E_MEMBERNOTFOUND;
+		}
+		break;
 	}
 	return S_OK;
 }
@@ -437,11 +462,8 @@ STDMETHODIMP CWebBrowserUI::GetDropTarget( IDropTarget* pDropTarget, IDropTarget
 
 STDMETHODIMP CWebBrowserUI::GetExternal( IDispatch** ppDispatch )
 {
-	if (m_pWebBrowserEventHandler)
-	{
-		return m_pWebBrowserEventHandler->GetExternal(ppDispatch);
-	}
-	return S_FALSE;
+	*ppDispatch = this;
+	return S_OK;
 }
 
 STDMETHODIMP CWebBrowserUI::TranslateUrl( DWORD dwTranslate, OLECHAR* pchURLIn, OLECHAR** ppchURLOut )
@@ -632,6 +654,17 @@ HRESULT CWebBrowserUI::SetProperty( IDispatch *pObj, LPOLESTR pName, VARIANT *pV
 	ps.rgdispidNamedArgs = NULL;
 
 	return pObj->Invoke(dispid, IID_NULL, LOCALE_SYSTEM_DEFAULT, DISPATCH_PROPERTYPUT, &ps, NULL, NULL, NULL);
+}
+
+void CWebBrowserUI::BindJSWindowExternalFunc(const CDuiString& strJSFuncName,PJSCall pCallback)
+{
+	int nIndex = m_aJsCallInfo.GetSize() + 500;
+	JSCallInfo* pInfo = new JSCallInfo;
+	pInfo->lDspId = nIndex;
+	pInfo->strFuncName = strJSFuncName;
+	pInfo->pFunc = pCallback;
+
+	m_aJsCallInfo.Add(pInfo);
 }
 
 IDispatch* CWebBrowserUI::GetHtmlWindow()

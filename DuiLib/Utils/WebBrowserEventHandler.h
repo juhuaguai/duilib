@@ -111,12 +111,6 @@ namespace DuiLib
 			return E_NOTIMPL;
 		}
 
-		virtual HRESULT STDMETHODCALLTYPE GetExternal(
-			/* [out] */ IDispatch __RPC_FAR *__RPC_FAR *ppDispatch)
-		{
-			return E_NOTIMPL;
-		}
-
 		virtual HRESULT STDMETHODCALLTYPE TranslateUrl(
 			/* [in] */ DWORD dwTranslate,
 			/* [in] */ OLECHAR __RPC_FAR *pchURLIn,
