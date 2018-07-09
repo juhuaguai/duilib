@@ -42,6 +42,19 @@ void CWebBrowserUI::ReleaseControl()
 
 CWebBrowserUI::~CWebBrowserUI()
 {
+	JSCallInfo* pInfo = NULL;
+	for (int i=0;i<m_aJsCallInfo.GetSize();i++)
+	{
+		pInfo = (JSCallInfo*)m_aJsCallInfo.GetAt(i);
+		{
+			if (pInfo)
+			{
+				delete pInfo;
+				pInfo = NULL;
+			}
+		}
+	}
+	m_aJsCallInfo.Empty();
 	ReleaseControl();
 }
 
