@@ -17,7 +17,7 @@ Duilib界面文件预览工具
 **嵌入到notepad++：
 	打开notpad++
     按F5运行
-        程序名=DuilibPreview.exe的完整路径 $(FULL_CURRENT_PATH)
+        程序名=DuilibPreview.exe的完整路径 $(FULL_CURRENT_PATH)			//例如【c:/DuilibPreview.exe $(FULL_CURRENT_PATH)】
     保存
         Name=DuilibPreview
         Alt+F10
