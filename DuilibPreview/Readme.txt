@@ -15,7 +15,8 @@ Duilib界面文件预览工具
     现在编辑xml的时候按"Ctrl+1"快捷键就可以快速预览界面了
 
 **嵌入到notepad++：
-    F5运行
+	打开notpad++
+    按F5运行
         程序名=DuilibPreview.exe的完整路径 $(FULL_CURRENT_PATH)
     保存
         Name=DuilibPreview
