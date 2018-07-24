@@ -124,6 +124,8 @@ public:
     bool DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
     void PaintText(HDC hDC);
     void PaintStatusImage(HDC hDC);
+	void SetTextRenderingAlias(int nTextRenderingAlias);
+	TextRenderingHint GetTextRenderingAlias();
 
 	LPCTSTR GetVscrollbar() const;
 	LPCTSTR GetHscrollbar() const;
@@ -157,6 +159,8 @@ protected:
     TDrawInfo m_diDisabled;
 
     TListInfoUI m_ListInfo;
+
+	TextRenderingHint		m_TextRenderingAlias;	//ÎÄ×Ö¿¹¾â³Ý¼¶±ð
 };
 
 } // namespace DuiLib

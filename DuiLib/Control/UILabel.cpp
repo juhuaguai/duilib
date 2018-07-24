@@ -28,7 +28,8 @@ namespace DuiLib
 		m_EnabledStroke(false),
 		m_dwStrokeColor(0),
 		m_EnabledShadow(false),
-		m_GradientLength(0)
+		m_GradientLength(0),
+		m_TextRenderingAlias(TextRenderingHintAntiAlias)
 	{
 		m_ShadowOffset.X		= 0.0f;
 		m_ShadowOffset.Y		= 0.0f;
@@ -340,6 +341,7 @@ namespace DuiLib
 		else if( _tcscmp(pstrName, _T("showhtml")) == 0 ) SetShowHtml(_tcscmp(pstrValue, _T("true")) == 0);
 		else if( _tcscmp(pstrName, _T("enabledeffect")) == 0 ) SetEnabledEffect(_tcscmp(pstrValue, _T("true")) == 0);
 		else if( _tcscmp(pstrName, _T("enabledluminous")) == 0 ) SetEnabledLuminous(_tcscmp(pstrValue, _T("true")) == 0);
+		else if(_tcscmp(pstrName, _T("rhaa")) == 0 ) SetTextRenderingAlias(_ttoi(pstrValue));
 		else if( _tcscmp(pstrName, _T("luminousfuzzy")) == 0 ) SetLuminousFuzzy((float)_tstof(pstrValue));
 		else if( _tcscmp(pstrName, _T("gradientangle")) == 0 ) SetGradientAngle(_ttoi(pstrValue));
 		else if( _tcscmp(pstrName, _T("enabledstroke")) == 0 ) SetEnabledStroke(_tcscmp(pstrValue, _T("true")) == 0);
@@ -465,7 +467,7 @@ namespace DuiLib
 #ifdef _USE_GDIPLUS
 			Font	nFont(hDC,m_pManager->GetFont(GetFont()));
 			Graphics nGraphics(hDC);
-			nGraphics.SetTextRenderingHint(TextRenderingHintAntiAlias);
+			nGraphics.SetTextRenderingHint(GetTextRenderingAlias());
 
 			StringFormat format;
 			StringAlignment sa = StringAlignment::StringAlignmentNear;
@@ -503,7 +505,7 @@ namespace DuiLib
 				Bitmap Bit1((INT)nRc.Width, (INT)nRc.Height);
 				Graphics g1(&Bit1);
 				g1.SetSmoothingMode(SmoothingModeAntiAlias);
-				g1.SetTextRenderingHint(TextRenderingHintAntiAlias);
+				g1.SetTextRenderingHint(GetTextRenderingAlias());
 				g1.SetCompositingQuality(CompositingQualityAssumeLinear);
 				Bitmap Bit2(iFuzzyWidth, iFuzzyHeight);
 				Graphics g2(&Bit2);
@@ -518,7 +520,7 @@ namespace DuiLib
 				g2.DrawImage(&Bit1, 0, 0, (int)iFuzzyWidth, (int)iFuzzyHeight);
 				g1.Clear(Color(0));
 				g1.DrawImage(&Bit2, (int)m_ShadowOffset.X, (int)m_ShadowOffset.Y, (int)nRc.Width, (int)nRc.Height);
-				g1.SetTextRenderingHint(TextRenderingHintAntiAlias);
+				g1.SetTextRenderingHint(GetTextRenderingAlias());
 
 				nGraphics.DrawImage(&Bit1, nRc.X, nRc.Y);
 			}
@@ -606,6 +608,17 @@ namespace DuiLib
 	bool CLabelUI::GetEnabledEffect()
 	{
 		return m_EnableEffect;
+	}
+
+	void CLabelUI::SetTextRenderingAlias(int nTextRenderingAlias)
+	{
+		m_TextRenderingAlias = (TextRenderingHint)nTextRenderingAlias;
+		Invalidate();
+	}
+
+	TextRenderingHint CLabelUI::GetTextRenderingAlias()
+	{
+		return m_TextRenderingAlias;
 	}
 
 	void CLabelUI::SetEnabledLuminous(bool bEnableLuminous)

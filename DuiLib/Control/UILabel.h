@@ -55,6 +55,8 @@ namespace DuiLib
 
 #ifdef _USE_GDIPLUS
 		void		SetEnabledEffect(bool _EnabledEffect);
+		void		SetTextRenderingAlias(int nTextRenderingAlias);
+		TextRenderingHint GetTextRenderingAlias();
 		bool		GetEnabledEffect();
 		void		SetEnabledLuminous(bool bEnableLuminous);
 		bool		GetEnabledLuminous();
@@ -105,6 +107,7 @@ namespace DuiLib
 		DWORD					m_dwTextShadowColorB;
 		DWORD					m_dwStrokeColor;
 		RectF					m_ShadowOffset;
+		TextRenderingHint		m_TextRenderingAlias;	//ÎÄ×Ö¿¹¾â³Ý¼¶±ð
 //		ULONG_PTR				m_gdiplusToken;
 //#ifdef _USE_GDIPLUS
 //		GdiplusStartupInput		m_gdiplusStartupInput;

@@ -255,7 +255,7 @@ Label_ForeImage:
 #ifdef _USE_GDIPLUS
 				Font	nFont(hDC,m_pManager->GetFont(m_iFont));
 				Graphics nGraphics(hDC);
-				nGraphics.SetTextRenderingHint(TextRenderingHintAntiAlias);
+				nGraphics.SetTextRenderingHint(GetTextRenderingAlias());
 
 				StringFormat format;
 				StringAlignment sa = StringAlignment::StringAlignmentNear;

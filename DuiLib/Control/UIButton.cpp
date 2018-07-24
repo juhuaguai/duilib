@@ -503,7 +503,7 @@ namespace DuiLib
 #ifdef _USE_GDIPLUS
 			Font	nFont(hDC,m_pManager->GetFont(GetFont()));
 			Graphics nGraphics(hDC);
-			nGraphics.SetTextRenderingHint(TextRenderingHintAntiAlias);
+			nGraphics.SetTextRenderingHint(GetTextRenderingAlias());
 
 			StringFormat format;
 			StringAlignment sa = StringAlignment::StringAlignmentNear;

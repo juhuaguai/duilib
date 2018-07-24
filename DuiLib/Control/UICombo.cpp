@@ -375,7 +375,7 @@ UINT CComboWnd::GetClassStyle() const
 ////////////////////////////////////////////////////////
 
 
-CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0),m_dwTextColor(0),m_dwDisabledTextColor(0),m_iFont(-1),m_uTextStyle(DT_VCENTER|DT_SINGLELINE|DT_LEFT),m_EnableEffect(false)
+CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0),m_dwTextColor(0),m_dwDisabledTextColor(0),m_iFont(-1),m_uTextStyle(DT_VCENTER|DT_SINGLELINE|DT_LEFT),m_EnableEffect(false),m_TextRenderingAlias(TextRenderingHintAntiAlias)
 {
     m_szDropBox = CDuiSize(0, 150);
     ::ZeroMemory(&m_rcTextPadding, sizeof(m_rcTextPadding));
@@ -1193,6 +1193,7 @@ void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 		SetDisabledTextColor(clrColor);
 	}
+	else if( _tcscmp(pstrName, _T("rhaa")) == 0 ) SetTextRenderingAlias(_ttoi(pstrValue));
 	else if( _tcscmp(pstrName, _T("showtext")) == 0 ) SetShowText(_tcscmp(pstrValue, _T("true")) == 0);
 	else if( _tcscmp(pstrName, _T("selectedid")) == 0 ) SelectItem(_ttoi(pstrValue));
     else if( _tcscmp(pstrName, _T("normalimage")) == 0 ) SetNormalImage(pstrValue);
@@ -1382,6 +1383,16 @@ bool CComboUI::GetEnabledEffect()
 {
 	return m_EnableEffect;
 }
+void CComboUI::SetTextRenderingAlias(int nTextRenderingAlias)
+{
+	m_TextRenderingAlias = (TextRenderingHint)nTextRenderingAlias;
+	Invalidate();
+}
+
+TextRenderingHint CComboUI::GetTextRenderingAlias()
+{
+	return m_TextRenderingAlias;
+}
 
 void CComboUI::PaintText(HDC hDC)
 {
@@ -1410,7 +1421,7 @@ void CComboUI::PaintText(HDC hDC)
 #ifdef _USE_GDIPLUS
 				Font	nFont(hDC,m_pManager->GetFont(m_iFont));
 				Graphics nGraphics(hDC);
-				nGraphics.SetTextRenderingHint(TextRenderingHintAntiAlias);
+				nGraphics.SetTextRenderingHint(GetTextRenderingAlias());
 
 				StringFormat format;
 				StringAlignment sa = StringAlignment::StringAlignmentNear;
