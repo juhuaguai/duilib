@@ -258,14 +258,15 @@ public:
     static HINSTANCE GetResourceDll();
     static const CDuiString& GetResourcePath();
     static const CDuiString& GetResourceZip();
+	static const char* GetResourceZipPassword();
     static bool IsCachedResourceZip();
     static HANDLE GetResourceZipHandle();
     static void SetInstance(HINSTANCE hInst);
     static void SetCurrentPath(LPCTSTR pStrPath);
     static void SetResourceDll(HINSTANCE hInst);
     static void SetResourcePath(LPCTSTR pStrPath);
-	static void SetResourceZip(LPVOID pVoid, unsigned int len);
-    static void SetResourceZip(LPCTSTR pstrZip, bool bCachedResourceZip = false);
+	static void SetResourceZip(LPVOID pVoid, unsigned int len,LPCSTR pStrPwd=NULL);
+    static void SetResourceZip(LPCTSTR pstrZip, bool bCachedResourceZip = false,LPCSTR pStrPwd=NULL);
     static bool GetHSL(short* H, short* S, short* L);
     static void SetHSL(bool bUseHSL, short H, short S, short L); // H:0~360, S:0~200, L:0~200 
     static void ReloadSkin();
@@ -500,6 +501,7 @@ private:
 	static CDuiString m_pStrResourcePath;
 	static CDuiString m_pStrResourceZip;
 	static HANDLE m_hResourceZip;
+	static char m_szResourceZipPassword[64];
 
 	static bool m_bCachedResourceZip;
 	static TResInfo m_SharedResInfo;

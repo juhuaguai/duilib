@@ -4,13 +4,6 @@
 #include <CommCtrl.h>
 #pragma  comment(lib,"Comctl32.lib")
 
-DECLARE_HANDLE(HZIP);	// An HZIP identifies a zip file that has been opened
-typedef DWORD ZRESULT;
-#define OpenZip OpenZipU
-#define CloseZip(hz) CloseZipU(hz)
-extern HZIP OpenZipU(void *z,unsigned int len,DWORD flags);
-extern ZRESULT CloseZipU(HZIP hz);
-
 namespace DuiLib {
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -91,6 +84,7 @@ short CPaintManagerUI::m_S = 100;
 short CPaintManagerUI::m_L = 100;
 CDuiPtrArray CPaintManagerUI::m_aPreMessages;
 CDuiPtrArray CPaintManagerUI::m_aPlugins;
+char CPaintManagerUI::m_szResourceZipPassword[64]={0};
 
 CPaintManagerUI::CPaintManagerUI() :
 m_hWndPaint(NULL),
@@ -288,6 +282,10 @@ HANDLE CPaintManagerUI::GetResourceZipHandle()
 {
     return m_hResourceZip;
 }
+const char* CPaintManagerUI::GetResourceZipPassword()
+{
+	return m_szResourceZipPassword;
+}
 
 void CPaintManagerUI::SetInstance(HINSTANCE hInst)
 {
@@ -312,8 +310,18 @@ void CPaintManagerUI::SetResourcePath(LPCTSTR pStrPath)
     if( cEnd != _T('\\') && cEnd != _T('/') ) m_pStrResourcePath += _T('\\');
 }
 
-void CPaintManagerUI::SetResourceZip(LPVOID pVoid, unsigned int len)
+void CPaintManagerUI::SetResourceZip(LPVOID pVoid, unsigned int len,LPCSTR pStrPwd/* =NULL */)
 {
+	int nLen = 0;
+	if (pStrPwd != NULL)
+		nLen = strlen(pStrPwd);
+	if (nLen>64)
+		nLen = 64;
+	if (nLen>0)
+		strncpy(m_szResourceZipPassword,pStrPwd,nLen);
+	else
+		memset(m_szResourceZipPassword,0,64);
+
     if( m_pStrResourceZip == _T("membuffer") ) return;
     if( m_bCachedResourceZip && m_hResourceZip != NULL ) {
         CloseZip((HZIP)m_hResourceZip);
@@ -321,22 +329,32 @@ void CPaintManagerUI::SetResourceZip(LPVOID pVoid, unsigned int len)
     }
     m_pStrResourceZip = _T("membuffer");
     if( m_bCachedResourceZip ) 
-        m_hResourceZip = (HANDLE)OpenZip(pVoid, len, 3);
+		m_hResourceZip = (HANDLE)OpenZip(pVoid, len, CPaintManagerUI::GetResourceZipPassword());
 }
 
-void CPaintManagerUI::SetResourceZip(LPCTSTR pStrPath, bool bCachedResourceZip)
+void CPaintManagerUI::SetResourceZip(LPCTSTR pstrZip, bool bCachedResourceZip /* = false */,LPCSTR pStrPwd/* =NULL */)
 {
-    if( m_pStrResourceZip == pStrPath && m_bCachedResourceZip == bCachedResourceZip ) return;
+	int nLen = 0;
+	if (pStrPwd != NULL)
+		nLen = strlen(pStrPwd);
+	if (nLen>64)
+		nLen = 64;
+	if (nLen>0)
+		strncpy(m_szResourceZipPassword,pStrPwd,nLen);
+	else
+		memset(m_szResourceZipPassword,0,64);
+
+    if( m_pStrResourceZip == pstrZip && m_bCachedResourceZip == bCachedResourceZip ) return;
     if( m_bCachedResourceZip && m_hResourceZip != NULL ) {
         CloseZip((HZIP)m_hResourceZip);
         m_hResourceZip = NULL;
     }
-    m_pStrResourceZip = pStrPath;
+    m_pStrResourceZip = pstrZip;
     m_bCachedResourceZip = bCachedResourceZip;
     if( m_bCachedResourceZip ) {
         CDuiString sFile = CPaintManagerUI::GetResourcePath();
         sFile += CPaintManagerUI::GetResourceZip();
-        m_hResourceZip = (HANDLE)OpenZip((void*)sFile.GetData(), 0, 2);
+		m_hResourceZip = (HANDLE)OpenZip(sFile.GetData(),CPaintManagerUI::GetResourceZipPassword());
     }
 }
 

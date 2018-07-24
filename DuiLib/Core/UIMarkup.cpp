@@ -1,48 +1,5 @@
 #include "StdAfx.h"
 
-#ifndef TRACE
-#define TRACE
-#endif
-
-///////////////////////////////////////////////////////////////////////////////////////
-DECLARE_HANDLE(HZIP);	// An HZIP identifies a zip file that has been opened
-typedef DWORD ZRESULT;
-typedef struct
-{ 
-    int index;                 // index of this file within the zip
-    char name[MAX_PATH];       // filename within the zip
-    DWORD attr;                // attributes, as in GetFileAttributes.
-    FILETIME atime,ctime,mtime;// access, create, modify filetimes
-    long comp_size;            // sizes of item, compressed and uncompressed. These
-    long unc_size;             // may be -1 if not yet known (e.g. being streamed in)
-} ZIPENTRY;
-typedef struct
-{ 
-    int index;                 // index of this file within the zip
-    TCHAR name[MAX_PATH];      // filename within the zip
-    DWORD attr;                // attributes, as in GetFileAttributes.
-    FILETIME atime,ctime,mtime;// access, create, modify filetimes
-    long comp_size;            // sizes of item, compressed and uncompressed. These
-    long unc_size;             // may be -1 if not yet known (e.g. being streamed in)
-} ZIPENTRYW;
-#define OpenZip OpenZipU
-#define CloseZip(hz) CloseZipU(hz)
-extern HZIP OpenZipU(void *z,unsigned int len,DWORD flags);
-extern ZRESULT CloseZipU(HZIP hz);
-#ifdef _UNICODE
-#define ZIPENTRY ZIPENTRYW
-#define GetZipItem GetZipItemW
-#define FindZipItem FindZipItemW
-#else
-#define GetZipItem GetZipItemA
-#define FindZipItem FindZipItemA
-#endif
-extern ZRESULT GetZipItemA(HZIP hz, int index, ZIPENTRY *ze);
-extern ZRESULT GetZipItemW(HZIP hz, int index, ZIPENTRYW *ze);
-extern ZRESULT FindZipItemA(HZIP hz, const TCHAR *name, bool ic, int *index, ZIPENTRY *ze);
-extern ZRESULT FindZipItemW(HZIP hz, const TCHAR *name, bool ic, int *index, ZIPENTRYW *ze);
-extern ZRESULT UnzipItem(HZIP hz, int index, void *dst, unsigned int len, DWORD flags);
-///////////////////////////////////////////////////////////////////////////////////////
 
 namespace DuiLib {
 
@@ -404,9 +361,12 @@ bool CMarkup::LoadFromFile(LPCTSTR pstrFilename, int encoding)
     else {
         sFile += CPaintManagerUI::GetResourceZip();
         HZIP hz = NULL;
-        if( CPaintManagerUI::IsCachedResourceZip() ) hz = (HZIP)CPaintManagerUI::GetResourceZipHandle();
-        else hz = OpenZip((void*)sFile.GetData(), 0, 2);
-        if( hz == NULL ) return _Failed(_T("Error opening zip file"));
+        if( CPaintManagerUI::IsCachedResourceZip() ) 
+			hz = (HZIP)CPaintManagerUI::GetResourceZipHandle();
+        else 
+			hz = OpenZip(sFile.GetData(),CPaintManagerUI::GetResourceZipPassword());
+        if( hz == NULL ) 
+			return _Failed(_T("Error opening zip file"));
         ZIPENTRY ze; 
         int i; 
         if( FindZipItem(hz, pstrFilename, true, &i, &ze) != 0 ) return _Failed(_T("Could not find ziped file"));
@@ -414,7 +374,7 @@ bool CMarkup::LoadFromFile(LPCTSTR pstrFilename, int encoding)
         if( dwSize == 0 ) return _Failed(_T("File is empty"));
         if ( dwSize > 4096*1024 ) return _Failed(_T("File too large"));
         BYTE* pByte = new BYTE[ dwSize ];
-        int res = UnzipItem(hz, i, pByte, dwSize, 3);
+        int res = UnzipItem(hz, i, pByte, dwSize);
         if( res != 0x00000000 && res != 0x00000600) {
             delete[] pByte;
             if( !CPaintManagerUI::IsCachedResourceZip() ) CloseZip(hz);
@@ -655,8 +615,8 @@ void CMarkup::_ParseMetaChar(LPTSTR& pstrText, LPTSTR& pstrDest)
 bool CMarkup::_Failed(LPCTSTR pstrError, LPCTSTR pstrLocation)
 {
     // Register last error
-    TRACE(_T("XML Error: %s"), pstrError);
-    if( pstrLocation != NULL ) TRACE(pstrLocation);
+   // TRACE(_T("XML Error: %s"), pstrError);
+    //if( pstrLocation != NULL ) TRACE(pstrLocation);
     _tcsncpy(m_szErrorMsg, pstrError, (sizeof(m_szErrorMsg) / sizeof(m_szErrorMsg[0])) - 1);
     _tcsncpy(m_szErrorXML, pstrLocation != NULL ? pstrLocation : _T(""), lengthof(m_szErrorXML) - 1);
     return false; // Always return 'false'

@@ -336,7 +336,7 @@
 				Optimization="0"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories=""
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;UILIB_EXPORTS"
+				PreprocessorDefinitions="UILIB_EXPORTS;WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
@@ -582,44 +582,8 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Utils\Utils.cpp"
+					RelativePath=".\Utils\Unzip.cpp"
 					>
-				</File>
-				<File
-					RelativePath=".\Utils\WinImplBase.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Utils\WndShadow.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Utils\XUnzip.cpp"
-					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="UnicodeDebug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="UnicodeRelease|Win32"
 						>
@@ -636,6 +600,18 @@
 							UsePrecompiledHeader="0"
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Utils\Utils.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\WinImplBase.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\WndShadow.cpp"
+					>
 				</File>
 			</Filter>
 			<Filter
@@ -796,6 +772,10 @@
 				</File>
 				<File
 					RelativePath=".\Utils\UIDelegate.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\Unzip.h"
 					>
 				</File>
 				<File

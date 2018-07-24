@@ -81,6 +81,7 @@
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #endif
 
+#include "Utils/Unzip.h"
 #include "Utils/Utils.h"
 #include "Utils/UIDelegate.h"
 #include "Core/UIDefine.h"
