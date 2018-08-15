@@ -4119,12 +4119,40 @@ ZRESULT TUnzip1::Get(int index,ZIPENTRY *ze)
 
 ZRESULT TUnzip1::Find(const TCHAR *tname,bool ic,int *index,ZIPENTRY *ze)
 { 
-	char name[MAX_PATH];
+	char name[MAX_PATH] = {0};
 #ifdef UNICODE
 	WideCharToMultiByte(CP_ACP,0,tname,-1,name,MAX_PATH,0,0);
 #else
 	strcpy(name,tname);
 #endif
+
+	//将\转为/
+	char szNewName[MAX_PATH] = {0};
+	int nNameLen = strlen(name);
+	for (int i=0;i<nNameLen;i++)
+	{
+		char ch = name[i];
+		if (ch=='\\')
+			ch='/';
+		szNewName[i] = ch;
+	}
+	//将//转为/
+	memset(name,0,MAX_PATH);
+	nNameLen= strlen(szNewName);
+	int j=0;
+	for (int i=0;i<nNameLen;i++)
+	{
+		char ch = szNewName[i];
+		if (ch=='/')
+		{
+			if (j==0 || (name[j-1]=='/'))
+				continue;
+		}
+
+		name[j] = ch;
+		j++;
+	}
+
 	int res = unzLocateFile(uf,name,ic?CASE_INSENSITIVE:CASE_SENSITIVE);
 	if (res!=UNZ_OK)
 	{ 

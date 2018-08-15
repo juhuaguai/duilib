@@ -284,6 +284,9 @@ HANDLE CPaintManagerUI::GetResourceZipHandle()
 }
 const char* CPaintManagerUI::GetResourceZipPassword()
 {
+	if (strlen(m_szResourceZipPassword)<1)
+		return NULL;
+
 	return m_szResourceZipPassword;
 }
 
