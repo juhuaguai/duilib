@@ -808,7 +808,7 @@ namespace DuiLib
 			int nCount = pTreeNode->GetCountChild();
 			for(int nIndex = 0;nIndex < nCount;nIndex++)
 			{
-				CTreeNodeUI* pNode = pTreeNode->GetChildNode(nIndex);
+				CTreeNodeUI* pNode = pTreeNode->GetChildNode(0);
 				if(pNode){
 					pTreeNode->Remove(pNode, true);
 				}
