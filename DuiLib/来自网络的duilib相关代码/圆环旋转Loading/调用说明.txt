@@ -1,0 +1,15 @@
+xml…Ë÷√£∫
+<Rotate name="RTA_LOADING" float="true" visible="false" pos="475,325,0,0" width="114" height="114" bkimage="busy_dark.png"/>
+
+cpp µœ÷£∫
+CControlUI* CMainWnd::CreateControl(LPCTSTR pstrClass)
+{
+	if (_tcsicmp(pstrClass, _T("Rotate")) == 0)
+	{
+		return new CRotateUI();
+	}
+	return NULL;
+}
+
+
+QQ:115452278

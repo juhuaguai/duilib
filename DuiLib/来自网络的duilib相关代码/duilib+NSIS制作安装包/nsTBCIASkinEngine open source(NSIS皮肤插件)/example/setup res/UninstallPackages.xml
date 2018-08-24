@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<Window size="501,363" caption="0,0,0,35" mininfo="501,363" maxinfo="501,363" roundcorner="6,6">
+    <Font name="宋体" size="12" bold="true" italic="false" />
+    <Font name="SimSun" size="12" bold="true" italic="false" />
+    <Font name="SimSun" size="12" bold="false" italic="false" default="true" />
+    <Default name="VScrollBar" value="button1normalimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,0,16,16&apos;&quot; button1hotimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,0,16,16&apos; mask=&apos;#FFFF00FF&apos;&quot; button1pushedimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,16,16,32&apos; mask=&apos;#FFFF00FF&apos;&quot; button1disabledimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,0,16,16&apos; mask=&apos;#FFFF00FF&apos;&quot; button2normalimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,32,16,48&apos; mask=&apos;#FFFF00FF&apos;&quot; button2hotimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,32,16,48&apos; mask=&apos;#FFFF00FF&apos;&quot; button2pushedimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,48,16,64&apos; mask=&apos;#FFFF00FF&apos;&quot; button2disabledimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,32,16,48&apos; mask=&apos;#FFFF00FF&apos;&quot; thumbnormalimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,64,16,80&apos; corner=&apos;2,2,2,2&apos; mask=&apos;#FFFF00FF&apos;&quot; thumbhotimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,64,16,80&apos; corner=&apos;2,2,2,2&apos; mask=&apos;#FFFF00FF&apos;&quot; thumbpushedimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,112,16,128&apos; corner=&apos;2,2,2,2&apos; mask=&apos;#FFFF00FF&apos;&quot; thumbdisabledimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,64,16,80&apos; corner=&apos;2,2,2,2&apos; mask=&apos;#FFFF00FF&apos;&quot; railnormalimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,80,16,96&apos; corner=&apos;2,2,2,2&apos; mask=&apos;#FFFF00FF&apos;&quot; railhotimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,80,16,96&apos; corner=&apos;2,2,2,2&apos; mask=&apos;#FFFF00FF&apos;&quot; railpushedimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,96,16,112&apos; corner=&apos;2,2,2,2&apos; mask=&apos;#FFFF00FF&apos;&quot; raildisabledimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,112,16,128&apos; corner=&apos;2,2,2,2&apos; mask=&apos;#FFFF00FF&apos;&quot; bknormalimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,128,16,146&apos; corner=&apos;2,2,2,2&apos; mask=&apos;#FFFF00FF&apos;&quot; bkhotimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,128,16,146&apos; corner=&apos;2,2,2,2&apos; mask=&apos;#FFFF00FF&apos;&quot; bkpushedimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,128,16,146&apos; corner=&apos;2,2,2,2&apos; mask=&apos;#FFFF00FF&apos;&quot; bkdisabledimage=&quot;file=&apos;scroll.png&apos; source=&apos;0,128,16,146&apos; corner=&apos;2,2,2,2&apos; mask=&apos;#FFFF00FF&apos;&quot; " />
+    <Container name="ContainerUI1" width="60" height="30">
+        <VerticalLayout name="VerticalLayoutUI1" width="60" height="30" bkimage="安装背景.png">
+            <VerticalLayout name="VerticalLayoutUI2" width="503" height="33">
+                <Button name="Wizard_CloseBtn" float="true" pos="454,1,0,0" width="39" height="20" textcolor="#00FF0000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="btn_close_normal.png" hotimage="btn_close_highlight.png" pushedimage="btn_close_down.png" />
+                <Button name="Wizard_MinBtn" float="true" pos="426,1,0,0" width="28" height="20" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="btn_mini_normal.png" hotimage="btn_mini_highlight.png" pushedimage="btn_mini_down.png" />              
+                <Label name="TitleTextLab" text="360Safe卸载向导" float="true" pos="44,5,0,0" width="225" height="23" textcolor="#00000000" disabledtextcolor="#FFA7A6AA"  />
+                <Label name="LabelUI1" float="true" pos="9,5,0,0" width="33" height="24" bkimage="logo.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />      
+            </VerticalLayout>
+            <VerticalLayout name="VerticalLayoutUI4" width="503" height="330">
+                <TabLayout name="WizardTab" width="503" height="330" >
+                    <VerticalLayout name="VerticalLayoutUI12" width="503" height="330">
+                        <Button name="UninstallBtn4UninstallPage" text="卸载" float="true" pos="309,268,0,0" width="80" height="28" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="按钮normal.png" hotimage="按钮hot.png" pushedimage="按钮hot.png" />
+                        <Button name="CancelBtn4UninstallPage" text="取消" float="true" pos="396,268,0,0" width="80" height="28" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="按钮normal.png" hotimage="按钮hot.png" pushedimage="按钮hot.png" />
+                        <Label name="LabelUI2" text="确定要从您的计算机中卸载360Safe？" float="true" pos="32,36,0,0" width="304" height="30" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                        <Label name="LabelUI3" float="true" bkimage="uninstall_bkg.png" pos="32,88,0,0" width="250" height="160" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                    </VerticalLayout>
+                    <VerticalLayout name="VerticalLayoutUI13" width="503" height="330">
+                        <Label name="UninstallTitleLab" float="true" pos="38,23,0,0" width="133" height="31" bkimage="正在卸载.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                        <Progress name="Wizard_UninstallProgress" float="true" pos="22,263,0,0" width="459" height="22" bkimage="精度条背景.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" foreimage="精度条.png" min="0" max="30000" value="50" hor="true" />
+                        <Label name="Wizard_BackgroundUninstallPage" float="true" pos="2,74,0,0" width="501" height="163" bkimage="内嵌背景4Page3_1.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                    </VerticalLayout>
+                    <VerticalLayout name="VerticalLayoutUI14" width="503" height="330">
+                        <Label name="LabelUI1" text="360Safe已从您的计算机中移除。" float="true" pos="32,36,0,0" width="254" height="30" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                        <Label name="LabelUI11" text="请点击“完成”退出。" float="true" pos="32,71,0,0" width="258" height="30" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                        <Label name="LabelUI9" text="欢迎登录官方网站了解更多安全产品介绍 &lt;u&gt;&lt;c #00ff8000&gt;http://110.taobao.com&lt;/c&gt;&lt;/u&gt;" float="true" pos="32,276,0,0" width="380" height="18" textcolor="#005A5A5A" disabledtextcolor="#FFA7A6AA" showhtml="true" />
+                        <Button name="Wizard_110Btn4UninstallPage" float="true" pos="248,276,0,0" width="116" height="18" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+                        <Button name="FinishedBtn4UninstallPage" text="完成" float="true" pos="390,271,0,0" width="80" height="28" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="按钮normal.png" hotimage="按钮hot.png" pushedimage="按钮hot.png" />
+                    </VerticalLayout>
+                </TabLayout>
+            </VerticalLayout>
+        </VerticalLayout>
+    </Container>
+</Window>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>  
+
+<Window size="216,176">
+	<Font name="黑体" size="16" />
+	<Default name="Option" value="bkcolor=&quot;#FFFFFFFF&quot; hotimage=&quot;btn\btn_day_hot.png&quot; pushedimage=&quot;btn\btn_day_down.png&quot; selectedimage=&quot;btn\btn_day_hot.png&quot; selectedpushedimage=&quot;btn\btn_day_down.png&quot; disabledtextcolor=&quot;#FF80B4E6&quot; group=&quot;day&quot;"></Default>
+	<VerticalLayout bordersize="1" focusbordercolor="#FF000000" bkcolor="#FFFFFFFF">
+		<HorizontalLayout height="35">
+			<Button name="btnBeforeYear" text="<<" font="0" textcolor="#FF000000" hottextcolor="#FF0066CC" pushedtextcolor="#FF0066CC"></Button>
+			<Button name="btnBeforeMonth" text="<" font="0" textcolor="#FF000000" hottextcolor="#FF0066CC" pushedtextcolor="#FF0066CC"></Button>
+			<Button name="btnYears" text="2015-6" width="100" textcolor="#FF000000" hottextcolor="#FF0066CC" pushedtextcolor="#FF0066CC"></Button>
+			<Button name="btnNextMonth" text=">" font="0" textcolor="#FF000000" hottextcolor="#FF0066CC" pushedtextcolor="#FF0066CC"></Button>
+			<Button name="btnNextYear" text=">>" font="0" textcolor="#FF000000" hottextcolor="#FF0066CC" pushedtextcolor="#FF0066CC"></Button>
+		</HorizontalLayout>
+		<HorizontalLayout height="18">
+			<Label text="周一" align="center"></Label>
+			<Label text="周二" align="center"></Label>
+			<Label text="周三" align="center"></Label>
+			<Label text="周四" align="center"></Label>
+			<Label text="周五" align="center"></Label>
+			<Label text="周六" align="center"></Label>
+			<Label text="周日" align="center"></Label>
+		</HorizontalLayout>
+		<VerticalLayout padding="1,1,1,1">
+			<HorizontalLayout>
+				<Option name="btnDay1" text="1" ></Option>
+				<Option name="btnDay2" text="1" ></Option>
+				<Option name="btnDay3" text="1" ></Option>
+				<Option name="btnDay4" text="1" ></Option>
+				<Option name="btnDay5" text="1" ></Option>
+				<Option name="btnDay6" text="1" ></Option>
+				<Option name="btnDay7" text="1" ></Option>
+			</HorizontalLayout>
+			<HorizontalLayout>
+				<Option name="btnDay8" text="1" ></Option>
+				<Option name="btnDay9" text="1" ></Option>
+				<Option name="btnDay10" text="1" ></Option>
+				<Option name="btnDay11" text="1" ></Option>
+				<Option name="btnDay12" text="1" ></Option>
+				<Option name="btnDay13" text="1" ></Option>
+				<Option name="btnDay14" text="1" ></Option>
+			</HorizontalLayout>
+			<HorizontalLayout>
+				<Option name="btnDay15" text="1" ></Option>
+				<Option name="btnDay16" text="1" ></Option>
+				<Option name="btnDay17" text="1" ></Option>
+				<Option name="btnDay18" text="1" ></Option>
+				<Option name="btnDay19" text="1" ></Option>
+				<Option name="btnDay20" text="1" ></Option>
+				<Option name="btnDay21" text="1" ></Option>
+			</HorizontalLayout>
+			<HorizontalLayout>
+				<Option name="btnDay22" text="1"  ></Option>
+				<Option name="btnDay23" text="1"  ></Option>
+				<Option name="btnDay24" text="1"  ></Option>
+				<Option name="btnDay25" text="1"  ></Option>
+				<Option name="btnDay26" text="1"  ></Option>
+				<Option name="btnDay27" text="1"  ></Option>
+				<Option name="btnDay28" text="1"  ></Option>
+			</HorizontalLayout>
+			<HorizontalLayout>
+				<Option name="btnDay29" text="1"  ></Option>
+				<Option name="btnDay30" text="1"  ></Option>
+				<Option name="btnDay31" text="1"  ></Option>
+				<Option name="btnDay32" text="1"  ></Option>
+				<Option name="btnDay33" text="1"  ></Option>
+				<Option name="btnDay34" text="1"  ></Option>
+				<Option name="btnDay35" text="1"  ></Option>
+			</HorizontalLayout>			
+			<HorizontalLayout>
+				<Option name="btnDay36" text="1"  ></Option>
+				<Option name="btnDay37" text="1"  ></Option>
+				<Option name="btnDay38" text="1"  ></Option>
+				<Option name="btnDay39" text="1"  ></Option>
+				<Option name="btnDay40" text="1"  ></Option>
+				<Option name="btnDay41" text="1"  ></Option>
+				<Option name="btnDay42" text="1"  ></Option>
+			</HorizontalLayout>			
+		</VerticalLayout>
+	</VerticalLayout>
+</Window>

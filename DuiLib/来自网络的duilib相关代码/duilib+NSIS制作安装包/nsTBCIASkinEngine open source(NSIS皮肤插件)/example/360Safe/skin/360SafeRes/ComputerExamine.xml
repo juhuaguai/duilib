@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Window>
+  <HorizontalLayout>
+    <VerticalLayout>
+      <HorizontalLayout height="100" inset="1,1,0,0">
+        <Container bkimage="examine_background.bmp">
+          <Control bkimage="file='start.png' dest='14,14,69,69,'"/>
+          <Text text="{f 3}您已经有{/f}{f 4}{c #F27D30}8{/c}{/f}{f 3}天没有体检了！{/f}{n}上次体检得分{c #F27D30}{x 4}11{x 4}{/c}分，共发现{c #F27D30}{x 4}4{x 4}{/c}个问题，建议您立即体检。" pos="80, 20, 500, 100" float="true" showhtml="true"/>
+        </Container>
+      </HorizontalLayout>
+      <HorizontalLayout inset="20,4,20,0">
+        <Text text="{p}{c #999999}360体检将对您的电脑系统进行快速一键扫描，对木马病毒、系统漏洞、恶意插件等问题进行修复，并全面解决潜在的安全风险，提高您的电脑运行速度。{/c}{/p}" showhtml="true"/>
+        <Button pos="200, 135, 340, 188" relativepos="50,50,0,0"  float="true" normalimage="file='scanbutton.png' source='0,0,140,53'" hotimage="file='scanbutton.png' source='140,0,280,53'" pushedimage="file='scanbutton.png' source='280,0,420,53'"/>
+      </HorizontalLayout>
+    </VerticalLayout>
+    <VerticalLayout width="1" inset="0,1,0,1">
+      <Container bkimage="vertical_border.bmp" />
+    </VerticalLayout>
+    <VerticalLayout width="250" inset="8,15,8,15">
+      <HorizontalLayout height="160">
+        <Control bkimage="firewall_ok.png" maxheight="48" maxwidth="47"/>
+        <Text text="{p}{c #2F6F95}{b}木马防火墙正在保护电脑{/b}{/c}{y 20}{n}已拦截系统攻击{c #F27D30}2{/c}次{/p}" pos="57, 0, 250, 50" float="true" showhtml="true"/>
+        <Button text="查看" pos="192,35,228,55" float="true" textcolor="#FF0680C9" normalimage="button_normal.png" hotimage="button_hover.png" pushedimage="button_pushed.png" />
+        <Text text="{p}推荐您清理一下电脑的垃圾文件，清理后能{y 15}{n}释放磁盘空间，提高电脑速度。{/p}" pos="0, 60, 250, 150" float="true" showhtml="true"/>
+        <Button text="立即清理" pos="162,120,228,142" float="true" textcolor="#FF0680C9" normalimage="button_normal.png" hotimage="button_hover.png" pushedimage="button_pushed.png" />
+      </HorizontalLayout>
+      <HorizontalLayout height="1">
+        <Container bkimage="horizontal_border.bmp" />
+      </HorizontalLayout>
+      <VerticalLayout height="130" inset="10,10,10,10">
+        <Text text="{b}{f 1}功能导航{/f}{b}" pos="0, 13, 100, 28" float="true" showhtml="true"/>
+        <Option text="1" pos="150,10,168,28" float="true" normalimage="file='navigationbar.bmp' source='0,0,18,18'" selectedimage="file='navigationbar.bmp' source='18,0,36,18'" group="true"/>
+        <Option text="2" pos="170,10,188,28" float="true" normalimage="file='navigationbar.bmp' source='0,0,18,18'" selectedimage="file='navigationbar.bmp' source='18,0,36,18'" group="true"/>
+        <Option text="3" pos="190,10,208,28" float="true" normalimage="file='navigationbar.bmp' source='0,0,18,18'" selectedimage="file='navigationbar.bmp' source='18,0,36,18'" group="true"/>
+        <Option text="4" pos="210,10,228,28" float="true" normalimage="file='navigationbar.bmp' source='0,0,18,18'" selectedimage="file='navigationbar.bmp' source='18,0,36,18'" group="true"/>
+        <Text text="{p}{f 5}桌面图标出现异常？{y 20}{n}网络速度越来越慢？{y 20}{n}浏览器访问速度慢？{y 20}{n}开机启动速度太慢？{y 20}{/f}{/p}" pos="0, 28, 200, 208" float="true" showhtml="true"/>
+        <Text text="{p}{f 5}使用{c #0680C9}系统修复{/c}{y 20}{n}使用{c #0680C9}流量监控{/c}{y 20}{n}使用{c #0680C9}插件管理{/c}{y 20}{n}使用{c #0680C9}开机加速{/c}{y 20}{/f}{/p}" pos="150, 28, 400, 208" float="true" showhtml="true"/>
+      </VerticalLayout>
+      <HorizontalLayout height="1">
+        <Container bkimage="horizontal_border.bmp" />
+      </HorizontalLayout>
+      <VerticalLayout>
+        <Text text="{b}{f 1}官方日志{/f}{b}" pos="0, 13, 100, 28" float="true" showhtml="true"/>
+        <Text text="{p}{c #F27D30}QQ和360已恢复兼容，感谢有您！{/c}{y 20}{n}360董事长周鸿祎：不得不说的话{y 20}{n}360全球首创人工智能杀毒引擎{y 20}{n}电脑卡、慢？专家为你解决，只需20元{y 20}{/p}" pos="0, 28, 300, 500" float="true" showhtml="true"/>
+      </VerticalLayout>
+    </VerticalLayout>
+  </HorizontalLayout>
+</Window>

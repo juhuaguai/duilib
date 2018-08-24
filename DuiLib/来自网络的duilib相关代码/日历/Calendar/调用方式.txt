@@ -1,0 +1,19 @@
+调用方式和menu调用方式一样
+RECT rc = msg.pSender->GetPos();
+            POINT pt;
+            pt.x = rc.left;
+            pt.y = rc.bottom;
+            ::ClientToScreen(this->GetHWND(), &pt);
+            CalenderWnd *pCalender = new CalenderWnd(pt);
+            std::vector<SYSTEMTIME> vectTime;
+            for (int i = 10; i < 20; i++)
+            {
+                SYSTEMTIME sysTime;
+                sysTime.wYear = 2015;
+                sysTime.wMonth = 6;
+                sysTime.wDay = i;
+                vectTime.push_back(sysTime);
+            }
+            pCalender->SetTagTime(vectTime);//传入需要标记的日期
+            pCalender->Create(this->m_hWnd, _T("calender"), UI_WNDSTYLE_DIALOG, 0);
+            pCalender->ShowWindow();

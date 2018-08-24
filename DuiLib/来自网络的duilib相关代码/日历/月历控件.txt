@@ -1,0 +1,217 @@
+IT行业发展迅速，到了vc2010的时候，对时间与月历控件的使用已经推及到属性的设置。但是初学者不应该一开始就接触高级的编译器，学习原理和基础的学者最好是从C++和VC6开始。其实不论从哪里开始也好，“学好一门语言，精通一个编译器，实现计算机的一通百通”是我从别人哪里得到的信息，并作为学习的指南。此路走的通，也希望后继者走下去。
+又或者，困难的本身不在于难懂，而在于你的选择。
+介绍用法：
+///////////时间与月历控件
+风格：
+DTS_APPCANPARSE  // 
+DTS_LONGDATEFORMAT  //创建长时间，像 "Friday, April 19, 1996." 
+注意：：：//要获得使用所有的语言环境中，长日期格式EnumDateFormats ， EnumDateFormatsEx ，或EnumDateFormatsExEx 。
+DTS_SHOWNONE //可选需要用的日期风格，
+复选框能被DTM_SETSYSTEMTIME或 DTM_GETSYSTEMTIME  获得
+DTS_SHORTDATEFORMAT   //创建短时间。像"4/19/96."  
+DTS_TIMEFORMAT  //创建有旋转按钮，显示时间的，可以编辑的"5:31:42 PM."
+DTS_UPDOWN  //创建有旋转按钮，不能拉下的，没复选框的日期风格
+
+1、DTM_GETMONTHCAL      //获取日期时间控件的日历子窗口的句柄
+    wParam = 0;
+    lParam = 0;
+
+2、DTM_GETMCCOLOR  //获得日历时间控件的日历子窗口的颜色、
+    wParam = (WPARAM)(INT)iColor; //
+    lParam = 0;
+iColor; 的值：
+MCSC_BACKGROUND  检索月份之间的背景颜色显示出来。 
+MCSC_MONTHBK MCSC_MONTHBK  背景颜色检索在本月内显示出来。 
+MCSC_TEXT MCSC_TEXT  检索用于显示在一个月内文本的颜色。 
+MCSC_TITLEBK MCSC_TITLEBK 检索背景颜色在日历的标题显示出来。 
+MCSC_TITLETEXT MCSC_TITLETEXT  .检索用来显示在日历的标题文字的颜色。 
+MCSC_TRAILINGTEXT MCSC_TRAILINGTEXT 检索使用的颜色来显示头一天和后一天的文本头和尾部天数由以前的和随后的几个月里，关于当前月份的日历出现的日子。 
+ 
+返回COLORREF ：
+3、DTM_GETMCFONT    //获得日历时间控件的日历子窗口的字体
+    wParam = 0;
+    lParam = 0;
+
+4、DTM_GETRANGE     //取得日历时间控件的最大和最小时间
+    wParam = 0;
+    lParam = (LPARAM) lpSysTimeArray;
+返回一个DWORD值，它是GDTR_MAX组合GDTR_MIN或。第一个元素SYSTEMTIME数组包含最低限度的时间第二个元素的数组的SYSTEMTIME包含的最大的允许时间。
+
+
+5、DTM_GETSYSTEMTIME   //检目前的时间，和填充systime指针
+    wParam = 0;
+    lParam = (LPARAM) lpSysTime;
+
+返回值：
+
+返回一个 DWORD值，等于GDT_VALID如果时间信息被成功结构放置在指定的;
+或消息可以返回GDT_NONE如果控制被设置为DTS_SHOWNONE风格和控制复选框未被选中。 
+
+6、DTM_SETFORMAT     //设置日期时间选择器的格式
+    wParam = 0;
+    lParam = (LPARAM) lpszFormat;
+
+预设的格式有三种可供显示的日期和时间的显示
+DTS_LONGDATEFORMAT  显示将是这样的：“星期五，1996年4月19日”。  
+DTS_SHORTDATEFORMAT 显示将是这样的：“4/19/96”。  
+DTS_SHORTDATECENTURYFORMAT 显示将是这样的：“1996年4月19日”。  
+DTS_TIMEFORMAT DTS_TIMEFORMAT  显示将是这样的：“下午五时31分42秒”。  
+
+日期和时间格式元素将被替换为实际的日期和时间他们被定义为以下组的字符。  
+"d"  一个或两个数字的日期。. 
+"dd"  这两个数字的日期。单数天数的前面加一个零。. 
+"ddd"  三个字符的星期几的缩写。 
+"dddd"  完整的星期名称。
+"h"   在12小时格式的一位或两位数小时。 
+"hh"   在12小时格式的两位数小时.一位数数值前面加一个零。 
+"H"   以24小时格式的一位或两位数小时。
+"HH"   以24小时格式的两位数小时。一位数数值前面加一个零
+"m"  一个或两位数分钟
+"mm"  这两个数字的分钟。 一位数数值前面加一个零。
+"M"  一个或两个数字的月份数。
+"MM"  这两个数字的月份数。 一位数数值前面加一个零。 
+"MMM"  这三个字符的月份缩写。 
+"MMMM"  完整的月份名称。 
+"t"  单字母AM / PM缩写（即上午为“A”显示）。
+"tt"  这两个字母的AM / PM缩写（即上午为“AM”显示）。 
+"X"   //？？
+"y"  年份的最后一个数字 (即1996年将作为“6”显示). 
+"yy"  最后两位数字的年份（即1996年将作为“96”显示）。 
+"yyy"  完整的年份（即1996年将作为“1996年”显示）。 
+
+
+7、DTM_SETMCCOLOR     //设置日期时间选择器的日历控件颜色，返回先前的颜色
+    wParam = (WPARAM)(INT) iColor;
+    lParam = (LPARAM)(COLORREF) clr;
+8、DTM_SETMCFONT    //设置日期时间选择器的日历控件字体，fRedraw是是否立即重绘
+    wParam = (WPARAM)(HFONT) hFont;
+    lParam = (LPARAM) MAKELONG(fRedraw, 0);
+9、DTM_SETRANGE     //设置时间的最大最小值
+    wParam = (WPARAM) flags;
+    lParam = (LPARAM) lpSysTimeArray;
+
+10DTM_SETSYSTEMTIME             //设置时间。参考DTM_GETSYSTEMTIME   
+    wParam = (WPARAM) flag;
+    lParam = (LPARAM) lpSysTime;
+
+
+
+////////////////////////月历控件
+1、创建 窗口类MONTHCAL_CLASS   使用SetWindowPos改变大小
+2、风格：
+MCS_DAYSTATE     //标记选择的日期。有黑体阴影
+MCS_MULTISELECT   //选中范围 
+MCS_WEEKNUMBERS     //显示周数
+MCS_NOTODAYCIRCLE    //不圈今天
+MCS_NOTODAY         //不显示今天
+MCS_NOSELCHANGEONNAV
+MCS_NOTRAILINGDATES 
+MCS_SHORTDAYSOFWEEK 
+
+3、通知消息：
+
+（1）MCM_GETCOLOR     //获得颜色
+    wParam = (WPARAM)(INT)iColor;
+    lParam = 0;
+
+iColor的值：
+MCSC_BACKGROUND  //月之间的背景 
+MCSC_MONTHBK  //背景 
+MCSC_TEXT  //字体. 
+MCSC_TITLEBK  //标题 
+MCSC_TITLETEXT //标题
+MCSC_TRAILINGTEXT  //
+
+（2）MCM_GETCURSEL    //获得当前选中的日期
+    wParam = 0;
+    lParam = (LPARAM) (LPSYSTEMTIME) lpSysTime;
+
+（3）MCM_GETFIRSTDAYOFWEEK     //获得一个月的第一天
+    wParam = 0;
+    lParam = 0;
+
+（4）MCM_GETMAXSELCOUNT     //获得最大最小时间的范围
+    wParam = 0;
+    lParam = 0;
+
+（5）MCM_GETMAXTODAYWIDTH    //获得今天的宽度
+    wParam = 0;
+    lParam = 0;
+
+（6）
+MCM_GETMINREQRECT     //检索所需的最小尺寸显示在月历控制整整一个月。
+    wParam = 0;
+    lParam = (LPARAM) (LPRECT) lpRectInfo;
+
+（7）MCM_GETMONTHDELTA   //检索滚动月历控制率。 滚动速度的月数
+    wParam = 0;
+    lParam = 0;
+
+（8）MCM_GETMONTHRANGE   //获取最新的信息（使用SYSTEMTIME结构）表示月历控件的显示的上限和下限的。
+    wParam = (WPARAM)(DWORD) dwFlag;
+    lParam = (LPARAM)(LPSYSTEMTIME) lprgSysTimeArray;
+
+（9）MCM_GETRANGE    //检索一个月日历控件设置最小和最大允许的日期。
+    wParam = 0;
+    lParam = (LPARAM)(LPSYSTEMTIME) lprgSysTimeArray;
+
+（10）MCM_GETSELRANGE  //获取最新信息，表示日期的上限和下限范围目前由用户选择。
+    wParam = 0;
+    lParam = (LPARAM)(LPSYSTEMTIME) lprgSysTimeArray;
+
+（11） //检索作为“今天”指定月历控制日期的信息。
+MCM_GETTODAY
+    wParam = 0;
+    lParam = (LPARAM)(LPSYSTEMTIME) lpToday;
+
+（12）MCM_GETUNICODEFORMAT    //获得格式
+    wParam = 0;
+    lParam = 0;
+
+（13）MCM_HITTEST    //决定了一个月历控制部分是在屏幕上的一个特定点
+    wParam = 0;
+    lParam = (LPARAM)(PMCHITTESTINFO) pMCHitTest;
+
+（14）MCM_SETCOLOR   //设置颜色
+    wParam = (WPARAM)(INT) iColor;
+    lParam = (LPARAM)(COLORREF) clr;
+
+（15）MCM_SETCURSEL   //设置选中
+    wParam = 0;
+    lParam = (LPARAM)(LPSYSTEMTIME) lpSysTime;
+
+（16）MCM_SETDAYSTATE     //集目前所有月份的日历控件在一个月内每天可见的状态。
+    wParam = (WPARAM) iMonths;
+    lParam = (LPARAM)(LPMONTHDAYSTATE) lpDayStateArray;
+
+（17）MCM_SETFIRSTDAYOFWEEK   //设置第一天
+    wParam = 0;
+    lParam = (LPARAM)(INT) iDay;
+
+（18）MCM_SETMAXSELCOUNT    //设置可以选择的最大天数
+    wParam = (WPARAM)(INT) iMax;
+    lParam = 0;
+
+（19）MCM_SETMONTHDELTA   //设置滚动的月数
+    wParam = (WPARAM)(INT) iDelta;
+    lParam = 0;
+
+（20）MCM_SETRANGE   //设置最大最小的选择范围
+    wParam = (WPARAM)(SHORT) fWhichLimit;
+    lParam = (LPARAM)(LPSYSTEMTIME) lprgSysTimeArray;
+
+(21)MCM_SETSELRANGE   //设置了一个月的日历控件到一个指定日期范围内选择
+    wParam = 0;
+    lParam = (LPARAM)(LPSYSTEMTIME) lprgSysTimeArray;
+
+
+(22)MCM_SETTODAY    //设置今天
+    wParam = 0;
+    lParam = (LPARAM)(LPSYSTEMTIME) lpSysTime;
+
+（23）MCM_SETUNICODEFORMAT    //设置格式
+    wParam = (WPARAM)(BOOL)fUnicode;
+    lParam = 0;
+
+（24） MCM_GETCALENDARBORDER   //获得边框
+
