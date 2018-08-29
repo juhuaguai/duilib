@@ -4,7 +4,7 @@
 namespace DuiLib
 {
 	CTileLayoutUI::CTileLayoutUI() : m_nColumns(1), m_nRows(0), m_nColumnsFixed(0), m_iChildVPadding(0),
-		m_bIgnoreItemPadding(true)
+		m_bIgnoreItemPadding(true),m_nRowsFixed(0)
 	{
 		m_szItem.cx = m_szItem.cy = 80;
 	}
@@ -29,6 +29,18 @@ namespace DuiLib
 	{
 		if( iColums < 0 ) return;
 		m_nColumnsFixed = iColums;
+		NeedUpdate();
+	}
+
+	int CTileLayoutUI::GetFixedRows() const
+	{
+		return m_nRowsFixed;
+	}
+
+	void CTileLayoutUI::SetFixedRows(int iRows)
+	{
+		if( iRows < 0 ) return;
+		m_nRowsFixed = iRows;
 		NeedUpdate();
 	}
 
@@ -77,10 +89,40 @@ namespace DuiLib
 			SetItemSize(szItem);
 		}
 		else if( _tcscmp(pstrName, _T("columns")) == 0 ) SetFixedColumns(_ttoi(pstrValue));
+		else if( _tcscmp(pstrName, _T("rows")) == 0 ) SetFixedRows(_ttoi(pstrValue));
 		else if( _tcscmp(pstrName, _T("childvpadding")) == 0 ) SetChildVPadding(_ttoi(pstrValue));
 		else CContainerUI::SetAttribute(pstrName, pstrValue);
 	}
 
+	bool CTileLayoutUI::Add(CControlUI* pControl)
+	{
+		if( pControl == NULL) return false;
+
+		int nMax = m_nRowsFixed * m_nColumnsFixed;
+		if (nMax>0 && GetCount()==nMax)
+			return false;
+
+		if( m_pManager != NULL ) m_pManager->InitControls(pControl, this);
+		if( IsVisible() ) NeedUpdate();
+		else pControl->SetInternVisible(false);
+		return m_items.Add(pControl);   
+	}
+
+	bool CTileLayoutUI::AddAt(CControlUI* pControl, int iIndex)
+	{
+		if( pControl == NULL) return false;
+
+		int nMax = m_nRowsFixed * m_nColumnsFixed;
+		if (nMax>0 && GetCount()==nMax)
+			return false;
+
+		if( m_pManager != NULL ) m_pManager->InitControls(pControl, this);
+		if( IsVisible() ) NeedUpdate();
+		else pControl->SetInternVisible(false);
+		return m_items.InsertAt(iIndex, pControl);
+	}
+
+#if 0
 	void CTileLayoutUI::SetPos(RECT rc, bool bNeedInvalidate)
 	{
 		CControlUI::SetPos(rc, bNeedInvalidate);
@@ -338,4 +380,286 @@ namespace DuiLib
 	//	// Process the scrollbar
 	//	ProcessScrollBar(rc, 0, cyNeeded);
 	}
+#else
+	void CTileLayoutUI::SetPos(RECT rc, bool bNeedInvalidate)
+	{
+		CControlUI::SetPos(rc, bNeedInvalidate);
+		rc = m_rcItem;
+
+		// Adjust for inset
+		rc.left += m_rcInset.left;
+		rc.top += m_rcInset.top;
+		rc.right -= m_rcInset.right;
+		rc.bottom -= m_rcInset.bottom;
+		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetFixedWidth();
+		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+
+		if( m_items.GetSize() == 0) {
+			ProcessScrollBar(rc, 0, 0);
+			return;
+		}
+
+		// Determine the minimum size
+		SIZE szAvailable = { rc.right - rc.left, rc.bottom - rc.top };
+		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) 
+			szAvailable.cx += m_pHorizontalScrollBar->GetScrollRange();
+		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) 
+			szAvailable.cy += m_pVerticalScrollBar->GetScrollRange();
+
+		int nEstimateNum = 0;
+		for( int it = 0; it < m_items.GetSize(); it++ ) {
+			CControlUI* pControl = static_cast<CControlUI*>(m_items[it]);
+			if( !pControl->IsVisible() ) continue;
+			if( pControl->IsFloat() ) continue;
+			nEstimateNum++;
+		}
+
+		if (m_nRowsFixed<=0)
+		{
+			int cxNeeded = 0;
+			int cyNeeded = 0;
+			int iChildPadding = m_iChildPadding;
+			if (m_nColumnsFixed == 0) { 
+				if (rc.right - rc.left >= m_szItem.cx) {
+					m_nColumns = (rc.right - rc.left)/m_szItem.cx;
+					cxNeeded = rc.right - rc.left;
+					if (m_nColumns > 1) {
+						if (iChildPadding <= 0) {
+							iChildPadding = (cxNeeded-m_nColumns*m_szItem.cx)/(m_nColumns-1);
+						}
+						if (iChildPadding < 0) iChildPadding = 0;
+					}
+					else {
+						iChildPadding = 0;
+					}
+				}
+				else {
+					m_nColumns = 1;
+					cxNeeded = m_szItem.cx;
+				}
+
+				m_nRows = (nEstimateNum-1)/m_nColumns+1;
+				cyNeeded = m_nRows*m_szItem.cy + (m_nRows-1)*m_iChildVPadding;
+			}
+			else {
+				m_nColumns = m_nColumnsFixed;
+				if (m_nColumns > 1) {
+					if (iChildPadding <= 0) {
+						if (m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() && rc.right - rc.left >= m_nColumns*m_szItem.cx) {
+							iChildPadding = (rc.right - rc.left-m_nColumns*m_szItem.cx)/(m_nColumns-1);
+						}
+						else {
+							iChildPadding = (szAvailable.cx-m_nColumns*m_szItem.cx)/(m_nColumns-1);
+						}
+					}
+					if (iChildPadding < 0) iChildPadding = 0;
+				}
+				else iChildPadding = 0;
+
+				if (nEstimateNum >= m_nColumns) cxNeeded = m_nColumns*m_szItem.cx + (m_nColumns-1)*iChildPadding;
+				else cxNeeded = nEstimateNum*m_szItem.cx + (nEstimateNum-1)*iChildPadding;
+				m_nRows = (nEstimateNum-1)/m_nColumns+1;
+				cyNeeded = m_nRows*m_szItem.cy + (m_nRows-1)*m_iChildVPadding;
+			}
+
+			for( int it1 = 0; it1 < m_items.GetSize(); it1++ ) {
+				CControlUI* pControl = static_cast<CControlUI*>(m_items[it1]);
+				if( !pControl->IsVisible() ) continue;
+				if( pControl->IsFloat() ) {
+					SetFloatPos(it1);
+					continue;
+				}
+
+				RECT rcPadding = pControl->GetPadding();
+				SIZE sz = m_szItem;
+				sz.cx -= rcPadding.left + rcPadding.right;
+				sz.cy -= rcPadding.top + rcPadding.bottom;
+				if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
+				if( sz.cy > pControl->GetMaxHeight() ) sz.cy = pControl->GetMaxHeight();
+				if( sz.cx < 0) sz.cx = 0;
+				if( sz.cy < 0) sz.cy = 0;
+
+				UINT iChildAlign = GetChildAlign(); 
+				UINT iChildVAlign = GetChildVAlign();
+				int iColumnIndex = it1/m_nColumns;
+				int iRowIndex = it1%m_nColumns;
+				int iPosX = rc.left + iRowIndex*(m_szItem.cx+iChildPadding);
+				if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
+					iPosX -= m_pHorizontalScrollBar->GetScrollPos();
+				}
+				int iPosY = rc.top + iColumnIndex*(m_szItem.cy+m_iChildVPadding);
+				if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) {
+					iPosY -= m_pVerticalScrollBar->GetScrollPos();
+				}
+				if (iChildAlign == DT_CENTER) {
+					if (iChildVAlign == DT_VCENTER) {
+						RECT rcCtrl = { iPosX + (m_szItem.cx-sz.cx)/2+rcPadding.left, iPosY + (m_szItem.cy-sz.cy)/2+rcPadding.top, iPosX + (m_szItem.cx-sz.cx)/2 + sz.cx-rcPadding.right, iPosY + (m_szItem.cy-sz.cy)/2 + sz.cy-rcPadding.bottom };
+						pControl->SetPos(rcCtrl, false);
+					}
+					else if (iChildVAlign == DT_BOTTOM) {
+						RECT rcCtrl = { iPosX + (m_szItem.cx-sz.cx)/2+rcPadding.left, iPosY + m_szItem.cy - sz.cy+rcPadding.top, iPosX + (m_szItem.cx-sz.cx)/2 + sz.cx-rcPadding.right, iPosY + m_szItem.cy-rcPadding.bottom };
+						pControl->SetPos(rcCtrl, false);
+					}
+					else {
+						RECT rcCtrl = { iPosX + (m_szItem.cx-sz.cx)/2+rcPadding.left, iPosY+rcPadding.top, iPosX + (m_szItem.cx-sz.cx)/2 + sz.cx-rcPadding.right, iPosY + sz.cy-rcPadding.bottom };
+						pControl->SetPos(rcCtrl, false);
+					}
+				}
+				else if (iChildAlign == DT_RIGHT) {
+					if (iChildVAlign == DT_VCENTER) {
+						RECT rcCtrl = { iPosX + m_szItem.cx - sz.cx+rcPadding.left, iPosY + (m_szItem.cy-sz.cy)/2+rcPadding.top, iPosX + m_szItem.cx-rcPadding.right, iPosY + (m_szItem.cy-sz.cy)/2 + sz.cy-rcPadding.bottom };
+						pControl->SetPos(rcCtrl, false);
+					}
+					else if (iChildVAlign == DT_BOTTOM) {
+						RECT rcCtrl = { iPosX + m_szItem.cx - sz.cx+rcPadding.left, iPosY + m_szItem.cy - sz.cy+rcPadding.top, iPosX + m_szItem.cx-rcPadding.right, iPosY + m_szItem.cy-rcPadding.bottom };
+						pControl->SetPos(rcCtrl, false);
+					}
+					else {
+						RECT rcCtrl = { iPosX + m_szItem.cx - sz.cx+rcPadding.left, iPosY+rcPadding.top, iPosX + m_szItem.cx-rcPadding.right, iPosY + sz.cy-rcPadding.bottom };
+						pControl->SetPos(rcCtrl, false);
+					}
+				}
+				else {
+					if (iChildVAlign == DT_VCENTER) {
+						RECT rcCtrl = { iPosX+rcPadding.left, iPosY + (m_szItem.cy-sz.cy)/2+rcPadding.top, iPosX + sz.cx-rcPadding.right, iPosY + (m_szItem.cy-sz.cy)/2 + sz.cy-rcPadding.bottom };
+						pControl->SetPos(rcCtrl, false);
+					}
+					else if (iChildVAlign == DT_BOTTOM) {
+						RECT rcCtrl = { iPosX+rcPadding.left, iPosY + m_szItem.cy - sz.cy+rcPadding.top, iPosX + sz.cx-rcPadding.right, iPosY + m_szItem.cy-rcPadding.bottom };
+						pControl->SetPos(rcCtrl, false);
+					}
+					else {
+						RECT rcCtrl = { iPosX+rcPadding.left, iPosY+rcPadding.top, iPosX + sz.cx-rcPadding.right, iPosY + sz.cy-rcPadding.bottom };
+						pControl->SetPos(rcCtrl, false);
+					}
+				}
+			}
+
+			// Process the scrollbar
+			ProcessScrollBar(rc, cxNeeded, cyNeeded);
+		}
+		else	//m_nRowsFixed>0
+		{
+			int cxNeeded = 0;
+			int cyNeeded = rc.bottom-rc.top;
+			int iChildVPadding = m_iChildVPadding;
+			int iChildPadding = m_iChildPadding;
+			
+			m_nRows = m_nRowsFixed;
+			if (m_nRows > 1) 
+			{
+				if (iChildVPadding <= 0) 
+				{
+					if (m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() && rc.bottom - rc.top >= m_nRows*m_szItem.cy)
+						iChildVPadding = (rc.bottom - rc.top-m_nRows*m_szItem.cy)/(m_nRows-1);
+					else
+						iChildVPadding = (szAvailable.cy-m_nRows*m_szItem.cy)/(m_nRows-1);
+				}
+				if (iChildVPadding < 0) 
+					iChildVPadding = 0;
+			}
+			else
+				iChildVPadding = 0;
+			
+			if (m_nColumnsFixed==0)
+				m_nColumns = (GetCount()+m_nRowsFixed-1)/m_nRowsFixed;
+			else
+				m_nColumns = m_nColumnsFixed;
+			cxNeeded = m_nColumns*m_szItem.cx + (m_nColumns-1)*m_iChildPadding;
+			if (m_nColumns > 1) 
+			{
+				if (iChildPadding <= 0) 
+				{
+					if (rc.right - rc.left >= m_nColumns*m_szItem.cx)
+						iChildPadding = (rc.right - rc.left-m_nColumns*m_szItem.cx)/(m_nColumns-1);
+					else 
+						iChildPadding = 0;
+				}
+				if (iChildPadding < 0)
+					iChildPadding = 0;
+			}
+			else 
+				iChildPadding = 0;		
+
+			for( int it1 = 0; it1 < m_items.GetSize(); it1++ ) 
+			{
+				CControlUI* pControl = static_cast<CControlUI*>(m_items[it1]);
+				if( !pControl->IsVisible() ) continue;
+				if( pControl->IsFloat() ) {
+					SetFloatPos(it1);
+					continue;
+				}
+
+				RECT rcPadding = pControl->GetPadding();
+				SIZE sz = m_szItem;
+				sz.cx -= rcPadding.left + rcPadding.right;
+				sz.cy -= rcPadding.top + rcPadding.bottom;
+				if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
+				if( sz.cy > pControl->GetMaxHeight() ) sz.cy = pControl->GetMaxHeight();
+				if( sz.cx < 0) sz.cx = 0;
+				if( sz.cy < 0) sz.cy = 0;
+
+				UINT iChildAlign = GetChildAlign(); 
+				UINT iChildVAlign = GetChildVAlign();
+				int iColumnIndex = it1/m_nRows;
+				int iRowIndex = it1%m_nRows;
+				int iPosX = rc.left + iColumnIndex*(m_szItem.cx+iChildPadding);
+				if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
+					iPosX -= m_pHorizontalScrollBar->GetScrollPos();
+				}
+				int iPosY = rc.top + iRowIndex*(m_szItem.cy+iChildVPadding);
+				if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) {
+					iPosY -= m_pVerticalScrollBar->GetScrollPos();
+				}
+
+				if (iChildAlign == DT_CENTER) {
+					if (iChildVAlign == DT_VCENTER) {
+						RECT rcCtrl = { iPosX + (m_szItem.cx-sz.cx)/2+rcPadding.left, iPosY + (m_szItem.cy-sz.cy)/2+rcPadding.top, iPosX + (m_szItem.cx-sz.cx)/2 + sz.cx-rcPadding.right, iPosY + (m_szItem.cy-sz.cy)/2 + sz.cy-rcPadding.bottom };
+						pControl->SetPos(rcCtrl, false);
+					}
+					else if (iChildVAlign == DT_BOTTOM) {
+						RECT rcCtrl = { iPosX + (m_szItem.cx-sz.cx)/2+rcPadding.left, iPosY + m_szItem.cy - sz.cy+rcPadding.top, iPosX + (m_szItem.cx-sz.cx)/2 + sz.cx-rcPadding.right, iPosY + m_szItem.cy-rcPadding.bottom };
+						pControl->SetPos(rcCtrl, false);
+					}
+					else {
+						RECT rcCtrl = { iPosX + (m_szItem.cx-sz.cx)/2+rcPadding.left, iPosY+rcPadding.top, iPosX + (m_szItem.cx-sz.cx)/2 + sz.cx-rcPadding.right, iPosY + sz.cy-rcPadding.bottom };
+						pControl->SetPos(rcCtrl, false);
+					}
+				}
+				else if (iChildAlign == DT_RIGHT) {
+					if (iChildVAlign == DT_VCENTER) {
+						RECT rcCtrl = { iPosX + m_szItem.cx - sz.cx+rcPadding.left, iPosY + (m_szItem.cy-sz.cy)/2+rcPadding.top, iPosX + m_szItem.cx-rcPadding.right, iPosY + (m_szItem.cy-sz.cy)/2 + sz.cy-rcPadding.bottom };
+						pControl->SetPos(rcCtrl, false);
+					}
+					else if (iChildVAlign == DT_BOTTOM) {
+						RECT rcCtrl = { iPosX + m_szItem.cx - sz.cx+rcPadding.left, iPosY + m_szItem.cy - sz.cy+rcPadding.top, iPosX + m_szItem.cx-rcPadding.right, iPosY + m_szItem.cy-rcPadding.bottom };
+						pControl->SetPos(rcCtrl, false);
+					}
+					else {
+						RECT rcCtrl = { iPosX + m_szItem.cx - sz.cx+rcPadding.left, iPosY+rcPadding.top, iPosX + m_szItem.cx-rcPadding.right, iPosY + sz.cy-rcPadding.bottom };
+						pControl->SetPos(rcCtrl, false);
+					}
+				}
+				else {
+					if (iChildVAlign == DT_VCENTER) {
+						RECT rcCtrl = { iPosX+rcPadding.left, iPosY + (m_szItem.cy-sz.cy)/2+rcPadding.top, iPosX + sz.cx-rcPadding.right, iPosY + (m_szItem.cy-sz.cy)/2 + sz.cy-rcPadding.bottom };
+						pControl->SetPos(rcCtrl, false);
+					}
+					else if (iChildVAlign == DT_BOTTOM) {
+						RECT rcCtrl = { iPosX+rcPadding.left, iPosY + m_szItem.cy - sz.cy+rcPadding.top, iPosX + sz.cx-rcPadding.right, iPosY + m_szItem.cy-rcPadding.bottom };
+						pControl->SetPos(rcCtrl, false);
+					}
+					else {
+						RECT rcCtrl = { iPosX+rcPadding.left, iPosY+rcPadding.top, iPosX + sz.cx-rcPadding.right, iPosY + sz.cy-rcPadding.bottom };
+						pControl->SetPos(rcCtrl, false);
+					}
+				}
+			}
+
+			// Process the scrollbar
+			ProcessScrollBar(rc, cxNeeded, cyNeeded);
+		}
+
+	}
+#endif
 }
