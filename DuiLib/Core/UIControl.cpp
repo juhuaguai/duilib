@@ -205,6 +205,19 @@ void CControlUI::SetBkImage(LPCTSTR pStrImage)
 	Invalidate();
 }
 
+LPCTSTR CControlUI::GetForeImage()
+{
+	return m_diFore.sDrawString;
+}
+
+void CControlUI::SetForeImage( LPCTSTR pStrImage )
+{
+	if( m_diFore.sDrawString == pStrImage && m_diFore.pImageInfo != NULL ) return;
+	m_diFore.Clear();
+	m_diFore.sDrawString = pStrImage;
+	Invalidate();
+}
+
 DWORD CControlUI::GetBorderColor() const
 {
     return m_dwBorderColor;
@@ -974,6 +987,7 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         SetBorderRound(cxyRound);
     }
     else if( _tcscmp(pstrName, _T("bkimage")) == 0 ) SetBkImage(pstrValue);
+	else if( _tcscmp(pstrName, _T("foreimage")) == 0 ) SetForeImage(pstrValue);
     else if( _tcscmp(pstrName, _T("width")) == 0 ) SetFixedWidth(_ttoi(pstrValue));
     else if( _tcscmp(pstrName, _T("height")) == 0 ) SetFixedHeight(_ttoi(pstrValue));
     else if( _tcscmp(pstrName, _T("minwidth")) == 0 ) SetMinWidth(_ttoi(pstrValue));
@@ -1114,6 +1128,7 @@ void CControlUI::PaintBkImage(HDC hDC)
 
 void CControlUI::PaintStatusImage(HDC hDC)
 {
+	DrawImage(hDC, m_diFore);
     return;
 }
 

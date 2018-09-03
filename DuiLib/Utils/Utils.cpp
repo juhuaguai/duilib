@@ -665,6 +665,7 @@ namespace DuiLib
 		return *this;
 	}
 
+	bool operator == (LPCTSTR pStr1, const CDuiString& pStr2){return 0 == _tcscmp(pStr1, pStr2.GetData());};
 	bool CDuiString::operator == (LPCTSTR str) const { return (Compare(str) == 0); };
 	bool CDuiString::operator != (LPCTSTR str) const { return (Compare(str) != 0); };
 	bool CDuiString::operator <= (LPCTSTR str) const { return (Compare(str) <= 0); };
