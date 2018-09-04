@@ -588,10 +588,10 @@ void CMenuElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
     rcText.bottom -= pInfo->rcTextPadding.bottom;
 
     if( pInfo->bShowHtml )
-        CRenderEngine::DrawHtmlText(hDC, m_pManager, rcText, m_sText, iTextColor, \
+        CRenderEngine::DrawHtmlText(hDC, m_pManager, rcText, m_sText.GetData(), iTextColor, \
         NULL, NULL, nLinks, pInfo->nFont, DT_SINGLELINE | pInfo->uTextStyle);
     else
-        CRenderEngine::DrawText(hDC, m_pManager, rcText, m_sText, iTextColor, \
+        CRenderEngine::DrawText(hDC, m_pManager, rcText, m_sText.GetData(), iTextColor, \
         pInfo->nFont, DT_SINGLELINE | pInfo->uTextStyle);
 }
 
@@ -626,10 +626,10 @@ SIZE CMenuElementUI::EstimateSize(SIZE szAvailable)
 		rcText.right -= pInfo->rcTextPadding.right;
 		if( pInfo->bShowHtml ) {   
 			int nLinks = 0;
-			CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, iTextColor, NULL, NULL, nLinks, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+			CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText.GetData(), iTextColor, NULL, NULL, nLinks, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
 		}
 		else {
-			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, iTextColor, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText.GetData(), iTextColor, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
 		}
 		cXY.cx = rcText.right - rcText.left + pInfo->rcTextPadding.left + pInfo->rcTextPadding.right + 20;
 		cXY.cy = rcText.bottom - rcText.top + pInfo->rcTextPadding.top + pInfo->rcTextPadding.bottom;

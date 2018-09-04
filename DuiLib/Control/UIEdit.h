@@ -28,7 +28,7 @@ namespace DuiLib
 		HWND GetNativeWindow() const;
 
 		void SetEnabled(bool bEnable = true);
-		void SetText(LPCTSTR pstrText);
+		void SetText(const CDuiString& strText);
 		void SetMaxChar(UINT uMax);
 		UINT GetMaxChar();
 		void SetReadOnly(bool bReadOnly);
@@ -44,20 +44,20 @@ namespace DuiLib
 		int GetWindowStyls() const;
 		HWND GetNativeEditHWND() const;
 
-		LPCTSTR GetNormalImage();
-		void SetNormalImage(LPCTSTR pStrImage);
-		LPCTSTR GetHotImage();
-		void SetHotImage(LPCTSTR pStrImage);
-		LPCTSTR GetFocusedImage();
-		void SetFocusedImage(LPCTSTR pStrImage);
-		LPCTSTR GetDisabledImage();
-		void SetDisabledImage(LPCTSTR pStrImage);
+		CDuiString GetNormalImage();
+		void SetNormalImage(const CDuiString& strImage);
+		CDuiString GetHotImage();
+		void SetHotImage(const CDuiString& strImage);
+		CDuiString GetFocusedImage();
+		void SetFocusedImage(const CDuiString& strImage);
+		CDuiString GetDisabledImage();
+		void SetDisabledImage(const CDuiString& strImage);
 		void SetNativeEditBkColor(DWORD dwBkColor);
 		DWORD GetNativeEditBkColor() const;
 
 		void SetSel(long nStartChar, long nEndChar);
 		void SetSelAll();
-		void SetReplaceSel(LPCTSTR lpszReplace);
+		void SetReplaceSel(const CDuiString& strReplace);
 
 		void SetPos(RECT rc, bool bNeedInvalidate = true);
 		void Move(SIZE szOffset, bool bNeedInvalidate = true);

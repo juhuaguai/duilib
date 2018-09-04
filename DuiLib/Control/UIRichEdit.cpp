@@ -1453,37 +1453,37 @@ CDuiString CRichEditUI::GetText() const
     return sText;
 }
 
-void CRichEditUI::SetText(LPCTSTR pstrText)
+void CRichEditUI::SetText(const CDuiString& strText)
 {
-    m_sText = pstrText;
+    m_sText = strText;
     if( !m_pTwh ) return;
     SetSel(0, -1);
-    ReplaceSel(pstrText, FALSE);
+    ReplaceSel(strText.GetData(), FALSE);
 }
 
-LPCTSTR CRichEditUI::GetFocusedImage()
+CDuiString CRichEditUI::GetFocusedImage()
 {
 	return m_diFocused.sDrawString;	
 }
 
-void CRichEditUI::SetFocusedImage(LPCTSTR pStrImage)
+void CRichEditUI::SetFocusedImage(const CDuiString& strImage)
 {
-	if( m_diFocused.sDrawString == pStrImage && m_diFocused.pImageInfo != NULL ) return;
+	if( m_diFocused.sDrawString == strImage && m_diFocused.pImageInfo != NULL ) return;
 	m_diFocused.Clear();
-	m_diFocused.sDrawString = pStrImage;
+	m_diFocused.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CRichEditUI::GetDisabledImage()
+CDuiString CRichEditUI::GetDisabledImage()
 {
 	return m_diDisabled.sDrawString;	
 }
 
-void CRichEditUI::SetDisabledImage(LPCTSTR pStrImage)
+void CRichEditUI::SetDisabledImage(const CDuiString& strImage)
 {
-	if( m_diDisabled.sDrawString == pStrImage && m_diDisabled.pImageInfo != NULL ) return;
+	if( m_diDisabled.sDrawString == strImage && m_diDisabled.pImageInfo != NULL ) return;
 	m_diDisabled.Clear();
-	m_diDisabled.sDrawString = pStrImage;
+	m_diDisabled.sDrawString = strImage;
 	Invalidate();
 }
 
@@ -1530,15 +1530,15 @@ int CRichEditUI::SetSel(long nStartChar, long nEndChar)
     return (int)lResult;
 }
 
-void CRichEditUI::ReplaceSel(LPCTSTR lpszNewText, bool bCanUndo)
+void CRichEditUI::ReplaceSel(const CDuiString& strNewText, bool bCanUndo)
 {
 #ifdef _UNICODE		
-    TxSendMessage(EM_REPLACESEL, (WPARAM) bCanUndo, (LPARAM)lpszNewText, 0); 
+    TxSendMessage(EM_REPLACESEL, (WPARAM) bCanUndo, (LPARAM)strNewText.GetData(), 0); 
 #else
-    int iLen = _tcslen(lpszNewText);
+    int iLen = _tcslen(strNewText.GetData());
     LPWSTR lpText = new WCHAR[iLen + 1];
     ::ZeroMemory(lpText, (iLen + 1) * sizeof(WCHAR));
-    ::MultiByteToWideChar(CP_ACP, 0, lpszNewText, -1, (LPWSTR)lpText, iLen) ;
+    ::MultiByteToWideChar(CP_ACP, 0, strNewText.GetData(), -1, (LPWSTR)lpText, iLen) ;
     TxSendMessage(EM_REPLACESEL, (WPARAM) bCanUndo, (LPARAM)lpText, 0); 
     delete[] lpText;
 #endif

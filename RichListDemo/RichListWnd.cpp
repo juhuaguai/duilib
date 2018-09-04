@@ -31,7 +31,7 @@ void CPage1::OnClick(TNotifyUI& msg)
 		if(find_ctrl)
 		{
 			MessageBox(NULL, 
-				find_ctrl->GetText()+_T(" 演示未选中行中的按钮触发动作，依该按钮父结点的找到所属行listcontainer.."), 
+				(find_ctrl->GetText()+_T(" 演示未选中行中的按钮触发动作，依该按钮父结点的找到所属行listcontainer..")).GetData(), 
 				_T("DUILIB DEMO"), MB_OK);   
 			((CLabelUI *)find_ctrl)->SetText(_T("由程序动态设置后的名称..."));
 		}
@@ -258,7 +258,7 @@ void CRichListWnd::OnItemClick( TNotifyUI &msg )
 	if(find_ctrl)
 	{
 		MessageBox(NULL, 
-			find_ctrl->GetText()+_T(" 选中行的下载项目名称.."), 
+			(find_ctrl->GetText()+_T(" 选中行的下载项目名称..")).GetData(), 
 			_T("DUILIB DEMO"), MB_OK);   
 		((CLabelUI *)find_ctrl)->SetText(_T("由程序动态设置后的名称..."));
 	}

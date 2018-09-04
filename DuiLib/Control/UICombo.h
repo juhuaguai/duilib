@@ -25,7 +25,7 @@ public:
     void SetEnabled(bool bEnable = true);
 
     CDuiString GetDropBoxAttributeList();
-    void SetDropBoxAttributeList(LPCTSTR pstrList);
+    void SetDropBoxAttributeList(const CDuiString& strList);
     SIZE GetDropBoxSize() const;
     void SetDropBoxSize(SIZE szDropBox);
 
@@ -56,16 +56,16 @@ public:
 	int GetFont() const;
     RECT GetTextPadding() const;
     void SetTextPadding(RECT rc);
-    LPCTSTR GetNormalImage() const;
-    void SetNormalImage(LPCTSTR pStrImage);
-    LPCTSTR GetHotImage() const;
-    void SetHotImage(LPCTSTR pStrImage);
-    LPCTSTR GetPushedImage() const;
-    void SetPushedImage(LPCTSTR pStrImage);
-    LPCTSTR GetFocusedImage() const;
-    void SetFocusedImage(LPCTSTR pStrImage);
-    LPCTSTR GetDisabledImage() const;
-    void SetDisabledImage(LPCTSTR pStrImage);
+    CDuiString GetNormalImage() const;
+    void SetNormalImage(const CDuiString& strImage);
+    CDuiString GetHotImage() const;
+    void SetHotImage(const CDuiString& strImage);
+    CDuiString GetPushedImage() const;
+    void SetPushedImage(const CDuiString& strImage);
+    CDuiString GetFocusedImage() const;
+    void SetFocusedImage(const CDuiString& strImage);
+    CDuiString GetDisabledImage() const;
+    void SetDisabledImage(const CDuiString& strImage);
 
     TListInfoUI* GetListInfo();
     UINT GetItemFixedHeight();
@@ -80,28 +80,28 @@ public:
     void SetItemTextColor(DWORD dwTextColor);
 	DWORD GetItemBkColor() const;
     void SetItemBkColor(DWORD dwBkColor);
-	LPCTSTR GetItemBkImage() const;
-    void SetItemBkImage(LPCTSTR pStrImage);
+	CDuiString GetItemBkImage() const;
+    void SetItemBkImage(const CDuiString& strImage);
     bool IsAlternateBk() const;
     void SetAlternateBk(bool bAlternateBk);
 	DWORD GetSelectedItemTextColor() const;
     void SetSelectedItemTextColor(DWORD dwTextColor);
 	DWORD GetSelectedItemBkColor() const;
     void SetSelectedItemBkColor(DWORD dwBkColor);
-	LPCTSTR GetSelectedItemImage() const;
-    void SetSelectedItemImage(LPCTSTR pStrImage);
+	CDuiString GetSelectedItemImage() const;
+    void SetSelectedItemImage(const CDuiString& strImage);
 	DWORD GetHotItemTextColor() const;
     void SetHotItemTextColor(DWORD dwTextColor);
 	DWORD GetHotItemBkColor() const;
     void SetHotItemBkColor(DWORD dwBkColor);
-	LPCTSTR GetHotItemImage() const;
-    void SetHotItemImage(LPCTSTR pStrImage);
+	CDuiString GetHotItemImage() const;
+    void SetHotItemImage(const CDuiString& strImage);
 	DWORD GetDisabledItemTextColor() const;
     void SetDisabledItemTextColor(DWORD dwTextColor);
 	DWORD GetDisabledItemBkColor() const;
     void SetDisabledItemBkColor(DWORD dwBkColor);
-	LPCTSTR GetDisabledItemImage() const;
-    void SetDisabledItemImage(LPCTSTR pStrImage);
+	CDuiString GetDisabledItemImage() const;
+    void SetDisabledItemImage(const CDuiString& strImage);
     int GetItemHLineSize() const;
     void SetItemHLineSize(int iSize);
     DWORD GetItemHLineColor() const;
@@ -127,10 +127,10 @@ public:
 	void SetTextRenderingAlias(int nTextRenderingAlias);
 	TextRenderingHint GetTextRenderingAlias();
 
-	LPCTSTR GetVscrollbar() const;
-	LPCTSTR GetHscrollbar() const;
-	LPCTSTR GetVscrollStyle() const;
-	LPCTSTR GetHscrollStyle() const;
+	CDuiString GetVscrollbar() const;
+	CDuiString GetHscrollbar() const;
+	CDuiString GetVscrollStyle() const;
+	CDuiString GetHscrollStyle() const;
 
 protected:
     CComboWnd* m_pWindow;

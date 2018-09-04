@@ -21,7 +21,7 @@ protected:
 
 public:
     virtual CDuiString GetName() const;
-    virtual void SetName(LPCTSTR pstrName);
+    virtual void SetName(const CDuiString& strName);
     virtual LPCTSTR GetClass() const;
     virtual LPVOID GetInterface(LPCTSTR pstrName);
     virtual UINT GetControlFlags() const;
@@ -36,7 +36,7 @@ public:
 
     // 文本相关
     virtual CDuiString GetText() const;
-    virtual void SetText(LPCTSTR pstrText);
+    virtual void SetText(const CDuiString& strText);
 
     // 图形相关
     DWORD GetBkColor() const;
@@ -45,10 +45,10 @@ public:
     void SetBkColor2(DWORD dwBackColor);
     DWORD GetBkColor3() const;
     void SetBkColor3(DWORD dwBackColor);
-    LPCTSTR GetBkImage();
-    void SetBkImage(LPCTSTR pStrImage);
-	LPCTSTR GetForeImage();
-	void SetForeImage(LPCTSTR pStrImage);
+    CDuiString GetBkImage();
+    void SetBkImage(const CDuiString& strImage);
+	CDuiString GetForeImage();
+	void SetForeImage(const CDuiString& strImage);
 	DWORD GetFocusBorderColor() const;
 	void SetFocusBorderColor(DWORD dwBorderColor);
     bool IsColorHSL() const;
@@ -98,7 +98,7 @@ public:
 
     // 鼠标提示
     virtual CDuiString GetToolTip() const;
-    virtual void SetToolTip(LPCTSTR pstrText);
+    virtual void SetToolTip(const CDuiString& strText);
 	virtual void SetToolTipWidth(int nWidth);
 	virtual int	  GetToolTipWidth(void);	// 多行ToolTip单行最长宽度
 
@@ -112,7 +112,7 @@ public:
 
     // 用户属性
     virtual const CDuiString& GetUserData(); // 辅助函数，供用户使用
-    virtual void SetUserData(LPCTSTR pstrText); // 辅助函数，供用户使用
+    virtual void SetUserData(const CDuiString& strText); // 辅助函数，供用户使用
     virtual UINT_PTR GetTag() const; // 辅助函数，供用户使用
     virtual void SetTag(UINT_PTR pTag); // 辅助函数，供用户使用
 

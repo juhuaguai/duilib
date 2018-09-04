@@ -225,94 +225,94 @@ namespace DuiLib
 		return m_dwFocusedBkColor;
 	}
 
-	LPCTSTR CButtonUI::GetNormalImage()
+	CDuiString CButtonUI::GetNormalImage()
 	{
 		return m_diNormal.sDrawString;
 	}
 
-	void CButtonUI::SetNormalImage(LPCTSTR pStrImage)
+	void CButtonUI::SetNormalImage(const CDuiString& strImage)
 	{
-		if( m_diNormal.sDrawString == pStrImage && m_diNormal.pImageInfo != NULL ) return;
+		if( m_diNormal.sDrawString == strImage && m_diNormal.pImageInfo != NULL ) return;
 		m_diNormal.Clear();
-		m_diNormal.sDrawString = pStrImage;
+		m_diNormal.sDrawString = strImage;
 		Invalidate();
 	}
 
-	LPCTSTR CButtonUI::GetHotImage()
+	CDuiString CButtonUI::GetHotImage()
 	{
 		return m_diHot.sDrawString;
 	}
 
-	void CButtonUI::SetHotImage(LPCTSTR pStrImage)
+	void CButtonUI::SetHotImage(const CDuiString& strImage)
 	{
-		if( m_diHot.sDrawString == pStrImage && m_diHot.pImageInfo != NULL ) return;
+		if( m_diHot.sDrawString == strImage && m_diHot.pImageInfo != NULL ) return;
 		m_diHot.Clear();
-		m_diHot.sDrawString = pStrImage;
+		m_diHot.sDrawString = strImage;
 		Invalidate();
 	}
 
-	LPCTSTR CButtonUI::GetPushedImage()
+	CDuiString CButtonUI::GetPushedImage()
 	{
 		return m_diPushed.sDrawString;
 	}
 
-	void CButtonUI::SetPushedImage(LPCTSTR pStrImage)
+	void CButtonUI::SetPushedImage(const CDuiString& strImage)
 	{
-		if( m_diPushed.sDrawString == pStrImage && m_diPushed.pImageInfo != NULL ) return;
+		if( m_diPushed.sDrawString == strImage && m_diPushed.pImageInfo != NULL ) return;
 		m_diPushed.Clear();
-		m_diPushed.sDrawString = pStrImage;
+		m_diPushed.sDrawString = strImage;
 		Invalidate();
 	}
 
-	LPCTSTR CButtonUI::GetFocusedImage()
+	CDuiString CButtonUI::GetFocusedImage()
 	{
 		return m_diFocused.sDrawString;
 	}
 
-	void CButtonUI::SetFocusedImage(LPCTSTR pStrImage)
+	void CButtonUI::SetFocusedImage(const CDuiString& strImage)
 	{
-		if( m_diFocused.sDrawString == pStrImage && m_diFocused.pImageInfo != NULL ) return;
+		if( m_diFocused.sDrawString == strImage && m_diFocused.pImageInfo != NULL ) return;
 		m_diFocused.Clear();
-		m_diFocused.sDrawString = pStrImage;
+		m_diFocused.sDrawString = strImage;
 		Invalidate();
 	}
 
-	LPCTSTR CButtonUI::GetDisabledImage()
+	CDuiString CButtonUI::GetDisabledImage()
 	{
 		return m_diDisabled.sDrawString;
 	}
 
-	void CButtonUI::SetDisabledImage(LPCTSTR pStrImage)
+	void CButtonUI::SetDisabledImage(const CDuiString& strImage)
 	{
-		if( m_diDisabled.sDrawString == pStrImage && m_diDisabled.pImageInfo != NULL ) return;
+		if( m_diDisabled.sDrawString == strImage && m_diDisabled.pImageInfo != NULL ) return;
 		m_diDisabled.Clear();
-		m_diDisabled.sDrawString = pStrImage;
+		m_diDisabled.sDrawString = strImage;
 		Invalidate();
 	}
 
-	LPCTSTR CButtonUI::GetForeImage()
+	CDuiString CButtonUI::GetForeImage()
 	{
 		return m_diFore.sDrawString;
 	}
 
-	void CButtonUI::SetForeImage( LPCTSTR pStrImage )
+	void CButtonUI::SetForeImage(const CDuiString& strImage)
 	{
-		if( m_diFore.sDrawString == pStrImage && m_diFore.pImageInfo != NULL ) return;
+		if( m_diFore.sDrawString == strImage && m_diFore.pImageInfo != NULL ) return;
 		m_diFore.Clear();
-		m_diFore.sDrawString = pStrImage;
+		m_diFore.sDrawString = strImage;
 		Invalidate();
 	}
 
-	LPCTSTR CButtonUI::GetHotForeImage()
+	CDuiString CButtonUI::GetHotForeImage()
 	{
 		return m_diHotFore.sDrawString;
 	}
 
-	void CButtonUI::SetHotForeImage( LPCTSTR pStrImage )
+	void CButtonUI::SetHotForeImage(const CDuiString& strImage)
 	{
-		if( m_diHotFore.sDrawString == pStrImage && m_diHotFore.pImageInfo != NULL ) return;
+		if( m_diHotFore.sDrawString == strImage && m_diHotFore.pImageInfo != NULL ) return;
 		m_diHotFore.Clear();
-		m_diHotFore.sDrawString = pStrImage;
+		m_diHotFore.sDrawString = strImage;
 		Invalidate();
 	}
 
@@ -321,24 +321,24 @@ namespace DuiLib
 		return m_sCursor;
 	}
 
-	void CButtonUI::SetCursor(LPCTSTR pStrCursor)
+	void CButtonUI::SetCursor(const CDuiString& strCursor)
 	{
-		m_sCursor = pStrCursor;
+		m_sCursor = strCursor;
 		POINT ptMouse;
 		GetCursorPos(&ptMouse);
 		if(IsEnabled() && ::PtInRect(&m_rcItem,ptMouse))
 		{
-			if (_tcscmp(pStrCursor,_T("arrow")) == 0)
+			if (_tcscmp(m_sCursor.GetData(),_T("arrow")) == 0)
 				::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_ARROW)));
-			else if (_tcscmp(pStrCursor,_T("hand")) == 0)
+			else if (_tcscmp(m_sCursor.GetData(),_T("hand")) == 0)
 				::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
 		}
 	}
 
-	void CButtonUI::SetFiveStatusImage(LPCTSTR pStrImage)
+	void CButtonUI::SetFiveStatusImage(const CDuiString& strImage)
 	{
 		m_diNormal.Clear();
-		m_diNormal.sDrawString = pStrImage;
+		m_diNormal.sDrawString = strImage;
 		DrawImage(NULL, m_diNormal);
 		if (m_diNormal.pImageInfo) {
 			LONG width = m_diNormal.pImageInfo->nX / 5;
@@ -351,7 +351,7 @@ namespace DuiLib
 		}
 
 		m_diPushed.Clear();
-		m_diPushed.sDrawString = pStrImage;
+		m_diPushed.sDrawString = strImage;
 		DrawImage(NULL, m_diPushed);
 		if (m_diPushed.pImageInfo) {
 			LONG width = m_diPushed.pImageInfo->nX / 5;
@@ -360,7 +360,7 @@ namespace DuiLib
 		}
 
 		m_diHot.Clear();
-		m_diHot.sDrawString = pStrImage;
+		m_diHot.sDrawString = strImage;
 		DrawImage(NULL, m_diHot);
 		if (m_diHot.pImageInfo) {
 			LONG width = m_diHot.pImageInfo->nX / 5;
@@ -369,7 +369,7 @@ namespace DuiLib
 		}
 
 		m_diFocused.Clear();
-		m_diFocused.sDrawString = pStrImage;
+		m_diFocused.sDrawString = strImage;
 		DrawImage(NULL, m_diFocused);
 		if (m_diFocused.pImageInfo) {
 			LONG width = m_diFocused.pImageInfo->nX / 5;
@@ -378,7 +378,7 @@ namespace DuiLib
 		}
 
 		m_diDisabled.Clear();
-		m_diDisabled.sDrawString = pStrImage;
+		m_diDisabled.sDrawString = strImage;
 		DrawImage(NULL, m_diDisabled);
 		if (m_diDisabled.pImageInfo) {
 			LONG width = m_diDisabled.pImageInfo->nX / 5;
@@ -492,10 +492,10 @@ namespace DuiLib
 		if(!GetEnabledEffect())
 		{
 			if( m_bShowHtml )
-				CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, clrColor, \
+				CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText.GetData(), clrColor, \
 				NULL, NULL, nLinks, m_iFont, m_uTextStyle);
 			else
-				CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, clrColor, \
+				CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText.GetData(), clrColor, \
 				m_iFont, m_uTextStyle);
 		}
 		else
@@ -519,7 +519,7 @@ namespace DuiLib
 			SolidBrush nSolidBrush(ARGB2Color(clrColor));
 
 #ifdef _UNICODE
-			nGraphics.DrawString(m_sText,m_sText.GetLength(),&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
+			nGraphics.DrawString(m_sText.GetData(),m_sText.GetLength(),&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
 #else
 			int iLen = wcslen(m_pWideText);
 			nGraphics.DrawString(m_pWideText,iLen,&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);

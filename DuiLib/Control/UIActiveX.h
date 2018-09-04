@@ -45,7 +45,7 @@ public:
     HRESULT GetControl(const IID iid, LPVOID* ppRet);
 	CLSID GetClisd() const;
     CDuiString GetModuleName() const;
-    void SetModuleName(LPCTSTR pstrText);
+    void SetModuleName(const CDuiString& strText);
 
     void SetVisible(bool bVisible = true);
     void SetInternVisible(bool bVisible = true);

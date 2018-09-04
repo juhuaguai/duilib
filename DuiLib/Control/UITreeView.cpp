@@ -620,7 +620,7 @@ namespace DuiLib
 		_pTreeNodeUI->GetDottedLine()->SetVisible(true);
 		_pTreeNodeUI->GetDottedLine()->SetFixedWidth(pDottedLine->GetFixedWidth()+16);
 		_pTreeNodeUI->SetParentNode(this);
-		_pTreeNodeUI->GetItemButton()->SetGroup(pItemButton->GetGroup());
+		_pTreeNodeUI->GetItemButton()->SetGroup(pItemButton->GetGroup().GetData());
 		_pTreeNodeUI->SetTreeView(pTreeView);
 
 		return _pTreeNodeUI;

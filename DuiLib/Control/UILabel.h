@@ -27,7 +27,7 @@ namespace DuiLib
 
         void SetFixedWidth(int cx);
         void SetFixedHeight(int cy);
-		void SetText(LPCTSTR pstrText);
+		void SetText(const CDuiString& strText);
 
 		void SetTextStyle(UINT uStyle);
 		UINT GetTextStyle() const;

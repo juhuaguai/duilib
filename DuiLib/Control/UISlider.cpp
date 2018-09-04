@@ -73,42 +73,42 @@ namespace DuiLib
 		m_bImmMode = bImmMode;
 	}
 
-	LPCTSTR CSliderUI::GetThumbImage() const
+	CDuiString CSliderUI::GetThumbImage() const
 	{
 		return m_diThumb.sDrawString;
 	}
 
-	void CSliderUI::SetThumbImage(LPCTSTR pStrImage)
+	void CSliderUI::SetThumbImage(const CDuiString& strImage)
 	{
-		if( m_diThumb.sDrawString == pStrImage && m_diThumb.pImageInfo != NULL ) return;
+		if( m_diThumb.sDrawString == strImage && m_diThumb.pImageInfo != NULL ) return;
 		m_diThumb.Clear();
-		m_diThumb.sDrawString = pStrImage;
+		m_diThumb.sDrawString = strImage;
 		Invalidate();
 	}
 
-	LPCTSTR CSliderUI::GetThumbHotImage() const
+	CDuiString CSliderUI::GetThumbHotImage() const
 	{
 		return m_diThumbHot.sDrawString;
 	}
 
-	void CSliderUI::SetThumbHotImage(LPCTSTR pStrImage)
+	void CSliderUI::SetThumbHotImage(const CDuiString& strImage)
 	{
-		if( m_diThumbHot.sDrawString == pStrImage && m_diThumbHot.pImageInfo != NULL ) return;
+		if( m_diThumbHot.sDrawString == strImage && m_diThumbHot.pImageInfo != NULL ) return;
 		m_diThumbHot.Clear();
-		m_diThumbHot.sDrawString = pStrImage;
+		m_diThumbHot.sDrawString = strImage;
 		Invalidate();
 	}
 
-	LPCTSTR CSliderUI::GetThumbPushedImage() const
+	CDuiString CSliderUI::GetThumbPushedImage() const
 	{
 		return m_diThumbPushed.sDrawString;
 	}
 
-	void CSliderUI::SetThumbPushedImage(LPCTSTR pStrImage)
+	void CSliderUI::SetThumbPushedImage(const CDuiString& strImage)
 	{
-		if( m_diThumbPushed.sDrawString == pStrImage && m_diThumbPushed.pImageInfo != NULL ) return;
+		if( m_diThumbPushed.sDrawString == strImage && m_diThumbPushed.pImageInfo != NULL ) return;
 		m_diThumbPushed.Clear();
-		m_diThumbPushed.sDrawString = pStrImage;
+		m_diThumbPushed.sDrawString = strImage;
 		Invalidate();
 	}
 

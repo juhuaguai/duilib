@@ -123,7 +123,7 @@ static const DUI_MSGMAP_ENTRY* DuiFindMessageEntry(const DUI_MSGMAP_ENTRY* lpEnt
 
 bool CNotifyPump::AddVirtualWnd(CDuiString strName,CNotifyPump* pObject)
 {
-	if( m_VirtualWndMap.Find(strName) == NULL )
+	if( m_VirtualWndMap.Find(strName.GetData()) == NULL )
 	{
 		m_VirtualWndMap.Insert(strName.GetData(),(LPVOID)pObject);
 		return true;
@@ -133,9 +133,9 @@ bool CNotifyPump::AddVirtualWnd(CDuiString strName,CNotifyPump* pObject)
 
 bool CNotifyPump::RemoveVirtualWnd(CDuiString strName)
 {
-	if( m_VirtualWndMap.Find(strName) != NULL )
+	if( m_VirtualWndMap.Find(strName.GetData()) != NULL )
 	{
-		m_VirtualWndMap.Remove(strName);
+		m_VirtualWndMap.Remove(strName.GetData());
 		return true;
 	}
 	return false;

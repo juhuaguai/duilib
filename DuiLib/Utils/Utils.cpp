@@ -451,10 +451,10 @@ namespace DuiLib
 		return (int) _tcslen(m_pstr); 
 	}
 
-	CDuiString::operator LPCTSTR() const 
-	{ 
-		return m_pstr; 
-	}
+	//CDuiString::operator LPCTSTR() const 
+	//{ 
+	//	return m_pstr; 
+	//}
 
 	void CDuiString::Append(LPCTSTR pstr)
 	{
@@ -526,7 +526,7 @@ namespace DuiLib
 
 	const CDuiString& CDuiString::operator=(const CDuiString& src)
 	{      
-		Assign(src);
+		Assign(src.GetData());
 		return *this;
 	}
 
@@ -624,7 +624,7 @@ namespace DuiLib
 	CDuiString CDuiString::operator+(const CDuiString& src) const
 	{
 		CDuiString sTemp = *this;
-		sTemp.Append(src);
+		sTemp.Append(src.GetData());
 		return sTemp;
 	}
 
@@ -643,7 +643,7 @@ namespace DuiLib
 
 	const CDuiString& CDuiString::operator+=(const CDuiString& src)
 	{      
-		Append(src);
+		Append(src.GetData());
 		return *this;
 	}
 
@@ -665,13 +665,15 @@ namespace DuiLib
 		return *this;
 	}
 
-	bool operator == (LPCTSTR pStr1, const CDuiString& pStr2){return 0 == _tcscmp(pStr1, pStr2.GetData());};
-	bool CDuiString::operator == (LPCTSTR str) const { return (Compare(str) == 0); };
-	bool CDuiString::operator != (LPCTSTR str) const { return (Compare(str) != 0); };
-	bool CDuiString::operator <= (LPCTSTR str) const { return (Compare(str) <= 0); };
-	bool CDuiString::operator <  (LPCTSTR str) const { return (Compare(str) <  0); };
-	bool CDuiString::operator >= (LPCTSTR str) const { return (Compare(str) >= 0); };
-	bool CDuiString::operator >  (LPCTSTR str) const { return (Compare(str) >  0); };
+	//bool operator == (LPCTSTR pstr, const CDuiString& str2){return 0 == _tcscmp(pstr, str2.GetData());};
+	//bool operator==(const CDuiString& str1, CDuiString& str2 ){return 0 == _tcscmp(str1.GetData(), str2.GetData());};
+	//bool operator==(const CDuiString& str1, LPCTSTR pstr ){return 0 == _tcscmp(str1.GetData(),pstr);};
+	//bool CDuiString::operator == (LPCTSTR str) const { return (Compare(str) == 0); };
+	//bool CDuiString::operator != (LPCTSTR str) const { return (Compare(str) != 0); };
+	//bool CDuiString::operator <= (LPCTSTR str) const { return (Compare(str) <= 0); };
+	//bool CDuiString::operator <  (LPCTSTR str) const { return (Compare(str) <  0); };
+	//bool CDuiString::operator >= (LPCTSTR str) const { return (Compare(str) >= 0); };
+	//bool CDuiString::operator >  (LPCTSTR str) const { return (Compare(str) >  0); };
 
 	void CDuiString::SetAt(int nIndex, TCHAR ch)
 	{
@@ -762,7 +764,7 @@ namespace DuiLib
 			sTemp = Left(iPos);
 			sTemp += pstrTo;
 			sTemp += Mid(iPos + cchFrom);
-			Assign(sTemp);
+			Assign(sTemp.GetData());
 			iPos = Find(pstrFrom, iPos + cchTo);
 			nCount++;
 		}
@@ -791,7 +793,7 @@ namespace DuiLib
 		TCHAR szBuffer[64] = { 0 };
 		va_list argList;
 		va_start(argList, pstrFormat);
-		int iRet = ::wvsprintf(szBuffer, sFormat, argList);
+		int iRet = ::wvsprintf(szBuffer, sFormat.GetData(), argList);
 		va_end(argList);
 		Assign(szBuffer);
 		return iRet;
@@ -818,7 +820,7 @@ namespace DuiLib
 
 	static UINT HashKey(const CDuiString& Key)
 	{
-		return HashKey((LPCTSTR)Key);
+		return HashKey(Key.GetData());
 	};
 
 	CDuiStringPtrMap::CDuiStringPtrMap(int nSize) : m_nCount(0)

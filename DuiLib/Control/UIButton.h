@@ -27,27 +27,27 @@ namespace DuiLib
 		void SetEnabled(bool bEnable = true);
 		void DoEvent(TEventUI& event);
 
-		LPCTSTR GetNormalImage();
-		void SetNormalImage(LPCTSTR pStrImage);
-		LPCTSTR GetHotImage();
-		void SetHotImage(LPCTSTR pStrImage);
-		LPCTSTR GetPushedImage();
-		void SetPushedImage(LPCTSTR pStrImage);
-		LPCTSTR GetFocusedImage();
-		void SetFocusedImage(LPCTSTR pStrImage);
-		LPCTSTR GetDisabledImage();
-		void SetDisabledImage(LPCTSTR pStrImage);
-		LPCTSTR GetForeImage();
-		void SetForeImage(LPCTSTR pStrImage);
-		LPCTSTR GetHotForeImage();
-		void SetHotForeImage(LPCTSTR pStrImage);
+		CDuiString GetNormalImage();
+		void SetNormalImage(const CDuiString& strImage);
+		CDuiString GetHotImage();
+		void SetHotImage(const CDuiString& strImage);
+		CDuiString GetPushedImage();
+		void SetPushedImage(const CDuiString& strImage);
+		CDuiString GetFocusedImage();
+		void SetFocusedImage(const CDuiString& strImage);
+		CDuiString GetDisabledImage();
+		void SetDisabledImage(const CDuiString& strImage);
+		CDuiString GetForeImage();
+		void SetForeImage(const CDuiString& strImage);
+		CDuiString GetHotForeImage();
+		void SetHotForeImage(const CDuiString& strImage);
 		CDuiString GetCursor();
-		void SetCursor(LPCTSTR pStrCursor);
+		void SetCursor(const CDuiString& strCursor);
 		
 		UINT GetButtonState() {return m_uButtonState;};
 
 		// 对应按钮的5个状态图
-		void SetFiveStatusImage(LPCTSTR pStrImage);
+		void SetFiveStatusImage(const CDuiString& strImage);
 		void SetFadeAlphaDelta(BYTE uDelta);
 		BYTE GetFadeAlphaDelta();
 

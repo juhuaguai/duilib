@@ -1155,7 +1155,7 @@ bool CActiveXUI::DoCreateControl()
 
     HRESULT Hr = -1;
     if( !m_sModuleName.IsEmpty() ) {
-        HMODULE hModule = ::LoadLibrary((LPCTSTR)m_sModuleName);
+        HMODULE hModule = ::LoadLibrary((LPCTSTR)m_sModuleName.GetData());
         if( hModule != NULL ) {
             IClassFactory* aClassFactory = NULL;
             DllGetClassObjectFunc aDllGetClassObjectFunc = (DllGetClassObjectFunc)::GetProcAddress(hModule, "DllGetClassObject");
@@ -1232,9 +1232,9 @@ CDuiString CActiveXUI::GetModuleName() const
     return m_sModuleName;
 }
 
-void CActiveXUI::SetModuleName(LPCTSTR pstrText)
+void CActiveXUI::SetModuleName(const CDuiString& strText)
 {
-    m_sModuleName = pstrText;
+    m_sModuleName = strText;
 }
 
 } // namespace DuiLib

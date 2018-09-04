@@ -81,19 +81,19 @@ namespace DuiLib
         CControlUI::SetFixedHeight(cy);
     }
 
-	void CLabelUI::SetText(LPCTSTR pstrText)
+	void CLabelUI::SetText(const CDuiString& strText)
 	{
-		CControlUI::SetText(pstrText);
+		CControlUI::SetText(strText);
         m_bNeedEstimateSize = true;
 		if( m_EnableEffect) {
 #ifdef _UNICODE
 			m_pWideText = (LPWSTR)m_sText.GetData();
 #else 
-			int iLen = _tcslen(pstrText);
+			int iLen = _tcslen(strText.GetData());
 			if (m_pWideText) delete[] m_pWideText;
 			m_pWideText = new WCHAR[iLen + 1];
 			::ZeroMemory(m_pWideText, (iLen + 1) * sizeof(WCHAR));
-			::MultiByteToWideChar(CP_ACP, 0, pstrText, -1, (LPWSTR)m_pWideText, iLen);
+			::MultiByteToWideChar(CP_ACP, 0, strText.GetData(), -1, (LPWSTR)m_pWideText, iLen);
 #endif
 		}
 	}
@@ -225,10 +225,10 @@ namespace DuiLib
                     RECT rcText = { 0, 0, 9999, m_cxyFixedLast.cy };
                     if( m_bShowHtml ) {
                         int nLinks = 0;
-                        CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, NULL, NULL, nLinks, m_iFont, DT_CALCRECT | m_uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+                        CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText.GetData(), 0, NULL, NULL, nLinks, m_iFont, DT_CALCRECT | m_uTextStyle & ~DT_RIGHT & ~DT_CENTER);
                     }
                     else {
-                        CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, m_iFont, DT_CALCRECT | m_uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+                        CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText.GetData(), 0, m_iFont, DT_CALCRECT | m_uTextStyle & ~DT_RIGHT & ~DT_CENTER);
                     }
                     m_cxyFixedLast.cx = rcText.right - rcText.left + m_rcTextPadding.left + m_rcTextPadding.right;
                 }
@@ -242,10 +242,10 @@ namespace DuiLib
                 rcText.right -= m_rcTextPadding.right;
                 if( m_bShowHtml ) {
                     int nLinks = 0;
-                    CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, NULL, NULL, nLinks, m_iFont, DT_CALCRECT | m_uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+                    CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText.GetData(), 0, NULL, NULL, nLinks, m_iFont, DT_CALCRECT | m_uTextStyle & ~DT_RIGHT & ~DT_CENTER);
                 }
                 else {
-                    CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, m_iFont, DT_CALCRECT | m_uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+                    CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText.GetData(), 0, m_iFont, DT_CALCRECT | m_uTextStyle & ~DT_RIGHT & ~DT_CENTER);
                 }
                 m_cxyFixedLast.cy = rcText.bottom - rcText.top + m_rcTextPadding.top + m_rcTextPadding.bottom;
             }
@@ -447,18 +447,18 @@ namespace DuiLib
 			int nLinks = 0;
 			if( IsEnabled() ) {
 				if( m_bShowHtml )
-					CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, m_dwTextColor, \
+					CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText.GetData(), m_dwTextColor, \
 					NULL, NULL, nLinks, m_iFont, m_uTextStyle);
 				else
-					CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, m_dwTextColor, \
+					CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText.GetData(), m_dwTextColor, \
 					m_iFont, m_uTextStyle);
 			}
 			else {
 				if( m_bShowHtml )
-					CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, m_dwDisabledTextColor, \
+					CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText.GetData(), m_dwDisabledTextColor, \
 					NULL, NULL, nLinks, m_iFont, m_uTextStyle);
 				else
-					CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, m_dwDisabledTextColor, \
+					CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText.GetData(), m_dwDisabledTextColor, \
 					m_iFont, m_uTextStyle);
 			}
 		}
@@ -530,13 +530,13 @@ namespace DuiLib
 				LinearGradientBrush nLineGrBrushStroke(Point(GetGradientAngle(),0),Point(0,rc.bottom-rc.top+2),ARGB2Color(GetStrokeColor()),ARGB2Color(GetStrokeColor()));
 #ifdef _UNICODE
 				nRc.Offset(-1,0);
-				nGraphics.DrawString(m_sText,m_sText.GetLength(),&nFont,nRc,&format,&nLineGrBrushStroke);
+				nGraphics.DrawString(m_sText.GetData(),m_sText.GetLength(),&nFont,nRc,&format,&nLineGrBrushStroke);
 				nRc.Offset(2,0);
-				nGraphics.DrawString(m_sText,m_sText.GetLength(),&nFont,nRc,&format,&nLineGrBrushStroke);
+				nGraphics.DrawString(m_sText.GetData(),m_sText.GetLength(),&nFont,nRc,&format,&nLineGrBrushStroke);
 				nRc.Offset(-1,-1);
-				nGraphics.DrawString(m_sText,m_sText.GetLength(),&nFont,nRc,&format,&nLineGrBrushStroke);
+				nGraphics.DrawString(m_sText.GetData(),m_sText.GetLength(),&nFont,nRc,&format,&nLineGrBrushStroke);
 				nRc.Offset(0,2);
-				nGraphics.DrawString(m_sText,m_sText.GetLength(),&nFont,nRc,&format,&nLineGrBrushStroke);
+				nGraphics.DrawString(m_sText.GetData(),m_sText.GetLength(),&nFont,nRc,&format,&nLineGrBrushStroke);
 				nRc.Offset(0,-1);
 #else
 				int iLen = wcslen(m_pWideText);
@@ -553,9 +553,9 @@ namespace DuiLib
 			}
 #ifdef _UNICODE
 			if(GetEnabledShadow() && (GetTextShadowColorA() > 0 || GetTextShadowColorB() > 0))
-				nGraphics.DrawString(m_sText,m_sText.GetLength(),&nFont,nShadowRc,&format,&nLineGrBrushA);
+				nGraphics.DrawString(m_sText.GetData(),m_sText.GetLength(),&nFont,nShadowRc,&format,&nLineGrBrushA);
 
-			nGraphics.DrawString(m_sText,m_sText.GetLength(),&nFont,nRc,&format,&nLineGrBrushB);
+			nGraphics.DrawString(m_sText.GetData(),m_sText.GetLength(),&nFont,nRc,&format,&nLineGrBrushB);
 #else
 			int iLen = wcslen(m_pWideText);
 			if(GetEnabledShadow() && (GetTextShadowColorA() > 0 || GetTextShadowColorB() > 0))

@@ -190,7 +190,7 @@ public:
             break;
         }
         pControl->SetUserData(szBuf);
-        return pControl->GetUserData();
+        return pControl->GetUserData().GetData();
     }
 
     void Notify(TNotifyUI& msg)

@@ -68,7 +68,7 @@ namespace DuiLib
 		Invalidate();
 	}
 
-	LPCTSTR CProgressUI::GetForeImage() const
+	CDuiString CProgressUI::GetForeImage() const
 	{
 		return m_diFore.sDrawString;
 	}

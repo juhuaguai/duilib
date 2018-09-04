@@ -364,6 +364,12 @@ public:
         if( pSilder ) pSilder->OnNotify += MakeDelegate(this, &CFrameWindowWnd::OnSChanged);
         pSilder = static_cast<CSliderUI*>(m_pm.FindControl(_T("l_controlor")));
         if( pSilder ) pSilder->OnNotify += MakeDelegate(this, &CFrameWindowWnd::OnLChanged);
+
+		CDuiString strTest = m_pm.FindControl(_T("insertimagebtn"))->GetText();
+		if (strTest == _T("%{1}"))
+		{
+			OutputDebugString(strTest.GetData());
+		}
     }
 
     void Notify(TNotifyUI& msg)

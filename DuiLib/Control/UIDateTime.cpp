@@ -254,7 +254,7 @@ namespace DuiLib
 			CDuiString sText;
 			sText.SmallFormat(_T("%4d-%02d-%02d"),
 				m_sysTime.wYear, m_sysTime.wMonth, m_sysTime.wDay, m_sysTime.wHour, m_sysTime.wMinute);
-			SetText(sText);
+			SetText(sText.GetData());
 		}
 	}
 

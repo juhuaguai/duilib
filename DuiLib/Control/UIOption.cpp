@@ -11,7 +11,7 @@ namespace DuiLib
 
 	COptionUI::~COptionUI()
 	{
-		if( !m_sGroupName.IsEmpty() && m_pManager ) m_pManager->RemoveOptionGroup(m_sGroupName, this);
+		if( !m_sGroupName.IsEmpty() && m_pManager ) m_pManager->RemoveOptionGroup(m_sGroupName.GetData(), this);
 	}
 
 	LPCTSTR COptionUI::GetClass() const
@@ -29,11 +29,11 @@ namespace DuiLib
 	{
 		CControlUI::SetManager(pManager, pParent, bInit);
 		if( bInit && !m_sGroupName.IsEmpty() ) {
-			if (m_pManager) m_pManager->AddOptionGroup(m_sGroupName, this);
+			if (m_pManager) m_pManager->AddOptionGroup(m_sGroupName.GetData(), this);
 		}
 	}
 
-	LPCTSTR COptionUI::GetGroup() const
+	CDuiString COptionUI::GetGroup() const
 	{
 		return m_sGroupName;
 	}
@@ -46,15 +46,15 @@ namespace DuiLib
 		}
 		else {
 			if( m_sGroupName == pStrGroupName ) return;
-			if (!m_sGroupName.IsEmpty() && m_pManager) m_pManager->RemoveOptionGroup(m_sGroupName, this);
+			if (!m_sGroupName.IsEmpty() && m_pManager) m_pManager->RemoveOptionGroup(m_sGroupName.GetData(), this);
 			m_sGroupName = pStrGroupName;
 		}
 
 		if( !m_sGroupName.IsEmpty() ) {
-			if (m_pManager) m_pManager->AddOptionGroup(m_sGroupName, this);
+			if (m_pManager) m_pManager->AddOptionGroup(m_sGroupName.GetData(), this);
 		}
 		else {
-			if (m_pManager) m_pManager->RemoveOptionGroup(m_sGroupName, this);
+			if (m_pManager) m_pManager->RemoveOptionGroup(m_sGroupName.GetData(), this);
 		}
 
 		Selected(m_bSelected);
@@ -75,7 +75,7 @@ namespace DuiLib
 		if( m_pManager != NULL ) {
 			if( !m_sGroupName.IsEmpty() ) {
 				if( m_bSelected ) {
-					CDuiPtrArray* aOptionGroup = m_pManager->GetOptionGroup(m_sGroupName);
+					CDuiPtrArray* aOptionGroup = m_pManager->GetOptionGroup(m_sGroupName.GetData());
 					for( int i = 0; i < aOptionGroup->GetSize(); i++ ) {
 						COptionUI* pControl = static_cast<COptionUI*>(aOptionGroup->GetAt(i));
 						if( pControl != this ) {
@@ -111,29 +111,29 @@ namespace DuiLib
 		}
 	}
 
-	LPCTSTR COptionUI::GetSelectedImage()
+	CDuiString COptionUI::GetSelectedImage()
 	{
 		return m_diSelected.sDrawString;
 	}
 
-	void COptionUI::SetSelectedImage(LPCTSTR pStrImage)
+	void COptionUI::SetSelectedImage(const CDuiString& strImage)
 	{
-		if( m_diSelected.sDrawString == pStrImage && m_diSelected.pImageInfo != NULL ) return;
+		if( m_diSelected.sDrawString == strImage && m_diSelected.pImageInfo != NULL ) return;
 		m_diSelected.Clear();
-		m_diSelected.sDrawString = pStrImage;
+		m_diSelected.sDrawString = strImage;
 		Invalidate();
 	}
 
-	LPCTSTR COptionUI::GetSelectedHotImage()
+	CDuiString COptionUI::GetSelectedHotImage()
 	{
 		return m_diSelectedHot.sDrawString;
 	}
 
-	void COptionUI::SetSelectedHotImage( LPCTSTR pStrImage )
+	void COptionUI::SetSelectedHotImage( const CDuiString& strImage )
 	{
-		if( m_diSelectedHot.sDrawString == pStrImage && m_diSelectedHot.pImageInfo != NULL ) return;
+		if( m_diSelectedHot.sDrawString == strImage && m_diSelectedHot.pImageInfo != NULL ) return;
 		m_diSelectedHot.Clear();
-		m_diSelectedHot.sDrawString = pStrImage;
+		m_diSelectedHot.sDrawString = strImage;
 		Invalidate();
 	}
 
@@ -158,16 +158,16 @@ namespace DuiLib
 		return m_dwSelectedBkColor;
 	}
 
-	LPCTSTR COptionUI::GetForeImage()
+	CDuiString COptionUI::GetForeImage()
 	{
 		return m_diFore.sDrawString;
 	}
 
-	void COptionUI::SetForeImage(LPCTSTR pStrImage)
+	void COptionUI::SetForeImage(const CDuiString& strImage)
 	{
-		if( m_diFore.sDrawString == pStrImage && m_diFore.pImageInfo != NULL ) return;
+		if( m_diFore.sDrawString == strImage && m_diFore.pImageInfo != NULL ) return;
 		m_diFore.Clear();
-		m_diFore.sDrawString = pStrImage;
+		m_diFore.sDrawString = strImage;
 		Invalidate();
 	}
 
@@ -244,10 +244,10 @@ Label_ForeImage:
 			if(!GetEnabledEffect())
 			{
 				if( m_bShowHtml )
-					CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, IsEnabled()?m_dwTextColor:m_dwDisabledTextColor, \
+					CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText.GetData(), IsEnabled()?m_dwTextColor:m_dwDisabledTextColor, \
 					NULL, NULL, nLinks, m_iFont, m_uTextStyle);
 				else
-					CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, IsEnabled()?m_dwTextColor:m_dwDisabledTextColor, \
+					CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText.GetData(), IsEnabled()?m_dwTextColor:m_dwDisabledTextColor, \
 					m_iFont, m_uTextStyle);
 			}
 			else
@@ -271,7 +271,7 @@ Label_ForeImage:
 				SolidBrush nSolidBrush(ARGB2Color(IsEnabled()?m_dwTextColor:m_dwDisabledTextColor));
 
 #ifdef _UNICODE
-				nGraphics.DrawString(m_sText,m_sText.GetLength(),&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
+				nGraphics.DrawString(m_sText.GetData(),m_sText.GetLength(),&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
 #else
 				int iLen = wcslen(m_pWideText);
 				nGraphics.DrawString(m_pWideText,iLen,&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);

@@ -94,7 +94,7 @@ namespace DuiLib
         LPCTSTR GetData() const;
 
         void SetAt(int nIndex, TCHAR ch);
-        operator LPCTSTR() const;
+        //operator LPCTSTR() const;
 
         TCHAR operator[] (int nIndex) const;
         const CDuiString& operator=(const CDuiString& src);
@@ -113,12 +113,36 @@ namespace DuiLib
         const CDuiString& operator+=(LPCTSTR pstr);
         const CDuiString& operator+=(const TCHAR ch);
 
-        bool operator == (LPCTSTR str) const;
-        bool operator != (LPCTSTR str) const;
-        bool operator <= (LPCTSTR str) const;
-        bool operator <  (LPCTSTR str) const;
-        bool operator >= (LPCTSTR str) const;
-        bool operator >  (LPCTSTR str) const;
+		friend bool operator==(const CDuiString& str1, const CDuiString& str2 ){return 0 == _tcscmp(str1.GetData(), str2.GetData());};
+		friend bool operator==(const CDuiString& str1, LPCTSTR pstr ){return 0 == _tcscmp(str1.GetData(),pstr);};
+		//friend bool operator==(LPCTSTR pstr, const CDuiString& str2){return 0 == _tcscmp(pstr, str2.GetData());};
+		
+		friend bool operator!=(const CDuiString& str1, const CDuiString& str2 ){return 0 != _tcscmp(str1.GetData(), str2.GetData());};
+		friend bool operator!=(const CDuiString& str1, LPCTSTR pstr ){return 0 != _tcscmp(str1.GetData(),pstr);};
+		//friend bool operator!=(LPCTSTR pstr, const CDuiString& str2){return 0 != _tcscmp(pstr, str2.GetData());};
+
+		friend bool operator>=(const CDuiString& str1, const CDuiString& str2 ){return 0 <= _tcscmp(str1.GetData(), str2.GetData());};
+		friend bool operator>=(const CDuiString& str1, LPCTSTR pstr ){return 0 <= _tcscmp(str1.GetData(),pstr);};
+		//friend bool operator>=(LPCTSTR pstr, const CDuiString& str2){return 0 <= _tcscmp(pstr, str2.GetData());};
+
+		friend bool operator>(const CDuiString& str1, const CDuiString& str2 ){return 0 < _tcscmp(str1.GetData(), str2.GetData());};
+		friend bool operator>(const CDuiString& str1, LPCTSTR pstr ){return 0 < _tcscmp(str1.GetData(),pstr);};
+		//friend bool operator>(LPCTSTR pstr, const CDuiString& str2){return 0 < _tcscmp(pstr, str2.GetData());};
+
+		friend bool operator<=(const CDuiString& str1, const CDuiString& str2 ){return 0 >= _tcscmp(str1.GetData(), str2.GetData());};
+		friend bool operator<=(const CDuiString& str1, LPCTSTR pstr ){return 0 >= _tcscmp(str1.GetData(),pstr);};
+		//friend bool operator<=(LPCTSTR pstr, const CDuiString& str2){return 0 >= _tcscmp(pstr, str2.GetData());};
+
+		friend bool operator<(const CDuiString& str1, const CDuiString& str2 ){return 0 > _tcscmp(str1.GetData(), str2.GetData());};
+		friend bool operator<(const CDuiString& str1, LPCTSTR pstr ){return 0 > _tcscmp(str1.GetData(),pstr);};
+		//friend bool operator<(LPCTSTR pstr, const CDuiString& str2){return 0 > _tcscmp(pstr, str2.GetData());};
+
+        //bool operator == (LPCTSTR str) const;
+        //bool operator != (LPCTSTR str) const;
+        //bool operator <= (LPCTSTR str) const;
+        //bool operator <  (LPCTSTR str) const;
+        //bool operator >= (LPCTSTR str) const;
+        //bool operator >  (LPCTSTR str) const;
 
         int Compare(LPCTSTR pstr) const;
         int CompareNoCase(LPCTSTR pstr) const;

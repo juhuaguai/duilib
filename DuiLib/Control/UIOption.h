@@ -19,11 +19,11 @@ namespace DuiLib
 		bool Activate();
 		void SetEnabled(bool bEnable = true);
 
-		LPCTSTR GetSelectedImage();
-		void SetSelectedImage(LPCTSTR pStrImage);
+		CDuiString GetSelectedImage();
+		void SetSelectedImage(const CDuiString& strImage);
 
-		LPCTSTR GetSelectedHotImage();
-		void SetSelectedHotImage(LPCTSTR pStrImage);
+		CDuiString GetSelectedHotImage();
+		void SetSelectedHotImage(const CDuiString& strImage);
 
 		void SetSelectedTextColor(DWORD dwTextColor);
 		DWORD GetSelectedTextColor();
@@ -31,10 +31,10 @@ namespace DuiLib
 		void SetSelectedBkColor(DWORD dwBkColor);
 		DWORD GetSelectBkColor();
 
-		LPCTSTR GetForeImage();
-		void SetForeImage(LPCTSTR pStrImage);
+		CDuiString GetForeImage();
+		void SetForeImage(const CDuiString& strImage);
 
-		LPCTSTR GetGroup() const;
+		CDuiString GetGroup() const;
 		void SetGroup(LPCTSTR pStrGroupName = NULL);
 		bool IsSelected() const;
 		virtual void Selected(bool bSelected, bool bTriggerEvent=true);

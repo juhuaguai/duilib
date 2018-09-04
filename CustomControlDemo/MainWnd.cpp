@@ -41,7 +41,7 @@ void JSCallTest(CWebBrowserUI* pBrowser, DISPPARAMS *pDispParams,/* [out] */ VAR
 {
 	CDuiString strMsg;
 	strMsg.Format(L"%d,%d,%s",pDispParams->rgvarg[0].boolVal,pDispParams->rgvarg[1].intVal,pDispParams->rgvarg[2].bstrVal);
-	MessageBox(NULL,strMsg,L"测试",MB_OK);
+	MessageBox(NULL,strMsg.GetData(),L"测试",MB_OK);
 	if (pVarResult)
 	{
 		BSTR bstrRet = SysAllocString(L"c++传递的返回值");

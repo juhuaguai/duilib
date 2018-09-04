@@ -211,7 +211,7 @@ public:
 	void Invalidate();
     void Invalidate(RECT& rcItem);
 
-	LPCTSTR GetName() const;
+	CDuiString GetName() const;
     HDC GetPaintDC() const;
 	HBITMAP GetPaintOffscreenBitmap();
     HWND GetPaintWindow() const;
@@ -249,8 +249,8 @@ public:
 	void SetLayeredInset(RECT& rcLayeredInset);
 	BYTE GetLayeredOpacity();
 	void SetLayeredOpacity(BYTE nOpacity);
-	LPCTSTR GetLayeredImage();
-	void SetLayeredImage(LPCTSTR pstrImage);
+	CDuiString GetLayeredImage();
+	void SetLayeredImage(const CDuiString& strImage);
 
     static HINSTANCE GetInstance();
     static CDuiString GetInstancePath();
@@ -264,13 +264,13 @@ public:
     static void SetInstance(HINSTANCE hInst);
     static void SetCurrentPath(LPCTSTR pStrPath);
     static void SetResourceDll(HINSTANCE hInst);
-    static void SetResourcePath(LPCTSTR pStrPath);
+    static void SetResourcePath(const CDuiString& strPath);
 	static void SetResourceZip(LPVOID pVoid, unsigned int len,LPCSTR pStrPwd=NULL);
-    static void SetResourceZip(LPCTSTR pstrZip, bool bCachedResourceZip = false,LPCSTR pStrPwd=NULL);
+    static void SetResourceZip(const CDuiString& strZip, bool bCachedResourceZip = false,LPCSTR pStrPwd=NULL);
     static bool GetHSL(short* H, short* S, short* L);
     static void SetHSL(bool bUseHSL, short H, short S, short L); // H:0~360, S:0~200, L:0~200 
     static void ReloadSkin();
-	static CPaintManagerUI* GetPaintManager(LPCTSTR pstrName);
+	static CPaintManagerUI* GetPaintManager(const CDuiString& strName);
 	static CDuiPtrArray* GetPaintManagers();
     static bool LoadPlugin(LPCTSTR pstrModuleName);
     static CDuiPtrArray* GetPlugins();
@@ -290,13 +290,13 @@ public:
     void SetDefaultSelectedBkColor(DWORD dwColor, bool bShared = false);
 
     TFontInfo* GetDefaultFontInfo();
-	void SetDefaultFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bStrikeOut,bool bShared = false);
+	void SetDefaultFont(const CDuiString& strFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bStrikeOut,bool bShared = false);
     DWORD GetCustomFontCount(bool bShared = false) const;
-    HFONT AddFont(int id, LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bStrikeOut, bool bShared = false);
+    HFONT AddFont(int id, const CDuiString& strFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bStrikeOut, bool bShared = false);
     HFONT GetFont(int id);
-    HFONT GetFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bStrikeOut);
+    HFONT GetFont(const CDuiString& strFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bStrikeOut);
 	int GetFontIndex(HFONT hFont, bool bShared = false);
-	int GetFontIndex(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bStrikeOut, bool bShared = false);
+	int GetFontIndex(const CDuiString& strFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bStrikeOut, bool bShared = false);
     void RemoveFont(HFONT hFont, bool bShared = false);
     void RemoveFont(int id, bool bShared = false);
     void RemoveAllFonts(bool bShared = false);
@@ -338,7 +338,7 @@ public:
 
     bool AttachDialog(CControlUI* pControl);
     bool InitControls(CControlUI* pControl, CControlUI* pParent = NULL);
-	bool RenameControl(CControlUI* pControl, LPCTSTR pstrName);
+	bool RenameControl(CControlUI* pControl, const CDuiString& strName);
     void ReapObjects(CControlUI* pControl);
 
     bool AddOptionGroup(LPCTSTR pStrGroupName, CControlUI* pControl);

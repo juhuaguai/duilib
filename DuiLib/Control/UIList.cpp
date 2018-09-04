@@ -566,11 +566,11 @@ void CListUI::SetItemBkColor(DWORD dwBkColor)
     Invalidate();
 }
 
-void CListUI::SetItemBkImage(LPCTSTR pStrImage)
+void CListUI::SetItemBkImage(const CDuiString& strImage)
 {
-	if( m_ListInfo.diBk.sDrawString == pStrImage && m_ListInfo.diBk.pImageInfo != NULL ) return;
+	if( m_ListInfo.diBk.sDrawString == strImage && m_ListInfo.diBk.pImageInfo != NULL ) return;
 	m_ListInfo.diBk.Clear();
-	m_ListInfo.diBk.sDrawString = pStrImage;
+	m_ListInfo.diBk.sDrawString = strImage;
 	Invalidate();
 }
 
@@ -595,7 +595,7 @@ DWORD CListUI::GetItemBkColor() const
 	return m_ListInfo.dwBkColor;
 }
 
-LPCTSTR CListUI::GetItemBkImage() const
+CDuiString CListUI::GetItemBkImage() const
 {
     return m_ListInfo.diBk.sDrawString;
 }
@@ -612,11 +612,11 @@ void CListUI::SetSelectedItemBkColor(DWORD dwBkColor)
     Invalidate();
 }
 
-void CListUI::SetSelectedItemImage(LPCTSTR pStrImage)
+void CListUI::SetSelectedItemImage(const CDuiString& strImage)
 {
-	if( m_ListInfo.diSelected.sDrawString == pStrImage && m_ListInfo.diSelected.pImageInfo != NULL ) return;
+	if( m_ListInfo.diSelected.sDrawString == strImage && m_ListInfo.diSelected.pImageInfo != NULL ) return;
 	m_ListInfo.diSelected.Clear();
-	m_ListInfo.diSelected.sDrawString = pStrImage;
+	m_ListInfo.diSelected.sDrawString = strImage;
 	Invalidate();
 }
 
@@ -630,7 +630,7 @@ DWORD CListUI::GetSelectedItemBkColor() const
 	return m_ListInfo.dwSelectedBkColor;
 }
 
-LPCTSTR CListUI::GetSelectedItemImage() const
+CDuiString CListUI::GetSelectedItemImage() const
 {
 	return m_ListInfo.diSelected.sDrawString;
 }
@@ -647,11 +647,11 @@ void CListUI::SetHotItemBkColor(DWORD dwBkColor)
     Invalidate();
 }
 
-void CListUI::SetHotItemImage(LPCTSTR pStrImage)
+void CListUI::SetHotItemImage(const CDuiString& strImage)
 {
-	if( m_ListInfo.diHot.sDrawString == pStrImage && m_ListInfo.diHot.pImageInfo != NULL ) return;
+	if( m_ListInfo.diHot.sDrawString == strImage && m_ListInfo.diHot.pImageInfo != NULL ) return;
 	m_ListInfo.diHot.Clear();
-	m_ListInfo.diHot.sDrawString = pStrImage;
+	m_ListInfo.diHot.sDrawString = strImage;
 	Invalidate();
 }
 
@@ -664,7 +664,7 @@ DWORD CListUI::GetHotItemBkColor() const
 	return m_ListInfo.dwHotBkColor;
 }
 
-LPCTSTR CListUI::GetHotItemImage() const
+CDuiString CListUI::GetHotItemImage() const
 {
 	return m_ListInfo.diHot.sDrawString;
 }
@@ -681,11 +681,11 @@ void CListUI::SetDisabledItemBkColor(DWORD dwBkColor)
     Invalidate();
 }
 
-void CListUI::SetDisabledItemImage(LPCTSTR pStrImage)
+void CListUI::SetDisabledItemImage(const CDuiString& strImage)
 {
-	if( m_ListInfo.diDisabled.sDrawString == pStrImage && m_ListInfo.diDisabled.pImageInfo != NULL ) return;
+	if( m_ListInfo.diDisabled.sDrawString == strImage && m_ListInfo.diDisabled.pImageInfo != NULL ) return;
 	m_ListInfo.diDisabled.Clear();
-	m_ListInfo.diDisabled.sDrawString = pStrImage;
+	m_ListInfo.diDisabled.sDrawString = strImage;
 	Invalidate();
 }
 
@@ -699,7 +699,7 @@ DWORD CListUI::GetDisabledItemBkColor() const
 	return m_ListInfo.dwDisabledBkColor;
 }
 
-LPCTSTR CListUI::GetDisabledItemImage() const
+CDuiString CListUI::GetDisabledItemImage() const
 {
 	return m_ListInfo.diDisabled.sDrawString;
 }
@@ -1573,68 +1573,68 @@ void CListHeaderItemUI::SetShowHtml(bool bShowHtml)
     Invalidate();
 }
 
-LPCTSTR CListHeaderItemUI::GetNormalImage() const
+CDuiString CListHeaderItemUI::GetNormalImage() const
 {
 	return m_diNormal.sDrawString;
 }
 
-void CListHeaderItemUI::SetNormalImage(LPCTSTR pStrImage)
+void CListHeaderItemUI::SetNormalImage(const CDuiString& strImage)
 {
-	if( m_diNormal.sDrawString == pStrImage && m_diNormal.pImageInfo != NULL ) return;
+	if( m_diNormal.sDrawString == strImage && m_diNormal.pImageInfo != NULL ) return;
 	m_diNormal.Clear();
-	m_diNormal.sDrawString = pStrImage;
+	m_diNormal.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CListHeaderItemUI::GetHotImage() const
+CDuiString CListHeaderItemUI::GetHotImage() const
 {
 	return m_diHot.sDrawString;
 }
 
-void CListHeaderItemUI::SetHotImage(LPCTSTR pStrImage)
+void CListHeaderItemUI::SetHotImage(const CDuiString& strImage)
 {
-	if( m_diHot.sDrawString == pStrImage && m_diHot.pImageInfo != NULL ) return;
+	if( m_diHot.sDrawString == strImage && m_diHot.pImageInfo != NULL ) return;
 	m_diHot.Clear();
-	m_diHot.sDrawString = pStrImage;
+	m_diHot.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CListHeaderItemUI::GetPushedImage() const
+CDuiString CListHeaderItemUI::GetPushedImage() const
 {
 	return m_diPushed.sDrawString;
 }
 
-void CListHeaderItemUI::SetPushedImage(LPCTSTR pStrImage)
+void CListHeaderItemUI::SetPushedImage(const CDuiString& strImage)
 {
-	if( m_diPushed.sDrawString == pStrImage && m_diPushed.pImageInfo != NULL ) return;
+	if( m_diPushed.sDrawString == strImage && m_diPushed.pImageInfo != NULL ) return;
 	m_diPushed.Clear();
-	m_diPushed.sDrawString = pStrImage;
+	m_diPushed.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CListHeaderItemUI::GetFocusedImage() const
+CDuiString CListHeaderItemUI::GetFocusedImage() const
 {
 	return m_diFocused.sDrawString;
 }
 
-void CListHeaderItemUI::SetFocusedImage(LPCTSTR pStrImage)
+void CListHeaderItemUI::SetFocusedImage(const CDuiString& strImage)
 {
-	if( m_diFocused.sDrawString == pStrImage && m_diFocused.pImageInfo != NULL ) return;
+	if( m_diFocused.sDrawString == strImage && m_diFocused.pImageInfo != NULL ) return;
 	m_diFocused.Clear();
-	m_diFocused.sDrawString = pStrImage;
+	m_diFocused.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CListHeaderItemUI::GetSepImage() const
+CDuiString CListHeaderItemUI::GetSepImage() const
 {
 	return m_diSep.sDrawString;
 }
 
-void CListHeaderItemUI::SetSepImage(LPCTSTR pStrImage)
+void CListHeaderItemUI::SetSepImage(const CDuiString& strImage)
 {
-	if( m_diSep.sDrawString == pStrImage && m_diSep.pImageInfo != NULL ) return;
+	if( m_diSep.sDrawString == strImage && m_diSep.pImageInfo != NULL ) return;
 	m_diSep.Clear();
-	m_diSep.sDrawString = pStrImage;
+	m_diSep.sDrawString = strImage;
 	Invalidate();
 }
 
@@ -1875,10 +1875,10 @@ void CListHeaderItemUI::PaintText(HDC hDC)
     if( m_sText.IsEmpty() ) return;
     int nLinks = 0;
     if( m_bShowHtml )
-        CRenderEngine::DrawHtmlText(hDC, m_pManager, rcText, m_sText, m_dwTextColor, \
+        CRenderEngine::DrawHtmlText(hDC, m_pManager, rcText, m_sText.GetData(), m_dwTextColor, \
         NULL, NULL, nLinks, m_iFont, m_uTextStyle);
     else
-        CRenderEngine::DrawText(hDC, m_pManager, rcText, m_sText, m_dwTextColor, \
+        CRenderEngine::DrawText(hDC, m_pManager, rcText, m_sText.GetData(), m_dwTextColor, \
         m_iFont, m_uTextStyle);
 }
 
@@ -2160,10 +2160,10 @@ void CListLabelElementUI::SetFixedHeight(int cy)
     CControlUI::SetFixedHeight(cy);
 }
 
-void CListLabelElementUI::SetText(LPCTSTR pstrText)
+void CListLabelElementUI::SetText(const CDuiString& strText)
 {
     m_bNeedEstimateSize = true;
-    CControlUI::SetText(pstrText);
+    CControlUI::SetText(strText);
 }
 
 void CListLabelElementUI::DoEvent(TEventUI& event)
@@ -2264,10 +2264,10 @@ SIZE CListLabelElementUI::EstimateSize(SIZE szAvailable)
                 RECT rcText = { 0, 0, 9999, m_cxyFixedLast.cy };
                 if( pInfo->bShowHtml ) {
                     int nLinks = 0;
-                    CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, NULL, NULL, nLinks, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+                    CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText.GetData(), 0, NULL, NULL, nLinks, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
                 }
                 else {
-                    CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+                    CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText.GetData(), 0, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
                 }
                 m_cxyFixedLast.cx = rcText.right - rcText.left + pInfo->rcTextPadding.left + pInfo->rcTextPadding.right;
             }
@@ -2281,10 +2281,10 @@ SIZE CListLabelElementUI::EstimateSize(SIZE szAvailable)
             rcText.right -= pInfo->rcTextPadding.right;
             if( pInfo->bShowHtml ) {
                 int nLinks = 0;
-                CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, NULL, NULL, nLinks, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+                CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText.GetData(), 0, NULL, NULL, nLinks, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
             }
             else {
-                CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+                CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText.GetData(), 0, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
             }
             m_cxyFixedLast.cy = rcText.bottom - rcText.top + pInfo->rcTextPadding.top + pInfo->rcTextPadding.bottom;
         }
@@ -2324,10 +2324,10 @@ void CListLabelElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
     rcText.bottom -= pInfo->rcTextPadding.bottom;
 
     if( pInfo->bShowHtml )
-        CRenderEngine::DrawHtmlText(hDC, m_pManager, rcText, m_sText, iTextColor, \
+        CRenderEngine::DrawHtmlText(hDC, m_pManager, rcText, m_sText.GetData(), iTextColor, \
         NULL, NULL, nLinks, pInfo->nFont, pInfo->uTextStyle);
     else
-        CRenderEngine::DrawText(hDC, m_pManager, rcText, m_sText, iTextColor, \
+        CRenderEngine::DrawText(hDC, m_pManager, rcText, m_sText.GetData(), iTextColor, \
         pInfo->nFont, pInfo->uTextStyle);
 }
 
@@ -2522,10 +2522,10 @@ SIZE CListTextElementUI::EstimateSize(SIZE szAvailable)
                 RECT rcText = { 0, 0, 9999, m_cxyFixedLast.cy };
                 if( pInfo->bShowHtml ) {
                     int nLinks = 0;
-                    CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, strText, 0, NULL, NULL, nLinks, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+                    CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, strText.GetData(), 0, NULL, NULL, nLinks, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
                 }
                 else {
-                    CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, strText, 0, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+                    CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, strText.GetData(), 0, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
                 }
                 m_cxyFixedLast.cx = rcText.right - rcText.left + pInfo->rcTextPadding.left + pInfo->rcTextPadding.right;
             }
@@ -2539,10 +2539,10 @@ SIZE CListTextElementUI::EstimateSize(SIZE szAvailable)
             rcText.right -= pInfo->rcTextPadding.right;
             if( pInfo->bShowHtml ) {
                 int nLinks = 0;
-                CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, strText, 0, NULL, NULL, nLinks, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+                CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, strText.GetData(), 0, NULL, NULL, nLinks, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
             }
             else {
-                CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, strText, 0, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+                CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, strText.GetData(), 0, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
             }
             m_cxyFixedLast.cy = rcText.bottom - rcText.top + pInfo->rcTextPadding.top + pInfo->rcTextPadding.bottom;
         }

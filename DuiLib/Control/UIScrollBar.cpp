@@ -187,55 +187,55 @@ void CScrollBarUI::SetButton1Color(DWORD dwColor)
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetButton1NormalImage()
+CDuiString CScrollBarUI::GetButton1NormalImage()
 {
 	return m_diButton1Normal.sDrawString;
 }
 
-void CScrollBarUI::SetButton1NormalImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetButton1NormalImage(const CDuiString& strImage)
 {
-	if( m_diButton1Normal.sDrawString == pStrImage && m_diButton1Normal.pImageInfo != NULL ) return;
+	if( m_diButton1Normal.sDrawString == strImage && m_diButton1Normal.pImageInfo != NULL ) return;
 	m_diButton1Normal.Clear();
-	m_diButton1Normal.sDrawString = pStrImage;
+	m_diButton1Normal.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetButton1HotImage()
+CDuiString CScrollBarUI::GetButton1HotImage()
 {
 	return m_diButton1Hot.sDrawString;
 }
 
-void CScrollBarUI::SetButton1HotImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetButton1HotImage(const CDuiString& strImage)
 {
-	if( m_diButton1Hot.sDrawString == pStrImage && m_diButton1Hot.pImageInfo != NULL ) return;
+	if( m_diButton1Hot.sDrawString == strImage && m_diButton1Hot.pImageInfo != NULL ) return;
 	m_diButton1Hot.Clear();
-	m_diButton1Hot.sDrawString = pStrImage;
+	m_diButton1Hot.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetButton1PushedImage()
+CDuiString CScrollBarUI::GetButton1PushedImage()
 {
 	return m_diButton1Pushed.sDrawString;
 }
 
-void CScrollBarUI::SetButton1PushedImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetButton1PushedImage(const CDuiString& strImage)
 {
-	if( m_diButton1Pushed.sDrawString == pStrImage && m_diButton1Pushed.pImageInfo != NULL ) return;
+	if( m_diButton1Pushed.sDrawString == strImage && m_diButton1Pushed.pImageInfo != NULL ) return;
 	m_diButton1Pushed.Clear();
-	m_diButton1Pushed.sDrawString = pStrImage;
+	m_diButton1Pushed.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetButton1DisabledImage()
+CDuiString CScrollBarUI::GetButton1DisabledImage()
 {
 	return m_diButton1Disabled.sDrawString;
 }
 
-void CScrollBarUI::SetButton1DisabledImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetButton1DisabledImage(const CDuiString& strImage)
 {
-	if( m_diButton1Disabled.sDrawString == pStrImage && m_diButton1Disabled.pImageInfo != NULL ) return;
+	if( m_diButton1Disabled.sDrawString == strImage && m_diButton1Disabled.pImageInfo != NULL ) return;
 	m_diButton1Disabled.Clear();
-	m_diButton1Disabled.sDrawString = pStrImage;
+	m_diButton1Disabled.sDrawString = strImage;
 	Invalidate();
 }
 
@@ -262,55 +262,55 @@ void CScrollBarUI::SetButton2Color(DWORD dwColor)
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetButton2NormalImage()
+CDuiString CScrollBarUI::GetButton2NormalImage()
 {
 	return m_diButton2Normal.sDrawString;
 }
 
-void CScrollBarUI::SetButton2NormalImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetButton2NormalImage(const CDuiString& strImage)
 {
-	if( m_diButton2Normal.sDrawString == pStrImage && m_diButton2Normal.pImageInfo != NULL ) return;
+	if( m_diButton2Normal.sDrawString == strImage && m_diButton2Normal.pImageInfo != NULL ) return;
 	m_diButton2Normal.Clear();
-	m_diButton2Normal.sDrawString = pStrImage;
+	m_diButton2Normal.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetButton2HotImage()
+CDuiString CScrollBarUI::GetButton2HotImage()
 {
 	return m_diButton2Hot.sDrawString;
 }
 
-void CScrollBarUI::SetButton2HotImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetButton2HotImage(const CDuiString& strImage)
 {
-	if( m_diButton2Hot.sDrawString == pStrImage && m_diButton2Hot.pImageInfo != NULL ) return;
+	if( m_diButton2Hot.sDrawString == strImage && m_diButton2Hot.pImageInfo != NULL ) return;
 	m_diButton2Hot.Clear();
-	m_diButton2Hot.sDrawString = pStrImage;
+	m_diButton2Hot.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetButton2PushedImage()
+CDuiString CScrollBarUI::GetButton2PushedImage()
 {
 	return m_diButton2Pushed.sDrawString;
 }
 
-void CScrollBarUI::SetButton2PushedImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetButton2PushedImage(const CDuiString& strImage)
 {
-	if( m_diButton2Pushed.sDrawString == pStrImage && m_diButton2Pushed.pImageInfo != NULL ) return;
+	if( m_diButton2Pushed.sDrawString == strImage && m_diButton2Pushed.pImageInfo != NULL ) return;
 	m_diButton2Pushed.Clear();
-	m_diButton2Pushed.sDrawString = pStrImage;
+	m_diButton2Pushed.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetButton2DisabledImage()
+CDuiString CScrollBarUI::GetButton2DisabledImage()
 {
 	return m_diButton2Disabled.sDrawString;
 }
 
-void CScrollBarUI::SetButton2DisabledImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetButton2DisabledImage(const CDuiString& strImage)
 {
-	if( m_diButton2Disabled.sDrawString == pStrImage && m_diButton2Disabled.pImageInfo != NULL ) return;
+	if( m_diButton2Disabled.sDrawString == strImage && m_diButton2Disabled.pImageInfo != NULL ) return;
 	m_diButton2Disabled.Clear();
-	m_diButton2Disabled.sDrawString = pStrImage;
+	m_diButton2Disabled.sDrawString = strImage;
 	Invalidate();
 }
 
@@ -326,159 +326,159 @@ void CScrollBarUI::SetThumbColor(DWORD dwColor)
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetThumbNormalImage()
+CDuiString CScrollBarUI::GetThumbNormalImage()
 {
 	return m_diThumbNormal.sDrawString;
 }
 
-void CScrollBarUI::SetThumbNormalImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetThumbNormalImage(const CDuiString& strImage)
 {
-	if( m_diThumbNormal.sDrawString == pStrImage && m_diThumbNormal.pImageInfo != NULL ) return;
+	if( m_diThumbNormal.sDrawString == strImage && m_diThumbNormal.pImageInfo != NULL ) return;
 	m_diThumbNormal.Clear();
-	m_diThumbNormal.sDrawString = pStrImage;
+	m_diThumbNormal.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetThumbHotImage()
+CDuiString CScrollBarUI::GetThumbHotImage()
 {
 	return m_diThumbHot.sDrawString;
 }
 
-void CScrollBarUI::SetThumbHotImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetThumbHotImage(const CDuiString& strImage)
 {
-	if( m_diThumbHot.sDrawString == pStrImage && m_diThumbHot.pImageInfo != NULL ) return;
+	if( m_diThumbHot.sDrawString == strImage && m_diThumbHot.pImageInfo != NULL ) return;
 	m_diThumbHot.Clear();
-	m_diThumbHot.sDrawString = pStrImage;
+	m_diThumbHot.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetThumbPushedImage()
+CDuiString CScrollBarUI::GetThumbPushedImage()
 {
 	return m_diThumbPushed.sDrawString;
 }
 
-void CScrollBarUI::SetThumbPushedImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetThumbPushedImage(const CDuiString& strImage)
 {
-	if( m_diThumbPushed.sDrawString == pStrImage && m_diThumbPushed.pImageInfo != NULL ) return;
+	if( m_diThumbPushed.sDrawString == strImage && m_diThumbPushed.pImageInfo != NULL ) return;
 	m_diThumbPushed.Clear();
-	m_diThumbPushed.sDrawString = pStrImage;
+	m_diThumbPushed.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetThumbDisabledImage()
+CDuiString CScrollBarUI::GetThumbDisabledImage()
 {
 	return m_diThumbDisabled.sDrawString;
 }
 
-void CScrollBarUI::SetThumbDisabledImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetThumbDisabledImage(const CDuiString& strImage)
 {
-	if( m_diThumbDisabled.sDrawString == pStrImage && m_diThumbDisabled.pImageInfo != NULL ) return;
+	if( m_diThumbDisabled.sDrawString == strImage && m_diThumbDisabled.pImageInfo != NULL ) return;
 	m_diThumbDisabled.Clear();
-	m_diThumbDisabled.sDrawString = pStrImage;
+	m_diThumbDisabled.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetRailNormalImage()
+CDuiString CScrollBarUI::GetRailNormalImage()
 {
 	return m_diRailNormal.sDrawString;
 }
 
-void CScrollBarUI::SetRailNormalImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetRailNormalImage(const CDuiString& strImage)
 {
-	if( m_diRailNormal.sDrawString == pStrImage && m_diRailNormal.pImageInfo != NULL ) return;
+	if( m_diRailNormal.sDrawString == strImage && m_diRailNormal.pImageInfo != NULL ) return;
 	m_diRailNormal.Clear();
-	m_diRailNormal.sDrawString = pStrImage;
+	m_diRailNormal.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetRailHotImage()
+CDuiString CScrollBarUI::GetRailHotImage()
 {
 	return m_diRailHot.sDrawString;
 }
 
-void CScrollBarUI::SetRailHotImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetRailHotImage(const CDuiString& strImage)
 {
-	if( m_diRailHot.sDrawString == pStrImage && m_diRailHot.pImageInfo != NULL ) return;
+	if( m_diRailHot.sDrawString == strImage && m_diRailHot.pImageInfo != NULL ) return;
 	m_diRailHot.Clear();
-	m_diRailHot.sDrawString = pStrImage;
+	m_diRailHot.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetRailPushedImage()
+CDuiString CScrollBarUI::GetRailPushedImage()
 {
 	return m_diRailPushed.sDrawString;
 }
 
-void CScrollBarUI::SetRailPushedImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetRailPushedImage(const CDuiString& strImage)
 {
-	if( m_diRailPushed.sDrawString == pStrImage && m_diRailPushed.pImageInfo != NULL ) return;
+	if( m_diRailPushed.sDrawString == strImage && m_diRailPushed.pImageInfo != NULL ) return;
 	m_diRailPushed.Clear();
-	m_diRailPushed.sDrawString = pStrImage;
+	m_diRailPushed.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetRailDisabledImage()
+CDuiString CScrollBarUI::GetRailDisabledImage()
 {
 	return m_diRailDisabled.sDrawString;
 }
 
-void CScrollBarUI::SetRailDisabledImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetRailDisabledImage(const CDuiString& strImage)
 {
-	if( m_diRailDisabled.sDrawString == pStrImage && m_diRailDisabled.pImageInfo != NULL ) return;
+	if( m_diRailDisabled.sDrawString == strImage && m_diRailDisabled.pImageInfo != NULL ) return;
 	m_diRailDisabled.Clear();
-	m_diRailDisabled.sDrawString = pStrImage;
+	m_diRailDisabled.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetBkNormalImage()
+CDuiString CScrollBarUI::GetBkNormalImage()
 {
 	return m_diBkNormal.sDrawString;
 }
 
-void CScrollBarUI::SetBkNormalImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetBkNormalImage(const CDuiString& strImage)
 {
-	if( m_diBkNormal.sDrawString == pStrImage && m_diBkNormal.pImageInfo != NULL ) return;
+	if( m_diBkNormal.sDrawString == strImage && m_diBkNormal.pImageInfo != NULL ) return;
 	m_diBkNormal.Clear();
-	m_diBkNormal.sDrawString = pStrImage;
+	m_diBkNormal.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetBkHotImage()
+CDuiString CScrollBarUI::GetBkHotImage()
 {
 	return m_diBkHot.sDrawString;
 }
 
-void CScrollBarUI::SetBkHotImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetBkHotImage(const CDuiString& strImage)
 {
-	if( m_diBkHot.sDrawString == pStrImage && m_diBkHot.pImageInfo != NULL ) return;
+	if( m_diBkHot.sDrawString == strImage && m_diBkHot.pImageInfo != NULL ) return;
 	m_diBkHot.Clear();
-	m_diBkHot.sDrawString = pStrImage;
+	m_diBkHot.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetBkPushedImage()
+CDuiString CScrollBarUI::GetBkPushedImage()
 {
 	return m_diBkPushed.sDrawString;
 }
 
-void CScrollBarUI::SetBkPushedImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetBkPushedImage(const CDuiString& strImage)
 {
-	if( m_diBkPushed.sDrawString == pStrImage && m_diBkPushed.pImageInfo != NULL ) return;
+	if( m_diBkPushed.sDrawString == strImage && m_diBkPushed.pImageInfo != NULL ) return;
 	m_diBkPushed.Clear();
-	m_diBkPushed.sDrawString = pStrImage;
+	m_diBkPushed.sDrawString = strImage;
 	Invalidate();
 }
 
-LPCTSTR CScrollBarUI::GetBkDisabledImage()
+CDuiString CScrollBarUI::GetBkDisabledImage()
 {
 	return m_diBkDisabled.sDrawString;
 }
 
-void CScrollBarUI::SetBkDisabledImage(LPCTSTR pStrImage)
+void CScrollBarUI::SetBkDisabledImage(const CDuiString& strImage)
 {
-	if( m_diBkDisabled.sDrawString == pStrImage && m_diBkDisabled.pImageInfo != NULL ) return;
+	if( m_diBkDisabled.sDrawString == strImage && m_diBkDisabled.pImageInfo != NULL ) return;
 	m_diBkDisabled.Clear();
-	m_diBkDisabled.sDrawString = pStrImage;
+	m_diBkDisabled.sDrawString = strImage;
 	Invalidate();
 }
 

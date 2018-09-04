@@ -22,12 +22,12 @@ namespace DuiLib
 		RECT GetThumbRect() const;
 		bool IsImmMode() const;
 		void SetImmMode(bool bImmMode);
-		LPCTSTR GetThumbImage() const;
-		void SetThumbImage(LPCTSTR pStrImage);
-		LPCTSTR GetThumbHotImage() const;
-		void SetThumbHotImage(LPCTSTR pStrImage);
-		LPCTSTR GetThumbPushedImage() const;
-		void SetThumbPushedImage(LPCTSTR pStrImage);
+		CDuiString GetThumbImage() const;
+		void SetThumbImage(const CDuiString& strImage);
+		CDuiString GetThumbHotImage() const;
+		void SetThumbHotImage(const CDuiString& strImage);
+		CDuiString GetThumbPushedImage() const;
+		void SetThumbPushedImage(const CDuiString& strImage);
 
 		void DoEvent(TEventUI& event);
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);

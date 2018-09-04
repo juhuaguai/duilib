@@ -326,13 +326,13 @@ void MainFrame::OnPrepare(TNotifyUI& msg)
 
 void MainFrame::Notify(TNotifyUI& msg)
 {
-	if (_tcsicmp(msg.sType, _T("windowinit")) == 0)
+	if (_tcsicmp(msg.sType.GetData(), _T("windowinit")) == 0)
 	{
 		OnPrepare(msg);
 	}
-	else if (_tcsicmp(msg.sType, _T("killfocus")) == 0)
+	else if (_tcsicmp(msg.sType.GetData(), _T("killfocus")) == 0)
 	{
-		if (_tcsicmp(msg.pSender->GetName(), kSignatureControlName) == 0)
+		if (_tcsicmp(msg.pSender->GetName().GetData(), kSignatureControlName) == 0)
 		{
 			msg.pSender->SetVisible(false);
 			CControlUI* signature_tip = m_PaintManager.FindControl(kSignatureTipsControlName);
@@ -344,7 +344,7 @@ void MainFrame::Notify(TNotifyUI& msg)
 				signature_tip->SetVisible(true);
 			}
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kSearchEditControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kSearchEditControlName) == 0)
 		{
 			msg.pSender->SetVisible(false);
 			CControlUI* search_tip = static_cast<CRichEditUI*>(m_PaintManager.FindControl(kSearchEditTipControlName));
@@ -357,13 +357,13 @@ void MainFrame::Notify(TNotifyUI& msg)
 			}
 		}
 	}
-	else if (_tcsicmp(msg.sType, _T("click")) == 0)
+	else if (_tcsicmp(msg.sType.GetData(), _T("click")) == 0)
 	{
-		if (_tcsicmp(msg.pSender->GetName(), kCloseButtonControlName) == 0)
+		if (_tcsicmp(msg.pSender->GetName().GetData(), kCloseButtonControlName) == 0)
 		{
 			OnExit(msg);
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kMinButtonControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kMinButtonControlName) == 0)
 		{
 #if defined(UNDER_CE)
 			::ShowWindow(m_hWnd, SW_MINIMIZE);
@@ -371,7 +371,7 @@ void MainFrame::Notify(TNotifyUI& msg)
 			SendMessage(WM_SYSCOMMAND, SC_MINIMIZE, 0);
 #endif
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kMaxButtonControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kMaxButtonControlName) == 0)
 		{
 #if defined(UNDER_CE)
 			::ShowWindow(m_hWnd, SW_MAXIMIZE);
@@ -383,7 +383,7 @@ void MainFrame::Notify(TNotifyUI& msg)
 			SendMessage(WM_SYSCOMMAND, SC_MAXIMIZE, 0);
 #endif
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kRestoreButtonControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kRestoreButtonControlName) == 0)
 		{
 #if defined(UNDER_CE)
 			::ShowWindow(m_hWnd, SW_RESTORE);
@@ -395,7 +395,7 @@ void MainFrame::Notify(TNotifyUI& msg)
 			SendMessage(WM_SYSCOMMAND, SC_RESTORE, 0);
 #endif
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kHideLeftMainPannelControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kHideLeftMainPannelControlName) == 0)
 		{
 			CControlUI* left_main_pannel = m_PaintManager.FindControl(kLeftMainPannelControlName);
 			CControlUI* hide_left_main_pannel = m_PaintManager.FindControl(kHideLeftMainPannelControlName);
@@ -407,7 +407,7 @@ void MainFrame::Notify(TNotifyUI& msg)
 				show_left_main_pannel->SetVisible(true);
 			}
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kShowLeftMainPannelControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kShowLeftMainPannelControlName) == 0)
 		{
 			CControlUI* left_main_pannel = m_PaintManager.FindControl(kLeftMainPannelControlName);
 			CControlUI* hide_left_main_pannel = m_PaintManager.FindControl(kHideLeftMainPannelControlName);
@@ -419,7 +419,7 @@ void MainFrame::Notify(TNotifyUI& msg)
 				show_left_main_pannel->SetVisible(false);
 			}
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kSignatureTipsControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kSignatureTipsControlName) == 0)
 		{
 			msg.pSender->SetVisible(false);
 			CRichEditUI* signature = static_cast<CRichEditUI*>(m_PaintManager.FindControl(kSignatureControlName));
@@ -429,7 +429,7 @@ void MainFrame::Notify(TNotifyUI& msg)
 				signature->SetVisible(true);
 			}
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kSearchEditTipControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kSearchEditTipControlName) == 0)
 		{
 			msg.pSender->SetVisible(false);
 			CRichEditUI* search_edit = static_cast<CRichEditUI*>(m_PaintManager.FindControl(kSearchEditControlName));
@@ -439,7 +439,7 @@ void MainFrame::Notify(TNotifyUI& msg)
 				search_edit->SetVisible(true);
 			}
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kChangeBkSkinControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kChangeBkSkinControlName) == 0)
 		{
 			CControlUI* background = m_PaintManager.FindControl(kBackgroundControlName);
 			if (background != NULL)
@@ -461,7 +461,7 @@ void MainFrame::Notify(TNotifyUI& msg)
 				if (background != NULL)
 				{
 					param.bkcolor = background->GetBkColor();
-					if (_tcslen(background->GetBkImage()) > 0)
+					if (_tcslen(background->GetBkImage().GetData()) > 0)
 					{
 #if defined(UNDER_WINCE)
 						_stprintf(szBuf, _T("bg%d.png"), bk_image_index_);
@@ -475,7 +475,7 @@ void MainFrame::Notify(TNotifyUI& msg)
 				skin_changed_observer_.Broadcast(param);
 			}
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kChangeColorSkinControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kChangeColorSkinControlName) == 0)
 		{
 			CDuiRect rcWindow;
 			GetWindowRect(m_hWnd, &rcWindow);
@@ -483,14 +483,14 @@ void MainFrame::Notify(TNotifyUI& msg)
 			new ColorSkinWindow(this, rcWindow);
 		}
 	}
-	else if (_tcsicmp(msg.sType, _T("timer")) == 0)
+	else if (_tcsicmp(msg.sType.GetData(), _T("timer")) == 0)
 	{
 		return OnTimer(msg);
 	}
-	else if (_tcsicmp(msg.sType, _T("selectchanged")) == 0)
+	else if (_tcsicmp(msg.sType.GetData(), _T("selectchanged")) == 0)
 	{
 		CTabLayoutUI* pTabControl = static_cast<CTabLayoutUI*>(m_PaintManager.FindControl(kTabControlName));
-		if (_tcsicmp(msg.pSender->GetName(), kFriendButtonControlName) == 0)
+		if (_tcsicmp(msg.pSender->GetName().GetData(), kFriendButtonControlName) == 0)
 		{
 			if (pTabControl && pTabControl->GetCurSel() != 0)
 			{
@@ -498,7 +498,7 @@ void MainFrame::Notify(TNotifyUI& msg)
 				UpdateFriendsList();
 			}
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kGroupButtonControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kGroupButtonControlName) == 0)
 		{
 			if (pTabControl && pTabControl->GetCurSel() != 1)
 			{
@@ -506,7 +506,7 @@ void MainFrame::Notify(TNotifyUI& msg)
 				UpdateGroupsList();
 			}
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kMicroBlogButtonControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kMicroBlogButtonControlName) == 0)
 		{
 			if (pTabControl && pTabControl->GetCurSel() != 2)
 			{
@@ -515,7 +515,7 @@ void MainFrame::Notify(TNotifyUI& msg)
 			}
 		}
 	}
-	else if (_tcsicmp(msg.sType, _T("itemactivate")) == 0)
+	else if (_tcsicmp(msg.sType.GetData(), _T("itemactivate")) == 0)
 	{
 		CTabLayoutUI* pTabControl = static_cast<CTabLayoutUI*>(m_PaintManager.FindControl(kTabControlName));
 		if (pTabControl != NULL)
@@ -536,14 +536,14 @@ void MainFrame::Notify(TNotifyUI& msg)
 
 							for (std::vector<FriendListItemInfo>::const_iterator citer = friends_.begin(); citer != friends_.end(); ++citer)
 							{
-								if (_tcsicmp(citer->id, node->data().value) == 0)
+								if (_tcsicmp(citer->id.GetData(), node->data().value.GetData()) == 0)
 								{
 									friend_info = *citer;
 									break;
 								}
 							}
 							TCHAR szBuf[MAX_PATH] = {0};
-							if (_tcslen(background->GetBkImage()) > 0)
+							if (_tcslen(background->GetBkImage().GetData()) > 0)
 							{
 #if defined(UNDER_WINCE)
 								_stprintf(szBuf, _T("bg%d.png"), bk_image_index_);
@@ -570,7 +570,7 @@ void MainFrame::Notify(TNotifyUI& msg)
 			}
 		}
 	}
-	else if (_tcsicmp(msg.sType, _T("itemclick")) == 0)
+	else if (_tcsicmp(msg.sType.GetData(), _T("itemclick")) == 0)
 	{
 		CTabLayoutUI* pTabControl = static_cast<CTabLayoutUI*>(m_PaintManager.FindControl(kTabControlName));
 		if (pTabControl != NULL)

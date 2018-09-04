@@ -51,8 +51,8 @@ namespace DuiLib
 		CWebBrowserUI();
 		virtual ~CWebBrowserUI();
 
-		void SetHomePage(LPCTSTR lpszUrl);
-		LPCTSTR GetHomePage();
+		void SetHomePage(const CDuiString& strUrl);
+		CDuiString GetHomePage();
 
 		void SetAutoNavigation(bool bAuto = TRUE);
 		bool IsAutoNavigation();

@@ -302,20 +302,20 @@ void ChatDialog::SendMsg()
 
 void ChatDialog::Notify(TNotifyUI& msg)
 {
-	if (_tcsicmp(msg.sType, _T("windowinit")) == 0)
+	if (_tcsicmp(msg.sType.GetData(), _T("windowinit")) == 0)
 	{
 		OnPrepare(msg);
 	}
-	else if (_tcsicmp(msg.sType, _T("killfocus")) == 0)
+	else if (_tcsicmp(msg.sType.GetData(), _T("killfocus")) == 0)
 	{
 	}
-	else if (_tcsicmp(msg.sType, _T("click")) == 0)
+	else if (_tcsicmp(msg.sType.GetData(), _T("click")) == 0)
 	{
-		if (_tcsicmp(msg.pSender->GetName(), kCloseButtonControlName) == 0)
+		if (_tcsicmp(msg.pSender->GetName().GetData(), kCloseButtonControlName) == 0)
 		{
 			OnExit(msg);
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kMinButtonControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kMinButtonControlName) == 0)
 		{
 #if defined(UNDER_CE)
 			::ShowWindow(m_hWnd, SW_MINIMIZE);
@@ -323,7 +323,7 @@ void ChatDialog::Notify(TNotifyUI& msg)
 			SendMessage(WM_SYSCOMMAND, SC_MINIMIZE, 0);
 #endif
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kMaxButtonControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kMaxButtonControlName) == 0)
 		{
 #if defined(UNDER_CE)
 			::ShowWindow(m_hWnd, SW_MAXIMIZE);
@@ -335,7 +335,7 @@ void ChatDialog::Notify(TNotifyUI& msg)
 			SendMessage(WM_SYSCOMMAND, SC_MAXIMIZE, 0);
 #endif
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kRestoreButtonControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kRestoreButtonControlName) == 0)
 		{
 #if defined(UNDER_CE)
 			::ShowWindow(m_hWnd, SW_RESTORE);
@@ -347,13 +347,13 @@ void ChatDialog::Notify(TNotifyUI& msg)
 			SendMessage(WM_SYSCOMMAND, SC_RESTORE, 0);
 #endif
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kFontButtonControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kFontButtonControlName) == 0)
 		{
 			CContainerUI* pFontbar = static_cast<CContainerUI*>(m_PaintManager.FindControl(kFontbarControlName));
 			if (pFontbar != NULL)
 				pFontbar->SetVisible(!pFontbar->IsVisible());
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kEmotionButtonControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kEmotionButtonControlName) == 0)
 		{
 			POINT pt = {0};
 			CDuiRect rcEmotionBtn = msg.pSender->GetPos();
@@ -364,25 +364,25 @@ void ChatDialog::Notify(TNotifyUI& msg)
 			pt.x = rcWindow.left + rcEmotionBtn.left;
 			//emotion_list_window_.SelectEmotion(pt);
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kSendButtonControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kSendButtonControlName) == 0)
         {
             SendMsg();
 		}
 	}
-    else if( _tcsicmp(msg.sType, _T("return")) == 0 ) 
+    else if( _tcsicmp(msg.sType.GetData(), _T("return")) == 0 ) 
     {
-        if (_tcsicmp(msg.pSender->GetName(), kInputRichEditControlName) == 0)
+        if (_tcsicmp(msg.pSender->GetName().GetData(), kInputRichEditControlName) == 0)
         {
             SendMsg();
         }
     }
-	else if (_tcsicmp(msg.sType, _T("timer")) == 0)
+	else if (_tcsicmp(msg.sType.GetData(), _T("timer")) == 0)
 	{
 		return OnTimer(msg);
 	}
-	else if (_tcsicmp(msg.sType, _T("selectchanged")) == 0)
+	else if (_tcsicmp(msg.sType.GetData(), _T("selectchanged")) == 0)
 	{
-		if (_tcsicmp(msg.pSender->GetName(), kColorButtonControlName) == 0)
+		if (_tcsicmp(msg.pSender->GetName().GetData(), kColorButtonControlName) == 0)
 		{
 			CContainerUI* pFontbar = static_cast<CContainerUI*>(m_PaintManager.FindControl(kFontbarControlName));
 			if (pFontbar != NULL)
@@ -398,7 +398,7 @@ void ChatDialog::Notify(TNotifyUI& msg)
 				new CColorPicker(this, pt);
 			}
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kBoldButtonControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kBoldButtonControlName) == 0)
 		{
 			COptionUI* bold_button = static_cast<COptionUI*>(msg.pSender);
 			if (bold_button != NULL)
@@ -407,7 +407,7 @@ void ChatDialog::Notify(TNotifyUI& msg)
 				FontStyleChanged();
 			}
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kItalicButtonControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kItalicButtonControlName) == 0)
 		{
 			COptionUI* italic_button = static_cast<COptionUI*>(msg.pSender);
 			if (italic_button != NULL)
@@ -416,7 +416,7 @@ void ChatDialog::Notify(TNotifyUI& msg)
 				FontStyleChanged();
 			}
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), KUnderlineButtonControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), KUnderlineButtonControlName) == 0)
 		{
 			COptionUI* underline_button = static_cast<COptionUI*>(msg.pSender);
 			if (underline_button != NULL)
@@ -426,9 +426,9 @@ void ChatDialog::Notify(TNotifyUI& msg)
 			}
 		}
 	}
-	else if (_tcsicmp(msg.sType, _T("itemselect")) == 0)
+	else if (_tcsicmp(msg.sType.GetData(), _T("itemselect")) == 0)
 	{
-		if (_tcsicmp(msg.pSender->GetName(), kFontTypeControlName) == 0)
+		if (_tcsicmp(msg.pSender->GetName().GetData(), kFontTypeControlName) == 0)
 		{
 			CComboUI* font_type = static_cast<CComboUI*>(msg.pSender);
 			if (font_type != NULL)
@@ -437,12 +437,12 @@ void ChatDialog::Notify(TNotifyUI& msg)
 				FontStyleChanged();
 			}
 		}
-		else if (_tcsicmp(msg.pSender->GetName(), kFontSizeControlName) == 0)
+		else if (_tcsicmp(msg.pSender->GetName().GetData(), kFontSizeControlName) == 0)
 		{
 			CComboUI* font_size = static_cast<CComboUI*>(msg.pSender);
 			if (font_size != NULL)
 			{
-				font_size_ = _ttoi(font_size->GetText());
+				font_size_ = _ttoi(font_size->GetText().GetData());
 				FontStyleChanged();
 			}
 		}

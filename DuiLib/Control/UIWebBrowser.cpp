@@ -27,7 +27,7 @@ bool CWebBrowserUI::DoCreateControl()
 	GetControl(IID_IWebBrowser2,(LPVOID*)&m_pWebBrowser2);
 	if ( m_bAutoNavi && !m_sHomePage.IsEmpty())
 	{
-		this->Navigate2(m_sHomePage);
+		this->Navigate2(m_sHomePage.GetData());
 	}
 	RegisterEventHandler(TRUE);
 	return true;
@@ -71,7 +71,19 @@ STDMETHODIMP CWebBrowserUI::GetTypeInfo( UINT iTInfo, LCID lcid, ITypeInfo **ppT
 
 STDMETHODIMP CWebBrowserUI::GetIDsOfNames( REFIID riid, OLECHAR **rgszNames, UINT cNames, LCID lcid,DISPID *rgDispId )
 {
+#ifdef UNICODE
 	CDuiString strCallName = rgszNames[0];
+#else
+	int nLength = ::WideCharToMultiByte(CP_ACP, 0, rgszNames[0], -1, NULL, 0, NULL, FALSE);
+	if (nLength < 1)
+		return E_NOTIMPL;
+
+	char* pszValue = new char[nLength+1];
+	memset(pszValue,0,nLength+1);
+	::WideCharToMultiByte(CP_ACP, 0, rgszNames[0], -1, pszValue, nLength, NULL, FALSE);
+	CDuiString strCallName = pszValue;
+#endif
+	
 	JSCallInfo* pInfo = NULL;
 	for( int i=0; i<m_aJsCallInfo.GetSize(); i++ )
 	{
@@ -536,7 +548,7 @@ void CWebBrowserUI::SetAttribute( LPCTSTR pstrName, LPCTSTR pstrValue )
 void CWebBrowserUI::NavigateHomePage()
 {
 	if (!m_sHomePage.IsEmpty())
-		this->NavigateUrl(m_sHomePage);
+		this->NavigateUrl(m_sHomePage.GetData());
 }
 
 void CWebBrowserUI::NavigateUrl( LPCTSTR lpszUrl )
@@ -558,12 +570,12 @@ LPVOID CWebBrowserUI::GetInterface( LPCTSTR pstrName )
 	return CActiveXUI::GetInterface(pstrName);
 }
 
-void CWebBrowserUI::SetHomePage( LPCTSTR lpszUrl )
+void CWebBrowserUI::SetHomePage(const CDuiString& strUrl)
 {
-	m_sHomePage.Format(_T("%s"),lpszUrl);
+	m_sHomePage = strUrl;
 }
 
-LPCTSTR CWebBrowserUI::GetHomePage()
+CDuiString CWebBrowserUI::GetHomePage()
 {
 	return m_sHomePage;
 }

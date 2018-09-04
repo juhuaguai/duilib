@@ -42,14 +42,14 @@ public:
     void SetLimitText(int iChars);
     long GetTextLength(DWORD dwFlags = GTL_DEFAULT) const;
     CDuiString GetText() const;
-    void SetText(LPCTSTR pstrText);
+    void SetText(const CDuiString& strText);
     bool IsModify() const;
     void SetModify(bool bModified = true) const;
     void GetSel(CHARRANGE &cr) const;
     void GetSel(long& nStartChar, long& nEndChar) const;
     int SetSel(CHARRANGE &cr);
     int SetSel(long nStartChar, long nEndChar);
-    void ReplaceSel(LPCTSTR lpszNewText, bool bCanUndo);
+    void ReplaceSel(const CDuiString& strNewText, bool bCanUndo);
     void ReplaceSelW(LPCWSTR lpszNewText, bool bCanUndo = false);
     CDuiString GetSelText() const;
     int SetSelAll();
@@ -145,10 +145,10 @@ public:
 
 	void SetPasswordChar(TCHAR chPasswordChar);
 
-	LPCTSTR GetFocusedImage();
-	void SetFocusedImage(LPCTSTR pStrImage);
-	LPCTSTR GetDisabledImage();
-	void SetDisabledImage(LPCTSTR pStrImage);
+	CDuiString GetFocusedImage();
+	void SetFocusedImage(const CDuiString& strImage);
+	CDuiString GetDisabledImage();
+	void SetDisabledImage(const CDuiString& strImage);
 
     LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled);
 

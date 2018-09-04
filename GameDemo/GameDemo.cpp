@@ -313,12 +313,12 @@ public:
                 if( pFontInfo->iSize < 18 ) {
                     TFontInfo* pFontInfo = m_pm.GetFontInfo(0);
                     if( pFontInfo )m_pm.SetDefaultFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, 
-                        pFontInfo->bUnderline, pFontInfo->bItalic);
+                        pFontInfo->bUnderline, pFontInfo->bItalic,pFontInfo->bStrikeOut);
                 }
                 else {
                     TFontInfo* pFontInfo = m_pm.GetFontInfo(1);
                     if( pFontInfo )m_pm.SetDefaultFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, 
-                        pFontInfo->bUnderline, pFontInfo->bItalic);
+                        pFontInfo->bUnderline, pFontInfo->bItalic,pFontInfo->bStrikeOut);
                 }
                 m_pm.GetRoot()->NeedUpdate();
             }

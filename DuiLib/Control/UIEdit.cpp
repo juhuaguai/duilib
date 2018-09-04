@@ -59,7 +59,7 @@ namespace DuiLib
 		SetWindowFont(m_hWnd, hFont, TRUE);
 		Edit_LimitText(m_hWnd, m_pOwner->GetMaxChar());
 		if( m_pOwner->IsPasswordMode() ) Edit_SetPasswordChar(m_hWnd, m_pOwner->GetPasswordChar());
-		Edit_SetText(m_hWnd, m_pOwner->GetText());
+		Edit_SetText(m_hWnd, m_pOwner->GetText().GetData());
 		Edit_SetModify(m_hWnd, FALSE);
 		SendMessage(EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN, MAKELPARAM(0, 0));
 		Edit_Enable(m_hWnd, m_pOwner->IsEnabled() == true);
@@ -387,10 +387,10 @@ namespace DuiLib
 		}
 	}
 
-	void CEditUI::SetText(LPCTSTR pstrText)
+	void CEditUI::SetText(const CDuiString& strText)
 	{
-		m_sText = pstrText;
-		if( m_pWindow != NULL ) Edit_SetText(*m_pWindow, m_sText);
+		m_sText = strText;
+		if( m_pWindow != NULL ) Edit_SetText(*m_pWindow, m_sText.GetData());
 		Invalidate();
 	}
 
@@ -482,55 +482,55 @@ namespace DuiLib
 		m_bAutoSelAll = bAutoSelAll;
 	}
 
-	LPCTSTR CEditUI::GetNormalImage()
+	CDuiString CEditUI::GetNormalImage()
 	{
 		return m_diNormal.sDrawString;
 	}
 
-	void CEditUI::SetNormalImage(LPCTSTR pStrImage)
+	void CEditUI::SetNormalImage(const CDuiString& strImage)
 	{
-		if( m_diNormal.sDrawString == pStrImage && m_diNormal.pImageInfo != NULL ) return;
+		if( m_diNormal.sDrawString == strImage && m_diNormal.pImageInfo != NULL ) return;
 		m_diNormal.Clear();
-		m_diNormal.sDrawString = pStrImage;
+		m_diNormal.sDrawString = strImage;
 		Invalidate();
 	}
 
-	LPCTSTR CEditUI::GetHotImage()
+	CDuiString CEditUI::GetHotImage()
 	{
 		return m_diHot.sDrawString;	
 	}
 
-	void CEditUI::SetHotImage(LPCTSTR pStrImage)
+	void CEditUI::SetHotImage(const CDuiString& strImage)
 	{
-		if( m_diHot.sDrawString == pStrImage && m_diHot.pImageInfo != NULL ) return;
+		if( m_diHot.sDrawString == strImage && m_diHot.pImageInfo != NULL ) return;
 		m_diHot.Clear();
-		m_diHot.sDrawString = pStrImage;
+		m_diHot.sDrawString = strImage;
 		Invalidate();
 	}
 
-	LPCTSTR CEditUI::GetFocusedImage()
+	CDuiString CEditUI::GetFocusedImage()
 	{
 		return m_diFocused.sDrawString;	
 	}
 
-	void CEditUI::SetFocusedImage(LPCTSTR pStrImage)
+	void CEditUI::SetFocusedImage(const CDuiString& strImage)
 	{
-		if( m_diFocused.sDrawString == pStrImage && m_diFocused.pImageInfo != NULL ) return;
+		if( m_diFocused.sDrawString == strImage && m_diFocused.pImageInfo != NULL ) return;
 		m_diFocused.Clear();
-		m_diFocused.sDrawString = pStrImage;
+		m_diFocused.sDrawString = strImage;
 		Invalidate();
 	}
 
-	LPCTSTR CEditUI::GetDisabledImage()
+	CDuiString CEditUI::GetDisabledImage()
 	{
 		return m_diDisabled.sDrawString;	
 	}
 
-	void CEditUI::SetDisabledImage(LPCTSTR pStrImage)
+	void CEditUI::SetDisabledImage(const CDuiString& strImage)
 	{
-		if( m_diDisabled.sDrawString == pStrImage && m_diDisabled.pImageInfo != NULL ) return;
+		if( m_diDisabled.sDrawString == strImage && m_diDisabled.pImageInfo != NULL ) return;
 		m_diDisabled.Clear();
-		m_diDisabled.sDrawString = pStrImage;
+		m_diDisabled.sDrawString = strImage;
 		Invalidate();
 	}
 
@@ -554,9 +554,9 @@ namespace DuiLib
 		SetSel(0,-1);
 	}
 
-	void CEditUI::SetReplaceSel(LPCTSTR lpszReplace)
+	void CEditUI::SetReplaceSel(const CDuiString& strReplace)
 	{
-		if( m_pWindow != NULL ) Edit_ReplaceSel(*m_pWindow, lpszReplace);
+		if( m_pWindow != NULL ) Edit_ReplaceSel(*m_pWindow, strReplace.GetData());
 	}
 
 	void CEditUI::SetPos(RECT rc, bool bNeedInvalidate)
@@ -676,11 +676,11 @@ namespace DuiLib
 		if(!GetEnabledEffect())
 		{
 			if( IsEnabled() ) {
-				CRenderEngine::DrawText(hDC, m_pManager, rc, sText, m_dwTextColor, \
+				CRenderEngine::DrawText(hDC, m_pManager, rc, sText.GetData(), m_dwTextColor, \
 					m_iFont, DT_SINGLELINE | m_uTextStyle);
 			}
 			else {
-				CRenderEngine::DrawText(hDC, m_pManager, rc, sText, m_dwDisabledTextColor, \
+				CRenderEngine::DrawText(hDC, m_pManager, rc, sText.GetData(), m_dwDisabledTextColor, \
 					m_iFont, DT_SINGLELINE | m_uTextStyle);
 			}
 		}
@@ -708,7 +708,7 @@ namespace DuiLib
 			SolidBrush nSolidBrush(ARGB2Color(clrColor));
 
 #ifdef _UNICODE
-			nGraphics.DrawString(sText,sText.GetLength(),&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
+			nGraphics.DrawString(sText.GetData(),sText.GetLength(),&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
 #else
 			int iLen = sText.GetLength();
 			LPWSTR  pWideText = NULL;

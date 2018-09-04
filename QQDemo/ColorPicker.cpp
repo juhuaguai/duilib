@@ -47,7 +47,7 @@ void CColorPicker::OnFinalMessage(HWND hWnd)
 
 void CColorPicker::Notify(TNotifyUI& msg)
 {
-	if (_tcsicmp(msg.sType, _T("click")) == 0)
+	if (_tcsicmp(msg.sType.GetData(), _T("click")) == 0)
 	{
 		CControlUI* pOne = static_cast<CControlUI*>(m_PaintManager.FindControl(msg.ptMouse));
 		if (_tcsicmp(pOne->GetClass(), DUI_CTR_BUTTON) == 0)

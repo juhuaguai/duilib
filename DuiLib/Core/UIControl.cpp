@@ -64,11 +64,11 @@ CDuiString CControlUI::GetName() const
     return m_sName;
 }
 
-void CControlUI::SetName(LPCTSTR pstrName)
+void CControlUI::SetName(const CDuiString& strName)
 {
-	if (m_sName != pstrName) {
-		m_sName = pstrName;
-		if (m_pManager != NULL) m_pManager->RenameControl(this, pstrName);
+	if (m_sName != strName) {
+		m_sName = strName;
+		if (m_pManager != NULL) m_pManager->RenameControl(this, strName);
 	}
 }
 
@@ -140,11 +140,11 @@ CDuiString CControlUI::GetText() const
     return m_sText;
 }
 
-void CControlUI::SetText(LPCTSTR pstrText)
+void CControlUI::SetText(const CDuiString& strText)
 {
-    if( m_sText == pstrText ) return;
+    if( m_sText == strText ) return;
 
-    m_sText = pstrText;
+    m_sText = strText;
     Invalidate();
 }
 
@@ -187,16 +187,16 @@ void CControlUI::SetBkColor3(DWORD dwBackColor)
     Invalidate();
 }
 
-LPCTSTR CControlUI::GetBkImage()
+CDuiString CControlUI::GetBkImage()
 {
     return m_diBk.sDrawString;
 }
 
-void CControlUI::SetBkImage(LPCTSTR pStrImage)
+void CControlUI::SetBkImage(const CDuiString& strImage)
 {
-	if( m_diBk.sDrawString == pStrImage && m_diBk.pImageInfo != NULL ) return;
+	if( m_diBk.sDrawString == strImage && m_diBk.pImageInfo != NULL ) return;
 	m_diBk.Clear();
-	m_diBk.sDrawString = pStrImage;
+	m_diBk.sDrawString = strImage;
 	DrawImage(NULL, m_diBk);
 	if( m_bFloat && m_cxyFixed.cx == 0 && m_cxyFixed.cy == 0 && m_diBk.pImageInfo ) {
 		m_cxyFixed.cx = m_diBk.pImageInfo->nX;
@@ -205,16 +205,16 @@ void CControlUI::SetBkImage(LPCTSTR pStrImage)
 	Invalidate();
 }
 
-LPCTSTR CControlUI::GetForeImage()
+CDuiString CControlUI::GetForeImage()
 {
 	return m_diFore.sDrawString;
 }
 
-void CControlUI::SetForeImage( LPCTSTR pStrImage )
+void CControlUI::SetForeImage( const CDuiString& strImage )
 {
-	if( m_diFore.sDrawString == pStrImage && m_diFore.pImageInfo != NULL ) return;
+	if( m_diFore.sDrawString == strImage && m_diFore.pImageInfo != NULL ) return;
 	m_diFore.Clear();
-	m_diFore.sDrawString = pStrImage;
+	m_diFore.sDrawString = strImage;
 	Invalidate();
 }
 
@@ -559,9 +559,9 @@ CDuiString CControlUI::GetToolTip() const
     return m_sToolTip;
 }
 
-void CControlUI::SetToolTip(LPCTSTR pstrText)
+void CControlUI::SetToolTip(const CDuiString& strText)
 {
-	CDuiString strTemp(pstrText);
+	CDuiString strTemp(strText);
 	strTemp.Replace(_T("<n>"),_T("\r\n"));
 	m_sToolTip=strTemp;
 }
@@ -601,9 +601,9 @@ const CDuiString& CControlUI::GetUserData()
     return m_sUserData;
 }
 
-void CControlUI::SetUserData(LPCTSTR pstrText)
+void CControlUI::SetUserData(const CDuiString& strText)
 {
-    m_sUserData = pstrText;
+    m_sUserData = strText;
 }
 
 UINT_PTR CControlUI::GetTag() const
@@ -1057,7 +1057,7 @@ void CControlUI::SetAttributeList(LPCTSTR pstrList)
         }
         ASSERT( *pstrList == _T('\"') );
         if( *pstrList++ != _T('\"') ) return;
-        SetAttribute(sItem, sValue);
+        SetAttribute(sItem.GetData(), sValue.GetData());
         if( *pstrList++ != _T(' ') ) return;
     }
 }

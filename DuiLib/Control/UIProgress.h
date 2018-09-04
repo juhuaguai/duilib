@@ -21,7 +21,7 @@ namespace DuiLib
 		void SetMaxValue(int nMax);
 		int GetValue() const;
 		void SetValue(int nValue);
-		LPCTSTR GetForeImage() const;
+		CDuiString GetForeImage() const;
 		void SetForeImage(LPCTSTR pStrImage);
 
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);

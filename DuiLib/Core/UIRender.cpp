@@ -1065,10 +1065,10 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 
 		const TImageInfo* data = NULL;
 		if( bUseRes == false ) {
-			data = pManager->GetImageEx((LPCTSTR)sImageName, NULL, dwMask, bUseHSL);
+			data = pManager->GetImageEx(sImageName.GetData(), NULL, dwMask, bUseHSL);
 		}
 		else {
-			data = pManager->GetImageEx((LPCTSTR)sImageName, (LPCTSTR)sImageResType, dwMask, bUseHSL);
+			data = pManager->GetImageEx(sImageName.GetData(), sImageResType.GetData(), dwMask, bUseHSL);
 		}
 		if( !data ) return false;
 
@@ -1278,7 +1278,7 @@ void CRenderEngine::DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTS
 
 	CDuiString sText = pstrText;
 	CPaintManagerUI::ProcessMultiLanguageTokens(sText);
-	pstrText = sText;
+	pstrText = sText.GetData();
 
 	if (dwTextColor == 0 || dwTextColor == 0xFF000000)
 		dwTextColor = 0xFF000001;
@@ -1429,7 +1429,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
 
 	CDuiString sText = pstrText;
 	CPaintManagerUI::ProcessMultiLanguageTokens(sText);
-	pstrText = sText;
+	pstrText = sText.GetData();
 
 	if (dwTextColor == 0 || dwTextColor == 0xFF000000)
 		dwTextColor = 0xFF000001;
@@ -1591,9 +1591,9 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     TFontInfo* pFontInfo = pManager->GetFontInfo(iDefaultFont);
                     if( aFontArray.GetSize() > 0 ) pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
                     if( pFontInfo->bUnderline == false ) {
-                        HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic,pFontInfo->bStrikeOut);
+                        HFONT hFont = pManager->GetFont(pFontInfo->sFontName.GetData(), pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic,pFontInfo->bStrikeOut);
 						if( hFont == NULL ) {
-							hFont = pManager->AddFont(g_iFontID, pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic,pFontInfo->bStrikeOut);
+							hFont = pManager->AddFont(g_iFontID, pFontInfo->sFontName.GetData(), pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic,pFontInfo->bStrikeOut);
 							g_iFontID += 1;
 						}
                         pFontInfo = pManager->GetFontInfo(hFont);
@@ -1612,9 +1612,9 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     TFontInfo* pFontInfo = pManager->GetFontInfo(iDefaultFont);
                     if( aFontArray.GetSize() > 0 ) pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
                     if( pFontInfo->bBold == false ) {
-                        HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, true, pFontInfo->bUnderline, pFontInfo->bItalic,pFontInfo->bStrikeOut);
+                        HFONT hFont = pManager->GetFont(pFontInfo->sFontName.GetData(), pFontInfo->iSize, true, pFontInfo->bUnderline, pFontInfo->bItalic,pFontInfo->bStrikeOut);
 						if( hFont == NULL ) {
-							hFont = pManager->AddFont(g_iFontID, pFontInfo->sFontName, pFontInfo->iSize, true, pFontInfo->bUnderline, pFontInfo->bItalic,pFontInfo->bStrikeOut);
+							hFont = pManager->AddFont(g_iFontID, pFontInfo->sFontName.GetData(), pFontInfo->iSize, true, pFontInfo->bUnderline, pFontInfo->bItalic,pFontInfo->bStrikeOut);
 							g_iFontID += 1;
 						}
                         pFontInfo = pManager->GetFontInfo(hFont);
@@ -1680,9 +1680,9 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                         if( sFontAttr.Find(_T("underline")) >= 0 ) bUnderline = true;
                         if( sFontAttr.Find(_T("italic")) >= 0 ) bItalic = true;
 						if( sFontAttr.Find(_T("strikeout")) >= 0 ) bStrikeOut = true;
-                        HFONT hFont = pManager->GetFont(sFontName, iFontSize, bBold, bUnderline, bItalic,bStrikeOut);
+                        HFONT hFont = pManager->GetFont(sFontName.GetData(), iFontSize, bBold, bUnderline, bItalic,bStrikeOut);
 						if( hFont == NULL ) {
-							hFont = pManager->AddFont(g_iFontID, sFontName, iFontSize, bBold, bUnderline, bItalic,bStrikeOut);
+							hFont = pManager->AddFont(g_iFontID, sFontName.GetData(), iFontSize, bBold, bUnderline, bItalic,bStrikeOut);
 							g_iFontID += 1;
 						}
                         TFontInfo* pFontInfo = pManager->GetFontInfo(hFont);
@@ -1714,9 +1714,9 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                         TFontInfo* pFontInfo = pManager->GetFontInfo(iDefaultFont);
                         if( aFontArray.GetSize() > 0 ) pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
                         if( pFontInfo->bItalic == false ) {
-                            HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, pFontInfo->bUnderline, true,pFontInfo->bStrikeOut);
+                            HFONT hFont = pManager->GetFont(pFontInfo->sFontName.GetData(), pFontInfo->iSize, pFontInfo->bBold, pFontInfo->bUnderline, true,pFontInfo->bStrikeOut);
 							if( hFont == NULL ) {
-								hFont = pManager->AddFont(g_iFontID, pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, pFontInfo->bUnderline, true,pFontInfo->bStrikeOut);
+								hFont = pManager->AddFont(g_iFontID, pFontInfo->sFontName.GetData(), pFontInfo->iSize, pFontInfo->bBold, pFontInfo->bUnderline, true,pFontInfo->bStrikeOut);
 								g_iFontID += 1;
 							}
                             pFontInfo = pManager->GetFontInfo(hFont);
@@ -1772,10 +1772,10 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
 								if( *pStrImage++ != _T(' ') ) break;
 							}
 
-							pImageInfo = pManager->GetImageEx((LPCTSTR)sImageName, sImageResType);
+							pImageInfo = pManager->GetImageEx(sImageName.GetData(), sImageResType.GetData());
 						}
 						else
-							pImageInfo = pManager->GetImageEx((LPCTSTR)sName);
+							pImageInfo = pManager->GetImageEx(sName.GetData());
 
 						if( pImageInfo ) {
 							iWidth = pImageInfo->nX;
@@ -1881,9 +1881,9 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     TFontInfo* pFontInfo = pManager->GetFontInfo(iDefaultFont);
                     if( aFontArray.GetSize() > 0 ) pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
                     if( pFontInfo->bUnderline == false ) {
-                        HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic,pFontInfo->bStrikeOut);
+                        HFONT hFont = pManager->GetFont(pFontInfo->sFontName.GetData(), pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic,pFontInfo->bStrikeOut);
 						if( hFont == NULL ) {
-							hFont = pManager->AddFont(g_iFontID, pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic,pFontInfo->bStrikeOut);
+							hFont = pManager->AddFont(g_iFontID, pFontInfo->sFontName.GetData(), pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic,pFontInfo->bStrikeOut);
 							g_iFontID += 1;
 						}
                         pFontInfo = pManager->GetFontInfo(hFont);
@@ -2296,7 +2296,7 @@ SIZE CRenderEngine::GetTextSize( HDC hDC, CPaintManagerUI* pManager , LPCTSTR ps
 {
 	CDuiString sText = pstrText;
 	CPaintManagerUI::ProcessMultiLanguageTokens(sText);
-	pstrText = sText;
+	pstrText = sText.GetData();
 	SIZE size = {0,0};
 	ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
 	if( pstrText == NULL || pManager == NULL ) return size;
@@ -2330,9 +2330,9 @@ SIZE CRenderEngine::EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR
 			RECT rcText = { 0, 0, 9999, size.cy };
 			int nLinks = 0;
 			if( bShowhtml )
-				DrawHtmlText(hDC, pManager, rcText, sText, 0, NULL, NULL, nLinks, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
+				DrawHtmlText(hDC, pManager, rcText, sText.GetData(), 0, NULL, NULL, nLinks, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
 			else
-				DrawText(hDC, pManager, rcText, sText, 0, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
+				DrawText(hDC, pManager, rcText, sText.GetData(), 0, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
 
 			size.cx = rcText.right - rcText.left;
 			if (prcTextpadding)
@@ -2352,9 +2352,9 @@ SIZE CRenderEngine::EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR
 				int nLinks = 0;
 				RECT rcText = { 0, 0, 9999, size.cy };
 				if( bShowhtml )
-					DrawHtmlText(hDC, pManager, rcText, sText, 0, NULL, NULL, nLinks, iFont, DT_CALCRECT | DT_SINGLELINE | uStyle & ~DT_RIGHT & ~DT_CENTER);
+					DrawHtmlText(hDC, pManager, rcText, sText.GetData(), 0, NULL, NULL, nLinks, iFont, DT_CALCRECT | DT_SINGLELINE | uStyle & ~DT_RIGHT & ~DT_CENTER);
 				else
-					DrawText(hDC, pManager, rcText, sText, 0, iFont, DT_CALCRECT | DT_SINGLELINE | uStyle & ~DT_RIGHT & ~DT_CENTER);
+					DrawText(hDC, pManager, rcText, sText.GetData(), 0, iFont, DT_CALCRECT | DT_SINGLELINE | uStyle & ~DT_RIGHT & ~DT_CENTER);
 
 				size.cx = rcText.right - rcText.left;
 				if (prcTextpadding)
@@ -2370,9 +2370,9 @@ SIZE CRenderEngine::EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR
 				}				
 				int nLinks = 0;
 				if( bShowhtml ) 
-					CRenderEngine::DrawHtmlText(hDC, pManager, rcText, sText, 0, NULL, NULL, nLinks, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
+					CRenderEngine::DrawHtmlText(hDC, pManager, rcText, sText.GetData(), 0, NULL, NULL, nLinks, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
 				else
-					CRenderEngine::DrawText(hDC, pManager, rcText, sText, 0, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
+					CRenderEngine::DrawText(hDC, pManager, rcText, sText.GetData(), 0, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
 				size.cy = rcText.bottom - rcText.top;
 				if (prcTextpadding)
 					size.cy += prcTextpadding->top + prcTextpadding->bottom;
@@ -2390,9 +2390,9 @@ SIZE CRenderEngine::EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR
 				}
 				int nLinks = 0;
 				if( bShowhtml ) 
-					CRenderEngine::DrawHtmlText(hDC, pManager, rcText, sText, 0, NULL, NULL, nLinks, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
+					CRenderEngine::DrawHtmlText(hDC, pManager, rcText, sText.GetData(), 0, NULL, NULL, nLinks, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
 				else
-					CRenderEngine::DrawText(hDC, pManager, rcText, sText, 0, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
+					CRenderEngine::DrawText(hDC, pManager, rcText, sText.GetData(), 0, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
 
 				size.cx = rcText.right - rcText.left;
 				if (prcTextpadding)

@@ -31,7 +31,7 @@ public:
             pActiveX->GetControl(IID_IUnknown, (void**)&pFlash);
             if( pFlash != NULL ) {
                 pFlash->put_WMode( _bstr_t(_T("Transparent") ) );
-                pFlash->put_Movie( _bstr_t(CPaintManagerUI::GetInstancePath() + _T("\\skin\\FlashRes\\test.swf")) );
+                pFlash->put_Movie( _bstr_t( (CPaintManagerUI::GetInstancePath() + _T("\\skin\\FlashRes\\test.swf")).GetData() ) );
                 pFlash->DisableLocalSecurity();
                 pFlash->put_AllowScriptAccess(L"always");
                 BSTR response;

@@ -22,8 +22,8 @@ namespace DuiLib
 		void	DoEvent(TEventUI& event);
 		void	SetVisible(bool bVisible = true );
 		void	SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
-		void	SetBkImage(LPCTSTR pStrImage);
-		LPCTSTR GetBkImage();
+		void	SetBkImage(const CDuiString& strImage);
+		CDuiString GetBkImage();
 
 		void	SetAutoPlay(bool bIsAuto = true );
 		bool	IsAutoPlay() const;
