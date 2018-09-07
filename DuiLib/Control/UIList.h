@@ -123,7 +123,7 @@ public:
     void RemoveAll();
 
     void EnsureVisible(int iIndex);
-    void Scroll(int dx, int dy);
+    void Scroll(int dx, int dy,bool bTriggerEvent=true);
 
     int GetChildPadding() const;
     void SetChildPadding(int iPadding);
@@ -191,7 +191,7 @@ public:
 
     SIZE GetScrollPos() const;
     SIZE GetScrollRange() const;
-    void SetScrollPos(SIZE szPos);
+    void SetScrollPos(SIZE szPos,bool bTriggerEvent=true);
     void LineUp();
     void LineDown();
     void PageUp();

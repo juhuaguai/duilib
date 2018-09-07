@@ -2159,18 +2159,18 @@ void CRichEditUI::OnTxNotify(DWORD iNotify, void *pv)
 
 // 多行非rich格式的richedit有一个滚动条bug，在最后一行是空行时，LineDown和SetScrollPos无法滚动到最后
 // 引入iPos就是为了修正这个bug
-void CRichEditUI::SetScrollPos(SIZE szPos)
+void CRichEditUI::SetScrollPos(SIZE szPos,bool bTriggerEvent/*=true*/)
 {
     int cx = 0;
     int cy = 0;
     if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) {
         int iLastScrollPos = m_pVerticalScrollBar->GetScrollPos();
-        m_pVerticalScrollBar->SetScrollPos(szPos.cy);
+        m_pVerticalScrollBar->SetScrollPos(szPos.cy,bTriggerEvent);
         cy = m_pVerticalScrollBar->GetScrollPos() - iLastScrollPos;
     }
     if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
         int iLastScrollPos = m_pHorizontalScrollBar->GetScrollPos();
-        m_pHorizontalScrollBar->SetScrollPos(szPos.cx);
+        m_pHorizontalScrollBar->SetScrollPos(szPos.cx,bTriggerEvent);
         cx = m_pHorizontalScrollBar->GetScrollPos() - iLastScrollPos;
     }
     if( cy != 0 ) {
@@ -2181,7 +2181,7 @@ void CRichEditUI::SetScrollPos(SIZE szPos)
         TxSendMessage(WM_VSCROLL, wParam, 0L, 0);
         if( m_pTwh && !m_bRich && m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) {
             if( cy > 0 && m_pVerticalScrollBar->GetScrollPos() <= iPos )
-                m_pVerticalScrollBar->SetScrollPos(iPos);
+                m_pVerticalScrollBar->SetScrollPos(iPos,bTriggerEvent);
         }
     }
     if( cx != 0 ) {

@@ -389,19 +389,19 @@ namespace DuiLib
 		return sz;
 	}
 
-	void CContainerUI::SetScrollPos(SIZE szPos)
+	void CContainerUI::SetScrollPos(SIZE szPos,bool bTriggerEvent/*=true*/)
 	{
 		int cx = 0;
 		int cy = 0;
 		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) {
 			int iLastScrollPos = m_pVerticalScrollBar->GetScrollPos();
-			m_pVerticalScrollBar->SetScrollPos(szPos.cy);
+			m_pVerticalScrollBar->SetScrollPos(szPos.cy,bTriggerEvent);
 			cy = m_pVerticalScrollBar->GetScrollPos() - iLastScrollPos;
 		}
 
 		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
 			int iLastScrollPos = m_pHorizontalScrollBar->GetScrollPos();
-			m_pHorizontalScrollBar->SetScrollPos(szPos.cx);
+			m_pHorizontalScrollBar->SetScrollPos(szPos.cx,bTriggerEvent);
 			cx = m_pHorizontalScrollBar->GetScrollPos() - iLastScrollPos;
 		}
 

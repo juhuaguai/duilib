@@ -11,7 +11,7 @@ class CListBodyUI : public CVerticalLayoutUI
 public:
     CListBodyUI(CListUI* pOwner);
 
-    void SetScrollPos(SIZE szPos);
+    void SetScrollPos(SIZE szPos,bool bTriggerEvent=true);
     void SetPos(RECT rc, bool bNeedInvalidate = true);
     void DoEvent(TEventUI& event);
     bool DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
@@ -820,11 +820,11 @@ void CListUI::EnsureVisible(int iIndex)
     Scroll(0, dx);
 }
 
-void CListUI::Scroll(int dx, int dy)
+void CListUI::Scroll(int dx, int dy,bool bTriggerEvent/*=true*/)
 {
     if( dx == 0 && dy == 0 ) return;
     SIZE sz = m_pList->GetScrollPos();
-    m_pList->SetScrollPos(CDuiSize(sz.cx + dx, sz.cy + dy));
+    m_pList->SetScrollPos(CDuiSize(sz.cx + dx, sz.cy + dy),bTriggerEvent);
 }
 
 void CListUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
@@ -979,9 +979,9 @@ SIZE CListUI::GetScrollRange() const
     return m_pList->GetScrollRange();
 }
 
-void CListUI::SetScrollPos(SIZE szPos)
+void CListUI::SetScrollPos(SIZE szPos,bool bTriggerEvent/*=true*/)
 {
-    m_pList->SetScrollPos(szPos);
+    m_pList->SetScrollPos(szPos,bTriggerEvent);
 }
 
 void CListUI::LineUp()
@@ -1117,19 +1117,19 @@ int __cdecl CListBodyUI::ItemComareFunc(const void *item1, const void *item2)
 	return m_pCompareFunc((UINT_PTR)pControl1, (UINT_PTR)pControl2, m_compareData);
 }
 
-void CListBodyUI::SetScrollPos(SIZE szPos)
+void CListBodyUI::SetScrollPos(SIZE szPos,bool bTriggerEvent/*=true*/)
 {
     int cx = 0;
     int cy = 0;
     if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) {
         int iLastScrollPos = m_pVerticalScrollBar->GetScrollPos();
-        m_pVerticalScrollBar->SetScrollPos(szPos.cy);
+        m_pVerticalScrollBar->SetScrollPos(szPos.cy,bTriggerEvent);
         cy = m_pVerticalScrollBar->GetScrollPos() - iLastScrollPos;
     }
 
     if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
         int iLastScrollPos = m_pHorizontalScrollBar->GetScrollPos();
-        m_pHorizontalScrollBar->SetScrollPos(szPos.cx);
+        m_pHorizontalScrollBar->SetScrollPos(szPos.cx,bTriggerEvent);
         cx = m_pHorizontalScrollBar->GetScrollPos() - iLastScrollPos;
     }
 

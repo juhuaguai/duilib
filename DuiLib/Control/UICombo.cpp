@@ -129,7 +129,7 @@ public:
 	void Notify(TNotifyUI& msg);
 
     void EnsureVisible(int iIndex);
-    void Scroll(int dx, int dy);
+    void Scroll(int dx, int dy,bool bTriggerEvent=true);
 
 #if(_WIN32_WINNT >= 0x0501)
 	virtual UINT GetClassStyle() const;
@@ -359,11 +359,11 @@ void CComboWnd::EnsureVisible(int iIndex)
     Scroll(0, dx);
 }
 
-void CComboWnd::Scroll(int dx, int dy)
+void CComboWnd::Scroll(int dx, int dy,bool bTriggerEvent/*=true*/)
 {
     if( dx == 0 && dy == 0 ) return;
     SIZE sz = m_pLayout->GetScrollPos();
-    m_pLayout->SetScrollPos(CDuiSize(sz.cx + dx, sz.cy + dy));
+    m_pLayout->SetScrollPos(CDuiSize(sz.cx + dx, sz.cy + dy),bTriggerEvent);
 }
 
 #if(_WIN32_WINNT >= 0x0501)

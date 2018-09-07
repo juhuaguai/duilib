@@ -94,7 +94,7 @@ public:
 
     virtual SIZE GetScrollPos() const;
     virtual SIZE GetScrollRange() const;
-    virtual void SetScrollPos(SIZE szPos);
+    virtual void SetScrollPos(SIZE szPos,bool bTriggerEvent=true);
     virtual void LineUp();
     virtual void LineDown();
     virtual void PageUp();

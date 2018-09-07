@@ -118,7 +118,7 @@ public:
     virtual bool OnTxViewChanged();
     virtual void OnTxNotify(DWORD iNotify, void *pv);
 
-    void SetScrollPos(SIZE szPos);
+    void SetScrollPos(SIZE szPos,bool bTriggerEvent=true);
     void LineUp();
     void LineDown();
     void PageUp();
