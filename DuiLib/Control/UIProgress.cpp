@@ -7,6 +7,7 @@ namespace DuiLib
 	{
 		m_uTextStyle = DT_SINGLELINE | DT_CENTER;
 		SetFixedHeight(12);
+		m_uTextStyle = DT_VCENTER|DT_SINGLELINE;
 	}
 
 	LPCTSTR CProgressUI::GetClass() const
