@@ -2307,7 +2307,7 @@ SIZE CRenderEngine::GetTextSize( HDC hDC, CPaintManagerUI* pManager , LPCTSTR ps
 	return size;
 }
 
-SIZE CRenderEngine::EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR pstrText, int iFont, UINT uStyle,bool bShowhtml,bool bEnabledEffect,int nSpecifyWidth,int nSpecifyHeight,const RECT* prcTextpadding)
+SIZE CRenderEngine::EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR pstrText,int iFont, UINT uStyle,bool bShowhtml/* =false */,bool bEnabledEffect/* =false */,int nSpecifyWidth/* =0 */,int nSpecifyHeight/* =0 */,const RECT* prcTextpadding/* =NULL */)
 {
 	SIZE size = {nSpecifyWidth,nSpecifyHeight};
 	if (nSpecifyWidth>0 && nSpecifyHeight>0)
