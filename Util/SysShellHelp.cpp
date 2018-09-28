@@ -258,6 +258,19 @@ BOOL CSysShellHelp::KillProcess(const xstring &strAppExeName, BOOL bIsAll/* = TR
 
 	return TRUE;
 }
+int CSysShellHelp::KillProcessDos(const string& strExeName)
+{
+	//taskkill /f /im steamwebhelper.exe /t
+	string strParam = "taskkill /f /im ";
+	strParam += strExeName;
+	strParam += " /t";
+
+	string strCmd("cmd.exe /c \"");
+	strCmd += strParam;
+	strCmd += "\"";
+
+	return ::WinExec(strCmd.c_str(), SW_HIDE);
+}
 
 BOOL SystemShutDown()
 {

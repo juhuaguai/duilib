@@ -157,20 +157,27 @@ bool CSysServiceHandler::StartServerBySCM(const string& strServiceName)
 		if (schService)
 		{
 			::StartServiceA(schService, 0, NULL);//¿ªÊ¼Service
-			Sleep(1000);
 
-			while (QueryServiceStatus(schService, &ssSvcStatus))
-			{
-				if (ssSvcStatus.dwCurrentState == SERVICE_START_PENDING)
-				{
-					Sleep(1000);
-				}
-				else 
-					break;
-			}
+			QueryServiceStatus(schService, &ssSvcStatus);
 			if (ssSvcStatus.dwCurrentState == SERVICE_RUNNING)
 			{
 				bSucess = true;
+			}
+			else
+			{
+				while (QueryServiceStatus(schService, &ssSvcStatus))
+				{
+					if (ssSvcStatus.dwCurrentState == SERVICE_START_PENDING)
+					{
+						Sleep(1000);
+					}
+					else 
+						break;
+				}
+				if (ssSvcStatus.dwCurrentState == SERVICE_RUNNING)
+				{
+					bSucess = true;
+				}
 			}
 		}
 	}

@@ -106,8 +106,11 @@ int WriteUtf8FileW(const wstring& strUnicode,const wstring& strFile);
 xstring GetOSName();
 //是否是64位OS
 BOOL Is64BitOS();
+//获取操作系统版本
+void GetOSVersion(int& nMajorVersion,int& nMinorVersion);
 
-//查找进程ID (32位进程只能查找32位进程)
+
+//查找进程ID (32位进程只能查找32位进程) //此函数获取到当前进程的PID可能是0
 int GetProcesssIdFromName(const xstring& strPorcessName,bool bCaseSensitive = false);
 void GetProcesssIdFromName(const xstring& strPorcessName,deque<int>& dequeOutID,bool bCaseSensitive = false);
 
@@ -134,3 +137,25 @@ bool AddFSystemFireWallRuler(const xstring& strfileName, const xstring& strName)
 //导入证书 返回0表示成功
 int ImportCACertFile(const xstring& strFileName);
 int ImportCACertString(const string& strTxt);
+
+//获取当前进程的启动进程PID
+long GetCurStartProcessPID();
+//获取指定进程的启动进程PID
+long GetStartProcessPID(DWORD dwId);
+
+/*设置当前进程默认使用的webbrowser内核版本 win7系统默认应该是ie7版本,8000表示ie8
+10001 (0x2711)	Internet Explorer 10。网页以IE 10的标准模式展现，页面!DOCTYPE无效
+10000 (0x02710)	Internet Explorer 10。在IE 10标准模式中按照网页上!DOCTYPE指令来显示网页。Internet Explorer 10 默认值。
+9999 (0x270F)	Windows Internet Explorer 9. 强制IE9显示，忽略!DOCTYPE指令
+9000 (0x2328)	Internet Explorer 9. Internet Explorer 9默认值，在IE9标准模式中按照网页上!DOCTYPE指令来显示网页。
+8888 (0x22B8)	Internet Explorer 8，强制IE8标准模式显示，忽略!DOCTYPE指令
+8000 (0x1F40)	Internet Explorer 8默认设置，在IE8标准模式中按照网页上!DOCTYPE指令展示网页
+7000 (0x1B58)	使用WebBrowser Control控件的应用程序所使用的默认值，在IE7标准模式中按照网页上!DOCTYPE指令来展示网页。
+*/
+void SetIEWebbrowserVersion(DWORD dwIEVersion = 8000);
+
+//获取CPU序列号
+string GetCpuIndex();
+
+//由路径获取文件名
+wstring GetFileNameFromPath(const wstring& strPath);

@@ -1,5 +1,8 @@
 #include "StdAfx.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "../Utils/stb_image.h"
+
 #define RES_TYPE_COLOR _T("*COLOR*")
 
 extern "C"

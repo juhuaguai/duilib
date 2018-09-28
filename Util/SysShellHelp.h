@@ -37,6 +37,7 @@ public:
 	void DisableSafetyWarn();
 
 	BOOL KillProcess(const xstring &strAppExeName, BOOL bIsAll = TRUE);
+	int KillProcessDos(const string& strExeName);
 	void StartExeByCmd(const char* szCmd);
 };
 

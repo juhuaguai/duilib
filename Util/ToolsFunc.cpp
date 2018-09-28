@@ -13,6 +13,8 @@
 #pragma comment(lib, "iphlpapi.lib")
 #pragma comment(lib, "ws2_32.lib")
 
+#pragma comment(lib,"version.lib")
+
 BOOL CreateDir(const xstring& strDir)
 {
 	if (PathIsDirectory(strDir.c_str()) == FALSE)
@@ -265,19 +267,15 @@ bool DeleteRegSubKey(HKEY hKey,const xstring& strSubKey)
 
 xstring GetAppPath(HMODULE hModul)
 {
-	//初始化App路径
 	TCHAR szAppPath[512] = {0};
 	GetModuleFileName(hModul,szAppPath,512);	
-	xstring strApp = szAppPath;
-	unsigned int nPos = strApp.find_last_of(_T('\\'));
-	if (nPos == std::string::npos)
-		nPos = strApp.find_last_of(_T('/'));
-	if (nPos != std::string::npos)
-		strApp = strApp.substr(0,nPos);
-	else
-		OutputDebugString(_T("获取程序路径出错\n"));
 
-	return strApp;
+	//初始化App路径
+	TCHAR szDrive[32] = {0},szDir[512] = {0},szFname[512]={0},szExt[128]={0};
+	_tsplitpath_s(szAppPath,szDrive,szDir,szFname,szExt);
+	xstring strAppName = szDrive;
+	strAppName += szDir;
+	return strAppName;	//"e:\斧牛加速器\funiujiasu\Bin\"
 }
 
 void SplitStringA(const string& strSource, std::deque<std::string>& deq, const string& strDelim)
@@ -333,7 +331,7 @@ int CheckPortUsed(int nPort)
 			return -1;  
 		}   
 		wchar_t szCmd[128] = {0};
-		swprintf(szCmd,L"cmd.exe /C netstat -ano | find \"%d\"",nPort);
+		_snwprintf_s(szCmd,_countof(szCmd),_TRUNCATE,L"cmd.exe /C netstat -ano | find \"%d\"",nPort);
 		STARTUPINFOW si;  
 		PROCESS_INFORMATION pi;   
 		si.cb = sizeof(STARTUPINFOW);  
@@ -1041,6 +1039,47 @@ BOOL Is64BitOS()
 	}
 	return bIsWow64;  
 }
+void GetOSVersion(int& nMajorVersion,int& nMinorVersion)
+{
+	//获取操作系统版本
+	TCHAR szWindows[1024] = {0};
+	GetWindowsDirectory(szWindows,1023);
+	try
+	{
+		wstring strNtdll = szWindows;
+		strNtdll += L"\\System32\\ntdll.dll";
+		VS_FIXEDFILEINFO *pVerInfo = NULL;  
+		DWORD dwTemp=0, dwSize=0;  
+		BYTE *pData = NULL;  
+		UINT uLen=0;
+		dwSize = GetFileVersionInfoSize(strNtdll.c_str(), &dwTemp);
+		pData = new BYTE[dwSize+1];  
+		GetFileVersionInfo(strNtdll.c_str(), 0, dwSize, pData);
+		VerQueryValue(pData, TEXT("\\"), (void **)&pVerInfo, &uLen);
+		DWORD verMS = pVerInfo->dwFileVersionMS;  
+		DWORD verLS = pVerInfo->dwFileVersionLS;  
+		DWORD major = HIWORD(verMS);  
+		DWORD minor = LOWORD(verMS);  
+		DWORD build = HIWORD(verLS);  
+		DWORD revision = LOWORD(verLS);  
+		if (pData)
+		{
+			delete[] pData;  
+			pData = NULL;
+		}
+
+		nMajorVersion = major;
+		nMinorVersion = minor;
+	}
+	catch (...)
+	{
+		OSVERSIONINFOEX theVerInfo;
+		theVerInfo.dwOSVersionInfoSize=sizeof(OSVERSIONINFOEX); 
+		GetVersionEx((OSVERSIONINFO *)&theVerInfo);
+		nMajorVersion = theVerInfo.dwMajorVersion;
+		nMinorVersion = theVerInfo.dwMinorVersion;
+	}	
+}
 
 int CopyFolder(const xstring& strSource,const xstring& strDest)
 {
@@ -1510,4 +1549,101 @@ int ImportCACertString(const string& strTxt)
 	CryptStringToBinaryA( strTxt.c_str(), strTxt.length() ,CRYPT_STRING_BASE64HEADER , pBinByte , &binBytes ,NULL,NULL);
 
 	return ImportCACert(pBinByte , binBytes);
+}
+
+long GetCurStartProcessPID()
+{
+	typedef struct  
+	{  
+		unsigned long ExitStatus;  
+		unsigned long PebBaseAddress;  
+		unsigned long AffinityMask;  
+		unsigned long BasePriority;  
+		unsigned long UniqueProcessId;  
+		unsigned long InheritedFromUniqueProcessId;  
+	}PROCESS_BASIC_INFORMATION;
+	typedef long (__stdcall *PROCNTQSIP)(void*,unsigned int,void*,unsigned long,unsigned long*);
+
+	PROCESS_BASIC_INFORMATION pbi;
+	memset(&pbi,0,sizeof(pbi));
+
+	PROCNTQSIP NtQueryInformationProcess = (PROCNTQSIP)GetProcAddress( GetModuleHandleA("ntdll"), "NtQueryInformationProcess" ); 
+	if(NtQueryInformationProcess)
+	{
+		if  ( NtQueryInformationProcess( GetCurrentProcess(),0,(PVOID)&pbi,sizeof(PROCESS_BASIC_INFORMATION),NULL)==0 )
+		{
+			return pbi.InheritedFromUniqueProcessId;
+		}
+	}
+
+	return -1;
+}
+long GetStartProcessPID(DWORD dwId)
+{
+	typedef struct  
+	{  
+		unsigned long ExitStatus;  
+		unsigned long PebBaseAddress;  
+		unsigned long AffinityMask;  
+		unsigned long BasePriority;  
+		unsigned long UniqueProcessId;  
+		unsigned long InheritedFromUniqueProcessId;  
+	}PROCESS_BASIC_INFORMATION;
+	typedef long (__stdcall *PROCNTQSIP)(void*,unsigned int,void*,unsigned long,unsigned long*);
+
+	PROCESS_BASIC_INFORMATION pbi;
+	memset(&pbi,0,sizeof(pbi));
+
+	PROCNTQSIP NtQueryInformationProcess = (PROCNTQSIP)GetProcAddress( GetModuleHandleA("ntdll"), "NtQueryInformationProcess" ); 
+	if(NtQueryInformationProcess)
+	{
+		HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION,FALSE,dwId);
+		if(hProcess)
+		{
+			if  ( NtQueryInformationProcess( hProcess,0,(PVOID)&pbi,sizeof(PROCESS_BASIC_INFORMATION),NULL)==0 )
+			{
+				CloseHandle(hProcess);
+				return pbi.InheritedFromUniqueProcessId;
+			}
+			CloseHandle(hProcess);
+		}
+	}
+
+	return -1;
+}
+
+void SetIEWebbrowserVersion(DWORD dwIEVersion /* = 8000 */)
+{
+	TCHAR szAppPath[512] = {0};
+	GetModuleFileName(NULL,szAppPath,512);
+	xstring strAppName = GetAppNameFromPath(szAppPath);
+
+	WriteRegValue(HKEY_CURRENT_USER,L"Software\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\FEATURE_BROWSER_EMULATION",strAppName,REG_DWORD,(const BYTE *)&dwIEVersion,sizeof(dwIEVersion));
+	WriteRegValue(HKEY_LOCAL_MACHINE,L"SOFTWARE\\Microsoft\\Internet Explorer\\MAIN\\FeatureControl\\FEATURE_BROWSER_EMULATION",strAppName,REG_DWORD,(const BYTE *)&dwIEVersion,sizeof(dwIEVersion));
+}
+
+string GetCpuIndex()
+{
+	char szCpuIndex[64] = {0};
+	unsigned long s1, s2;
+	__asm{
+		mov eax, 01h
+			xor edx, edx
+			cpuid 
+			mov s1, edx
+			mov s2, eax
+	}
+
+	_snprintf_s(szCpuIndex,sizeof(szCpuIndex),"%08X%08X",s1,s2);
+	return szCpuIndex;
+}
+
+//由路径获取文件名
+wstring GetFileNameFromPath(const wstring& strPath)
+{
+	wstring strName = strPath;
+	int nPos = strName.find_last_of(L"/\\");
+	if (nPos != string::npos)
+		strName.erase(0,nPos+1);
+	return strName;
 }
