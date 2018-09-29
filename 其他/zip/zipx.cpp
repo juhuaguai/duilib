@@ -114,7 +114,7 @@ BOOL CZipx::ZipFiles(LPCTSTR lpszSrcDir, LPCTSTR lpszDstFile, const char *pszPas
 
 	//建立文件目录
 	m_strDstFilePath = lpszDstFile;
-	m_strDstFileDir = strDstFileDir;
+	m_strSrcFileDir = lpszSrcDir;
 	CreateDir(strDstFileDir.c_str());
 
 	//创建ZIP文件 
@@ -125,8 +125,8 @@ BOOL CZipx::ZipFiles(LPCTSTR lpszSrcDir, LPCTSTR lpszDstFile, const char *pszPas
 		return FALSE; 
 	} 
 
-	//递归文件夹,将获取的问价加入ZIP文件 	
-	AddFileFromDir(hz, m_strDstFileDir); 
+	//递归文件夹,将获取的文件加入ZIP文件 	
+	AddFileFromDir(hz, m_strSrcFileDir); 
 
 	//关闭ZIP文件 
 	CloseZip(hz); 
@@ -293,6 +293,57 @@ bool CZipx::UnZipFile(LPCTSTR lpszSrcFile, LPCTSTR lpszFileName, LPCTSTR lpszDst
 	return (zr == ZR_OK) ;
 }
 
+bool CZipx::UnZipFileFromMem(void* pData,DWORD dwDataSize,LPCTSTR lpszDstDir, const char *pszPassword/* =NULL */)
+{
+	if(pData == NULL || dwDataSize==0)
+		return false;
+
+	CreateDir(lpszDstDir);
+
+	//打开ZIP文件 
+	HZIP hz = OpenZip(pData,dwDataSize, pszPassword); 
+	if(hz == 0) 
+	{ 
+		//打开Zip文件失败 
+		return false; 
+	} 
+
+	ZRESULT zr = SetUnzipBaseDir(hz, lpszDstDir); 
+	if(zr != ZR_OK) 
+	{ 
+		//打开Zip文件失败 
+		CloseZip(hz); 
+		return FALSE;       
+	} 
+
+	ZIPENTRY ze;
+	zr=GetZipItem(hz, -1, &ze); 
+	if(zr != ZR_OK) 
+	{ 
+		//获取Zip文件内容失败 
+		CloseZip(hz); 
+		return FALSE;       
+	} 
+
+	int nNumItems = ze.index; 
+	for (int i=0; i<nNumItems; i++) 
+	{ 
+		zr = GetZipItem(hz, i, &ze); 
+		zr = UnzipItem(hz, i, ze.name); 
+
+		if(zr != ZR_OK) 
+		{ 
+			//获取Zip文件内容失败 
+			CloseZip(hz); 
+			return false;       
+		} 
+	} 
+
+	CloseZip(hz); 
+
+	return true;
+}
+
 bool CZipx::CreateDir(LPCTSTR lpszDir)
 {
 	if (IsDirExist(lpszDir))       //如果目录已存在，直接返回
@@ -327,9 +378,9 @@ bool CZipx::CreateDir(LPCTSTR lpszDir)
 void CZipx::GetRelativePath(const xstring& strFilePath, xstring& strSubPath) 
 { 
 	strSubPath = strFilePath;
-	if(_tcsnicmp(strFilePath.c_str(), m_strDstFileDir.c_str(), m_strDstFileDir.size()) == 0)
+	if(_tcsnicmp(strFilePath.c_str(), m_strSrcFileDir.c_str(), m_strSrcFileDir.size()) == 0)
 	{
-		strSubPath = strFilePath.substr(m_strDstFileDir.size());
+		strSubPath = strFilePath.substr(m_strSrcFileDir.size());
 	}
 }
 

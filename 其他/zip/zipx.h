@@ -22,7 +22,7 @@ public:
 	~CZipx(void);
 
 private:
-	xstring m_strDstFileDir;
+	xstring m_strSrcFileDir;
 	xstring m_strDstFilePath;
 
 public:
@@ -34,6 +34,7 @@ public:
 	//压缩一个文件夹
 	bool UnZipFile(LPCTSTR lpszSrcFile, LPCTSTR lpszDstDir, const char *pszPassword=NULL);
 	bool UnZipFile(LPCTSTR lpszSrcFile, LPCTSTR lpszFileName, LPCTSTR lpszDstDir, const char *pszPassword=NULL);
+	bool UnZipFileFromMem(void* pData,DWORD dwDataSize,LPCTSTR lpszDstDir, const char *pszPassword=NULL);
 
 private:
 	bool CreateDir(LPCTSTR lpszDir);
