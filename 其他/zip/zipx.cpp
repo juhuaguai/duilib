@@ -380,7 +380,7 @@ void CZipx::GetRelativePath(const xstring& strFilePath, xstring& strSubPath)
 	strSubPath = strFilePath;
 	if(_tcsnicmp(strFilePath.c_str(), m_strSrcFileDir.c_str(), m_strSrcFileDir.size()) == 0)
 	{
-		strSubPath = strFilePath.substr(m_strSrcFileDir.size());
+		strSubPath = strFilePath.substr(m_strSrcFileDir.size()+1);
 	}
 }
 
