@@ -2805,13 +2805,34 @@ LRESULT CRichEditUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, boo
 	}
 #endif
     else if( uMsg == WM_CONTEXTMENU ) {
-        POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-        ::ScreenToClient(GetManager()->GetPaintWindow(), &pt);
-        CControlUI* pHover = GetManager()->FindControl(pt);
-        if(pHover != this) {
-            bWasHandled = false;
-            return 0;
-        }
+		if (IsContextMenuUsed())
+		{
+			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+			::ScreenToClient(GetManager()->GetPaintWindow(), &pt);
+			CControlUI* pHover = GetManager()->FindControl(pt);
+			if(pHover != this) {
+				bWasHandled = false;
+				return 0;
+			}
+			else
+			{			
+				POINT pt;
+				GetCursorPos(&pt);
+				HMENU hmenu = CreatePopupMenu();
+				AppendMenu(hmenu,MF_STRING,1000,_T("¸´ÖÆ(&C)"));
+				AppendMenu(hmenu,MF_STRING,1001,_T("Õ³Ìù(&P)"));
+				::SetForegroundWindow(GetManager()->GetPaintWindow());
+				int nNum = TrackPopupMenu(hmenu,TPM_RETURNCMD,pt.x,pt.y,NULL,GetManager()->GetPaintWindow(),NULL);
+				if (nNum == 1000)
+				{
+					Copy();
+				}
+				else if (nNum == 1001)
+				{
+					Paste();
+				}		
+			}
+		}
     }
     else
     {
