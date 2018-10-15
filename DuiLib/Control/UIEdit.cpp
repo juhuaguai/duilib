@@ -213,6 +213,13 @@ namespace DuiLib
 			}
 			bHandled = FALSE;
 		}
+		else if (uMsg == WM_CONTEXTMENU)
+		{
+			if (m_pOwner->IsContextMenuUsed())
+				bHandled = FALSE;
+			else
+				bHandled = TRUE;
+		}
 		else bHandled = FALSE;
 		if( !bHandled ) return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
 		return lRes;
