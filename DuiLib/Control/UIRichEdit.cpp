@@ -41,10 +41,10 @@ public:
     BOOL Init(CRichEditUI *re , const CREATESTRUCT *pcs);
     virtual ~CTxtWinHost();
 
-    ITextServices* GetTextServices(void) { return pserv; }
+    ITextServices* GetTextServices(void) { return m_pserv; }
     void SetClientRect(RECT *prc);
-    RECT* GetClientRect() { return &rcClient; }
-    BOOL IsWordWrap(void) { return fWordWrap; }
+    RECT* GetClientRect() { return &m_rcClient; }
+    BOOL IsWordWrap(void) { return m_fWordWrap; }
     void SetWordWrap(BOOL fWordWrap);
     BOOL IsReadOnly();
     void SetReadOnly(BOOL fReadOnly);
@@ -86,7 +86,7 @@ public:
     BOOL SetSaveSelection(BOOL fSaveSelection);
     HRESULT OnTxInPlaceDeactivate();
     HRESULT OnTxInPlaceActivate(LPCRECT prcClient);
-    BOOL GetActiveState(void) { return fInplaceActive; }
+    BOOL GetActiveState(void) { return m_fInplaceActive; }
     BOOL DoSetCursor(RECT *prc, POINT *pt);
     void SetTransparent(BOOL fTransparent);
     void GetControlRect(LPRECT prc);
@@ -151,39 +151,39 @@ public:
 
 private:
     CRichEditUI *m_re;
-    ULONG	cRefs;					// Reference Count
-    ITextServices	*pserv;		    // pointer to Text Services object
+    ULONG	m_cRefs;					// Reference Count
+    ITextServices	*m_pserv;		    // pointer to Text Services object
     // Properties
 
-    DWORD		dwStyle;				// style bits
+    DWORD		m_dwStyle;				// style bits
 
-    unsigned	fEnableAutoWordSel	:1;	// enable Word style auto word selection?
-    unsigned	fWordWrap			:1;	// Whether control should word wrap
-    unsigned	fAllowBeep			:1;	// Whether beep is allowed
-    unsigned	fRich				:1;	// Whether control is rich text
-    unsigned	fSaveSelection		:1;	// Whether to save the selection when inactive
-    unsigned	fInplaceActive		:1; // Whether control is inplace active
-    unsigned	fTransparent		:1; // Whether control is transparent
-    unsigned	fTimer				:1;	// A timer is set
-    unsigned    fCaptured           :1;
-	unsigned    fShowCaret          :1;
-	unsigned    fNeedFreshCaret     :1; // 修正改变大小后点击其他位置原来光标不能消除的问题
+    unsigned	m_fEnableAutoWordSel	:1;	// enable Word style auto word selection?
+    unsigned	m_fWordWrap			:1;	// Whether control should word wrap
+    unsigned	m_fAllowBeep			:1;	// Whether beep is allowed
+    unsigned	m_fRich				:1;	// Whether control is rich text
+    unsigned	m_fSaveSelection		:1;	// Whether to save the selection when inactive
+    unsigned	m_fInplaceActive		:1; // Whether control is inplace active
+    unsigned	m_fTransparent		:1; // Whether control is transparent
+    unsigned	m_fTimer				:1;	// A timer is set
+    unsigned    m_fCaptured           :1;
+	unsigned    m_fShowCaret          :1;
+	unsigned    m_fNeedFreshCaret     :1; // 修正改变大小后点击其他位置原来光标不能消除的问题
 
-	INT         iCaretWidth;
-	INT         iCaretHeight;
-	INT         iCaretLastWidth;
-	INT         iCaretLastHeight;
-    LONG		lSelBarWidth;			// Width of the selection bar
-    LONG  		cchTextMost;			// maximum text size
-    DWORD		dwEventMask;			// DoEvent mask to pass on to parent window
-    LONG		icf;
-    LONG		ipf;
-    RECT		rcClient;				// Client Rect for this control
-    SIZEL		sizelExtent;			// Extent array
-    CHARFORMAT2W cf;					// Default character format
-    PARAFORMAT2	pf;					    // Default paragraph format
-    LONG		laccelpos;				// Accelerator position
-    WCHAR		chPasswordChar;		    // Password character
+	INT         m_iCaretWidth;
+	INT         m_iCaretHeight;
+	INT         m_iCaretLastWidth;
+	INT         m_iCaretLastHeight;
+    LONG		m_lSelBarWidth;			// Width of the selection bar
+    LONG  		m_cchTextMost;			// maximum text size
+    DWORD		m_dwEventMask;			// DoEvent mask to pass on to parent window
+    LONG		m_icf;
+    LONG		m_ipf;
+    RECT		m_rcClient;				// Client Rect for this control
+    SIZEL		m_sizelExtent;			// Extent array
+    CHARFORMAT2W m_cf;					// Default character format
+    PARAFORMAT2	m_pf;					    // Default paragraph format
+    LONG		m_laccelpos;				// Accelerator position
+    WCHAR		m_chPasswordChar;		    // Password character
 };
 
 // Convert Pixels on the X axis to Himetric
@@ -273,16 +273,16 @@ HRESULT CreateHost(CRichEditUI *re, const CREATESTRUCT *pcs, CTxtWinHost **pptec
 
 CTxtWinHost::CTxtWinHost() : m_re(NULL)
 {
-    ::ZeroMemory(&cRefs, sizeof(CTxtWinHost) - offsetof(CTxtWinHost, cRefs));
-    cchTextMost = cInitTextMax;
-    laccelpos = -1;
-	dwStyle = 0;
+    ::ZeroMemory(&m_cRefs, sizeof(CTxtWinHost) - offsetof(CTxtWinHost, m_cRefs));
+    m_cchTextMost = cInitTextMax;
+    m_laccelpos = -1;
+	m_dwStyle = 0;
 }
 
 CTxtWinHost::~CTxtWinHost()
 {
-    pserv->OnTxInPlaceDeactivate();
-    pserv->Release();
+    m_pserv->OnTxInPlaceDeactivate();
+    m_pserv->Release();
 }
 
 ////////////////////// Create/Init/Destruct Commands ///////////////////////
@@ -294,14 +294,14 @@ BOOL CTxtWinHost::Init(CRichEditUI *re, const CREATESTRUCT *pcs)
 
     m_re = re;
     // Initialize Reference count
-    cRefs = 1;
+    m_cRefs = 1;
 
     // Create and cache CHARFORMAT for this control
-    if(FAILED(InitDefaultCharFormat(re, &cf, NULL)))
+    if(FAILED(InitDefaultCharFormat(re, &m_cf, NULL)))
         goto err;
 
     // Create and cache PARAFORMAT for this control
-    if(FAILED(InitDefaultParaFormat(re, &pf)))
+    if(FAILED(InitDefaultParaFormat(re, &m_pf)))
         goto err;
 
     //// edit controls created without a window are multiline by default
@@ -309,29 +309,29 @@ BOOL CTxtWinHost::Init(CRichEditUI *re, const CREATESTRUCT *pcs)
     //dwStyle = ES_MULTILINE;
 
     // edit controls are rich by default
-    fRich = re->IsRich();
+    m_fRich = re->IsRich();
 
-    cchTextMost = re->GetLimitText();
+    m_cchTextMost = re->GetLimitText();
 
     if (pcs )
     {
-        dwStyle = pcs->style;
+        m_dwStyle = pcs->style;
 
-        if ( !(dwStyle & (ES_AUTOHSCROLL | WS_HSCROLL)) )
+        if ( !(m_dwStyle & (ES_AUTOHSCROLL | WS_HSCROLL)) )
         {
-            fWordWrap = TRUE;
+            m_fWordWrap = TRUE;
         }
     }
 
-    if( !(dwStyle & ES_LEFT) )
+    if( !(m_dwStyle & ES_LEFT) )
     {
-        if(dwStyle & ES_CENTER)
-            pf.wAlignment = PFA_CENTER;
-        else if(dwStyle & ES_RIGHT)
-            pf.wAlignment = PFA_RIGHT;
+        if(m_dwStyle & ES_CENTER)
+            m_pf.wAlignment = PFA_CENTER;
+        else if(m_dwStyle & ES_RIGHT)
+            m_pf.wAlignment = PFA_RIGHT;
     }
 
-    fInplaceActive = TRUE;
+    m_fInplaceActive = TRUE;
 
     // Create Text Services component
     //if(FAILED(CreateTextServices(NULL, this, &pUnk)))
@@ -349,7 +349,7 @@ BOOL CTxtWinHost::Init(CRichEditUI *re, const CREATESTRUCT *pcs)
 		HRESULT hr = TextServicesProc(NULL, this, &pUnk);
 	}
 
-    hr = pUnk->QueryInterface(IID_ITextServices,(void **)&pserv);
+    hr = pUnk->QueryInterface(IID_ITextServices,(void **)&m_pserv);
 
     // Whether the previous call succeeded or failed we are done
     // with the private interface.
@@ -364,7 +364,7 @@ BOOL CTxtWinHost::Init(CRichEditUI *re, const CREATESTRUCT *pcs)
     if(pcs && pcs->lpszName)
     {
 #ifdef _UNICODE		
-        if(FAILED(pserv->TxSetText((TCHAR *)pcs->lpszName)))
+        if(FAILED(m_pserv->TxSetText((TCHAR *)pcs->lpszName)))
             goto err;
 #else
         size_t iLen = _tcslen(pcs->lpszName);
@@ -406,12 +406,12 @@ HRESULT CTxtWinHost::QueryInterface(REFIID riid, void **ppvObject)
 
 ULONG CTxtWinHost::AddRef(void)
 {
-    return ++cRefs;
+    return ++m_cRefs;
 }
 
 ULONG CTxtWinHost::Release(void)
 {
-    ULONG c_Refs = --cRefs;
+    ULONG c_Refs = --m_cRefs;
 
     if (c_Refs == 0)
     {
@@ -485,21 +485,21 @@ BOOL CTxtWinHost::TxSetScrollRange(INT fnBar, LONG nMinPos, INT nMaxPos, BOOL fR
     CScrollBarUI* pVerticalScrollBar = m_re->GetVerticalScrollBar();
     CScrollBarUI* pHorizontalScrollBar = m_re->GetHorizontalScrollBar();
     if( fnBar == SB_VERT && pVerticalScrollBar ) {
-        if( nMaxPos - nMinPos - rcClient.bottom + rcClient.top <= 0 ) {
+        if( nMaxPos - nMinPos - m_rcClient.bottom + m_rcClient.top <= 0 ) {
             pVerticalScrollBar->SetVisible(false);
         }
         else {
             pVerticalScrollBar->SetVisible(true);
-            pVerticalScrollBar->SetScrollRange(nMaxPos - nMinPos - rcClient.bottom + rcClient.top);
+            pVerticalScrollBar->SetScrollRange(nMaxPos - nMinPos - m_rcClient.bottom + m_rcClient.top);
         }
     }
     else if( fnBar == SB_HORZ && pHorizontalScrollBar ) {
-        if( nMaxPos - nMinPos - rcClient.right + rcClient.left <= 0 ) {
+        if( nMaxPos - nMinPos - m_rcClient.right + m_rcClient.left <= 0 ) {
             pHorizontalScrollBar->SetVisible(false);
         }
         else {
             pHorizontalScrollBar->SetVisible(true);
-            pHorizontalScrollBar->SetScrollRange(nMaxPos - nMinPos - rcClient.right + rcClient.left);
+            pHorizontalScrollBar->SetScrollRange(nMaxPos - nMinPos - m_rcClient.right + m_rcClient.left);
         }   
     }
     return TRUE;
@@ -521,7 +521,7 @@ BOOL CTxtWinHost::TxSetScrollPos (INT fnBar, INT nPos, BOOL fRedraw)
 void CTxtWinHost::TxInvalidateRect(LPCRECT prc, BOOL fMode)
 {
     if( prc == NULL ) {
-        m_re->GetManager()->Invalidate(rcClient);
+        m_re->GetManager()->Invalidate(m_rcClient);
         return;
     }
     RECT rc = *prc;
@@ -537,8 +537,8 @@ BOOL CTxtWinHost::TxCreateCaret(HBITMAP hbmp, INT xWidth, INT yHeight)
 {
 	if (m_re->GetCaret())
 	{
-		iCaretWidth = xWidth;
-		iCaretHeight = yHeight;
+		m_iCaretWidth = xWidth;
+		m_iCaretHeight = yHeight;
 		return ::CreateCaret(m_re->GetManager()->GetPaintWindow(), hbmp, xWidth, yHeight);
 	}
 
@@ -547,7 +547,7 @@ BOOL CTxtWinHost::TxCreateCaret(HBITMAP hbmp, INT xWidth, INT yHeight)
 
 BOOL CTxtWinHost::TxShowCaret(BOOL fShow)
 {
-	fShowCaret = fShow;
+	m_fShowCaret = fShow;
     if(fShow)
         return ::ShowCaret(m_re->GetManager()->GetPaintWindow());
     else
@@ -558,32 +558,32 @@ BOOL CTxtWinHost::TxSetCaretPos(INT x, INT y)
 {
 	POINT ptCaret = { 0 };
 	::GetCaretPos(&ptCaret);
-	RECT rcCaret = { ptCaret.x, ptCaret.y, ptCaret.x + iCaretLastWidth, ptCaret.y + iCaretLastHeight };
+	RECT rcCaret = { ptCaret.x, ptCaret.y, ptCaret.x + m_iCaretLastWidth, ptCaret.y + m_iCaretLastHeight };
 	if( m_re->GetManager()->IsLayered() ) m_re->GetManager()->Invalidate(rcCaret);
-	else if( fNeedFreshCaret == TRUE ) {
+	else if( m_fNeedFreshCaret == TRUE ) {
 		m_re->GetManager()->Invalidate(rcCaret);
-		fNeedFreshCaret = FALSE;
+		m_fNeedFreshCaret = FALSE;
 	}
 	rcCaret.left = x;
 	rcCaret.top = y;
-	rcCaret.right = x + iCaretWidth;
-	rcCaret.bottom = y + iCaretHeight;
+	rcCaret.right = x + m_iCaretWidth;
+	rcCaret.bottom = y + m_iCaretHeight;
 	if( m_re->GetManager()->IsLayered() ) m_re->GetManager()->Invalidate(rcCaret);
-	iCaretLastWidth = iCaretWidth;
-	iCaretLastHeight = iCaretHeight;
+	m_iCaretLastWidth = m_iCaretWidth;
+	m_iCaretLastHeight = m_iCaretHeight;
 	return ::SetCaretPos(x, y);
 }
 
 BOOL CTxtWinHost::TxSetTimer(UINT idTimer, UINT uTimeout)
 {
-    fTimer = TRUE;
+    m_fTimer = TRUE;
     return m_re->GetManager()->SetTimer(m_re, idTimer, uTimeout) == TRUE;
 }
 
 void CTxtWinHost::TxKillTimer(UINT idTimer)
 {
     m_re->GetManager()->KillTimer(m_re, idTimer);
-    fTimer = FALSE;
+    m_fTimer = FALSE;
 }
 
 void CTxtWinHost::TxScrollWindowEx (INT dx, INT dy, LPCRECT lprcScroll,	LPCRECT lprcClip,	HRGN hrgnUpdate, LPRECT lprcUpdate,	UINT fuScroll)	
@@ -595,7 +595,7 @@ void CTxtWinHost::TxSetCapture(BOOL fCapture)
 {
     if (fCapture) m_re->GetManager()->SetCapture();
     else m_re->GetManager()->ReleaseCapture();
-    fCaptured = fCapture;
+    m_fCaptured = fCapture;
 }
 
 void CTxtWinHost::TxSetFocus()
@@ -630,7 +630,7 @@ HRESULT CTxtWinHost::TxDeactivate(LONG lNewState)
 
 HRESULT CTxtWinHost::TxGetClientRect(LPRECT prc)
 {
-    *prc = rcClient;
+    *prc = m_rcClient;
     GetControlRect(prc);
     return NOERROR;
 }
@@ -643,13 +643,13 @@ HRESULT CTxtWinHost::TxGetViewInset(LPRECT prc)
 
 HRESULT CTxtWinHost::TxGetCharFormat(const CHARFORMATW **ppCF)
 {
-    *ppCF = &cf;
+    *ppCF = &m_cf;
     return NOERROR;
 }
 
 HRESULT CTxtWinHost::TxGetParaFormat(const PARAFORMAT **ppPF)
 {
-    *ppPF = &pf;
+    *ppPF = &m_pf;
     return NOERROR;
 }
 
@@ -660,19 +660,19 @@ COLORREF CTxtWinHost::TxGetSysColor(int nIndex)
 
 HRESULT CTxtWinHost::TxGetBackStyle(TXTBACKSTYLE *pstyle)
 {
-    *pstyle = fTransparent ? TXTBACK_TRANSPARENT : TXTBACK_OPAQUE;
+    *pstyle = m_fTransparent ? TXTBACK_TRANSPARENT : TXTBACK_OPAQUE;
     return NOERROR;
 }
 
 HRESULT CTxtWinHost::TxGetMaxLength(DWORD *pLength)
 {
-    *pLength = cchTextMost;
+    *pLength = m_cchTextMost;
     return NOERROR;
 }
 
 HRESULT CTxtWinHost::TxGetScrollBars(DWORD *pdwScrollBar)
 {
-    *pdwScrollBar =  dwStyle & (WS_VSCROLL | WS_HSCROLL | ES_AUTOVSCROLL | 
+    *pdwScrollBar =  m_dwStyle & (WS_VSCROLL | WS_HSCROLL | ES_AUTOVSCROLL | 
         ES_AUTOHSCROLL | ES_DISABLENOSCROLL);
 
     return NOERROR;
@@ -681,16 +681,16 @@ HRESULT CTxtWinHost::TxGetScrollBars(DWORD *pdwScrollBar)
 HRESULT CTxtWinHost::TxGetPasswordChar(TCHAR *pch)
 {
 #ifdef _UNICODE
-    *pch = chPasswordChar;
+    *pch = m_chPasswordChar;
 #else
-    ::WideCharToMultiByte(CP_ACP, 0, &chPasswordChar, 1, pch, 1, NULL, NULL) ;
+    ::WideCharToMultiByte(CP_ACP, 0, &m_chPasswordChar, 1, pch, 1, NULL, NULL) ;
 #endif
     return NOERROR;
 }
 
 HRESULT CTxtWinHost::TxGetAcceleratorPos(LONG *pcp)
 {
-    *pcp = laccelpos;
+    *pcp = m_laccelpos;
     return S_OK;
 } 										   
 
@@ -708,47 +708,47 @@ HRESULT CTxtWinHost::TxGetPropertyBits(DWORD dwMask, DWORD *pdwBits)
 {
     DWORD dwProperties = 0;
 
-    if (fRich)
+    if (m_fRich)
     {
         dwProperties = TXTBIT_RICHTEXT;
     }
 
-    if (dwStyle & ES_MULTILINE)
+    if (m_dwStyle & ES_MULTILINE)
     {
         dwProperties |= TXTBIT_MULTILINE;
     }
 
-    if (dwStyle & ES_READONLY)
+    if (m_dwStyle & ES_READONLY)
     {
         dwProperties |= TXTBIT_READONLY;
     }
 
-    if (dwStyle & ES_PASSWORD)
+    if (m_dwStyle & ES_PASSWORD)
     {
         dwProperties |= TXTBIT_USEPASSWORD;
     }
 
-    if (!(dwStyle & ES_NOHIDESEL))
+    if (!(m_dwStyle & ES_NOHIDESEL))
     {
         dwProperties |= TXTBIT_HIDESELECTION;
     }
 
-    if (fEnableAutoWordSel)
+    if (m_fEnableAutoWordSel)
     {
         dwProperties |= TXTBIT_AUTOWORDSEL;
     }
 
-    if (fWordWrap)
+    if (m_fWordWrap)
     {
         dwProperties |= TXTBIT_WORDWRAP;
     }
 
-    if (fAllowBeep)
+    if (m_fAllowBeep)
     {
         dwProperties |= TXTBIT_ALLOWBEEP;
     }
 
-    if (fSaveSelection)
+    if (m_fSaveSelection)
     {
         dwProperties |= TXTBIT_SAVESELECTION;
     }
@@ -775,45 +775,44 @@ HRESULT CTxtWinHost::TxNotify(DWORD iNotify, void *pv)
 
 HRESULT CTxtWinHost::TxGetExtent(LPSIZEL lpExtent)
 {
-    *lpExtent = sizelExtent;
+    *lpExtent = m_sizelExtent;
     return S_OK;
 }
 
 HRESULT	CTxtWinHost::TxGetSelectionBarWidth (LONG *plSelBarWidth)
 {
-    *plSelBarWidth = lSelBarWidth;
+    *plSelBarWidth = m_lSelBarWidth;
     return S_OK;
 }
 
 void CTxtWinHost::SetWordWrap(BOOL fWordWrap)
 {
-    fWordWrap = fWordWrap;
-    pserv->OnTxPropertyBitsChange(TXTBIT_WORDWRAP, fWordWrap ? TXTBIT_WORDWRAP : 0);
+    m_fWordWrap = fWordWrap;
+    m_pserv->OnTxPropertyBitsChange(TXTBIT_WORDWRAP, m_fWordWrap ? TXTBIT_WORDWRAP : 0);
 }
 
 BOOL CTxtWinHost::IsReadOnly()
 {
-    return (dwStyle & ES_READONLY) != 0;
+    return (m_dwStyle & ES_READONLY) != 0;
 }
 
 void CTxtWinHost::SetReadOnly(BOOL fReadOnly)
 {
     if (fReadOnly)
     {
-        dwStyle |= ES_READONLY;
+        m_dwStyle |= ES_READONLY;
     }
     else
     {
-        dwStyle &= ~ES_READONLY;
+        m_dwStyle &= ~ES_READONLY;
     }
 
-    pserv->OnTxPropertyBitsChange(TXTBIT_READONLY, 
-        fReadOnly ? TXTBIT_READONLY : 0);
+    m_pserv->OnTxPropertyBitsChange(TXTBIT_READONLY, fReadOnly ? TXTBIT_READONLY : 0);
 }
 
 bool CTxtWinHost::GetMultLine()
 {
-	if (dwStyle & ES_MULTILINE)
+	if (m_dwStyle & ES_MULTILINE)
 		return true;
 	else
 		return false;
@@ -823,47 +822,45 @@ void CTxtWinHost::SetMultLine(bool bMultLine /* = true */)
 {
 	if (bMultLine)
 	{
-		dwStyle = dwStyle|ES_MULTILINE;
+		m_dwStyle = m_dwStyle|ES_MULTILINE;
 	}
 	else
 	{
-		dwStyle &= ~ES_MULTILINE;
+		m_dwStyle &= ~ES_MULTILINE;
 	}
-	pserv->OnTxPropertyBitsChange(TXTBIT_MULTILINE, bMultLine ? TXTBIT_MULTILINE : 0);
+	m_pserv->OnTxPropertyBitsChange(TXTBIT_MULTILINE, bMultLine ? TXTBIT_MULTILINE : 0);
 }
 
 LONG CTxtWinHost::GetWinStyle()
 {
-	return dwStyle;
+	return m_dwStyle;
 }
 
 void CTxtWinHost::SetWinStyle(LONG lStyle)
 {
-	dwStyle = lStyle;
+	m_dwStyle = lStyle;
 }
 
 void CTxtWinHost::SetVscrollbar(bool bVscrollbar)
 {
 	if (bVscrollbar)
 	{
-		dwStyle |= ES_DISABLENOSCROLL | WS_VSCROLL;
+		m_dwStyle |= ES_DISABLENOSCROLL | WS_VSCROLL;
 	}
 	else
 	{
-		dwStyle &= ~WS_VSCROLL;
-		if ( (dwStyle&WS_HSCROLL)==0)
+		m_dwStyle &= ~WS_VSCROLL;
+		if ( (m_dwStyle&WS_HSCROLL)==0)
 		{
-			dwStyle &= ~ES_DISABLENOSCROLL;
+			m_dwStyle &= ~ES_DISABLENOSCROLL;
 		}
 	}
 }
 
 bool CTxtWinHost::GetVscrollbar()
 {
-	if (dwStyle & WS_VSCROLL)
-	{
+	if (m_dwStyle & WS_VSCROLL)
 		return true;
-	}
 	else
 		return false;
 }
@@ -872,24 +869,22 @@ void CTxtWinHost::SetHscrollbar(bool bHscrollbar)
 {
 	if (bHscrollbar)
 	{
-		dwStyle |= ES_DISABLENOSCROLL | WS_HSCROLL;
+		m_dwStyle |= ES_DISABLENOSCROLL | WS_HSCROLL;
 	}
 	else
 	{
-		dwStyle &= ~WS_HSCROLL;
-		if ( (dwStyle&WS_VSCROLL)==0)
+		m_dwStyle &= ~WS_HSCROLL;
+		if ( (m_dwStyle&WS_VSCROLL)==0)
 		{
-			dwStyle &= ~ES_DISABLENOSCROLL;
+			m_dwStyle &= ~ES_DISABLENOSCROLL;
 		}
 	}
 }
 
 bool CTxtWinHost::GetHsrcollbar()
 {
-	if (dwStyle & WS_HSCROLL)
-	{
+	if (m_dwStyle & WS_HSCROLL)
 		return true;
-	}
 	else
 		return false;
 }
@@ -898,19 +893,17 @@ void CTxtWinHost::SetAutoVscroll(bool bAutoVscroll)
 {
 	if (bAutoVscroll)
 	{
-		dwStyle |= ES_AUTOVSCROLL;
+		m_dwStyle |= ES_AUTOVSCROLL;
 	}
 	else
 	{
-		dwStyle &= ~ES_AUTOVSCROLL;
+		m_dwStyle &= ~ES_AUTOVSCROLL;
 	}
 }
 bool CTxtWinHost::GetAutoVscroll()
 {
-	if (dwStyle & ES_AUTOVSCROLL)
-	{
+	if (m_dwStyle & ES_AUTOVSCROLL)
 		return true;
-	}
 	else
 		return false;
 }
@@ -918,19 +911,17 @@ void CTxtWinHost::SetAutoHscroll(bool bAutoHscroll)
 {
 	if (bAutoHscroll)
 	{
-		dwStyle |= ES_AUTOHSCROLL;
+		m_dwStyle |= ES_AUTOHSCROLL;
 	}
 	else
 	{
-		dwStyle &= ~ES_AUTOHSCROLL;
+		m_dwStyle &= ~ES_AUTOHSCROLL;
 	}
 }
 bool CTxtWinHost::GetAutoHscroll()
 {
-	if (dwStyle & ES_AUTOHSCROLL)
-	{
+	if (m_dwStyle & ES_AUTOHSCROLL)
 		return true;
-	}
 	else
 		return false;
 }
@@ -941,163 +932,167 @@ void CTxtWinHost::SetFont(HFONT hFont)
     LOGFONT lf;
     ::GetObject(hFont, sizeof(LOGFONT), &lf);
     LONG yPixPerInch = ::GetDeviceCaps(m_re->GetManager()->GetPaintDC(), LOGPIXELSY);
-    cf.yHeight = -lf.lfHeight * LY_PER_INCH / yPixPerInch;
-    if(lf.lfWeight >= FW_BOLD) cf.dwEffects |= CFE_BOLD;
-	else cf.dwEffects &= ~CFE_BOLD;
-    if(lf.lfItalic) cf.dwEffects |= CFE_ITALIC;
-	else cf.dwEffects &= ~CFE_ITALIC;
-    if(lf.lfUnderline) cf.dwEffects |= CFE_UNDERLINE;
-	else cf.dwEffects &= ~CFE_UNDERLINE;
-	if(lf.lfStrikeOut) cf.dwEffects |= CFE_STRIKEOUT;
-	else cf.dwEffects &= ~CFE_STRIKEOUT;
-    cf.bCharSet = lf.lfCharSet;
-    cf.bPitchAndFamily = lf.lfPitchAndFamily;
+    m_cf.yHeight = -lf.lfHeight * LY_PER_INCH / yPixPerInch;
+    if(lf.lfWeight >= FW_BOLD) 
+		m_cf.dwEffects |= CFE_BOLD;
+	else 
+		m_cf.dwEffects &= ~CFE_BOLD;
+    if(lf.lfItalic)
+		m_cf.dwEffects |= CFE_ITALIC;
+	else 
+		m_cf.dwEffects &= ~CFE_ITALIC;
+    if(lf.lfUnderline) 
+		m_cf.dwEffects |= CFE_UNDERLINE;
+	else 
+		m_cf.dwEffects &= ~CFE_UNDERLINE;
+	if(lf.lfStrikeOut) 
+		m_cf.dwEffects |= CFE_STRIKEOUT;
+	else 
+		m_cf.dwEffects &= ~CFE_STRIKEOUT;
+    m_cf.bCharSet = lf.lfCharSet;
+    m_cf.bPitchAndFamily = lf.lfPitchAndFamily;
 #ifdef _UNICODE
-    _tcscpy(cf.szFaceName, lf.lfFaceName);
+    _tcscpy(m_cf.szFaceName, lf.lfFaceName);
 #else
     //need to thunk pcf->szFaceName to a standard char string.in this case it's easy because our thunk is also our copy
-    MultiByteToWideChar(CP_ACP, 0, lf.lfFaceName, LF_FACESIZE, cf.szFaceName, LF_FACESIZE) ;
+    MultiByteToWideChar(CP_ACP, 0, lf.lfFaceName, LF_FACESIZE, m_cf.szFaceName, LF_FACESIZE);
 #endif
 
-    pserv->OnTxPropertyBitsChange(TXTBIT_CHARFORMATCHANGE, 
-        TXTBIT_CHARFORMATCHANGE);
+    m_pserv->OnTxPropertyBitsChange(TXTBIT_CHARFORMATCHANGE, TXTBIT_CHARFORMATCHANGE);
 }
 
 void CTxtWinHost::SetColor(DWORD dwColor)
 {
 	if (dwColor == 0 || dwColor == 0xFF000000)
 		dwColor = 0xFF000001;
-    cf.crTextColor = RGB(GetBValue(dwColor), GetGValue(dwColor), GetRValue(dwColor));
-    pserv->OnTxPropertyBitsChange(TXTBIT_CHARFORMATCHANGE, 
-        TXTBIT_CHARFORMATCHANGE);
+    m_cf.crTextColor = RGB(GetBValue(dwColor), GetGValue(dwColor), GetRValue(dwColor));
+    m_pserv->OnTxPropertyBitsChange(TXTBIT_CHARFORMATCHANGE, TXTBIT_CHARFORMATCHANGE);
 }
 
 SIZEL* CTxtWinHost::GetExtent() 
 {
-    return &sizelExtent;
+    return &m_sizelExtent;
 }
 
 void CTxtWinHost::SetExtent(SIZEL *psizelExtent) 
 { 
-    sizelExtent = *psizelExtent; 
-    pserv->OnTxPropertyBitsChange(TXTBIT_EXTENTCHANGE, TXTBIT_EXTENTCHANGE);
+    m_sizelExtent = *psizelExtent; 
+    m_pserv->OnTxPropertyBitsChange(TXTBIT_EXTENTCHANGE, TXTBIT_EXTENTCHANGE);
 }
 
 void CTxtWinHost::LimitText(LONG nChars)
 {
-    cchTextMost = nChars;
-    if( cchTextMost <= 0 ) cchTextMost = cInitTextMax;
-    pserv->OnTxPropertyBitsChange(TXTBIT_MAXLENGTHCHANGE, TXTBIT_MAXLENGTHCHANGE);
+    m_cchTextMost = nChars;
+    if( m_cchTextMost <= 0 ) 
+		m_cchTextMost = cInitTextMax;
+    m_pserv->OnTxPropertyBitsChange(TXTBIT_MAXLENGTHCHANGE, TXTBIT_MAXLENGTHCHANGE);
 }
 
 BOOL CTxtWinHost::IsCaptured()
 {
-    return fCaptured;
+    return m_fCaptured;
 }
 
 BOOL CTxtWinHost::IsShowCaret()
 {
-	return fShowCaret;
+	return m_fShowCaret;
 }
 
 void CTxtWinHost::NeedFreshCaret()
 {
-	fNeedFreshCaret = TRUE;
+	m_fNeedFreshCaret = TRUE;
 }
 
 INT CTxtWinHost::GetCaretWidth()
 {
-	return iCaretWidth;
+	return m_iCaretWidth;
 }
 
 INT CTxtWinHost::GetCaretHeight()
 {
-	return iCaretHeight;
+	return m_iCaretHeight;
 }
 
 BOOL CTxtWinHost::GetAllowBeep()
 {
-    return fAllowBeep;
+    return m_fAllowBeep;
 }
 
 void CTxtWinHost::SetAllowBeep(BOOL fAllowBeep)
 {
-    fAllowBeep = fAllowBeep;
+    m_fAllowBeep = fAllowBeep;
 
-    pserv->OnTxPropertyBitsChange(TXTBIT_ALLOWBEEP, 
-        fAllowBeep ? TXTBIT_ALLOWBEEP : 0);
+    m_pserv->OnTxPropertyBitsChange(TXTBIT_ALLOWBEEP, fAllowBeep ? TXTBIT_ALLOWBEEP : 0);
 }
 
 WORD CTxtWinHost::GetDefaultAlign()
 {
-    return pf.wAlignment;
+    return m_pf.wAlignment;
 }
 
 void CTxtWinHost::SetDefaultAlign(WORD wNewAlign)
 {
-    pf.wAlignment = wNewAlign;
+    m_pf.wAlignment = wNewAlign;
 
     // Notify control of property change
-    pserv->OnTxPropertyBitsChange(TXTBIT_PARAFORMATCHANGE, 0);
+    m_pserv->OnTxPropertyBitsChange(TXTBIT_PARAFORMATCHANGE, 0);
 }
 
 BOOL CTxtWinHost::GetRichTextFlag()
 {
-    return fRich;
+    return m_fRich;
 }
 
 void CTxtWinHost::SetRichTextFlag(BOOL fNew)
 {
-    fRich = fNew;
+    m_fRich = fNew;
 
-    pserv->OnTxPropertyBitsChange(TXTBIT_RICHTEXT, 
-        fNew ? TXTBIT_RICHTEXT : 0);
+    m_pserv->OnTxPropertyBitsChange(TXTBIT_RICHTEXT, fNew ? TXTBIT_RICHTEXT : 0);
 }
 
 LONG CTxtWinHost::GetDefaultLeftIndent()
 {
-    return pf.dxOffset;
+    return m_pf.dxOffset;
 }
 
 void CTxtWinHost::SetDefaultLeftIndent(LONG lNewIndent)
 {
-    pf.dxOffset = lNewIndent;
+    m_pf.dxOffset = lNewIndent;
 
-    pserv->OnTxPropertyBitsChange(TXTBIT_PARAFORMATCHANGE, 0);
+    m_pserv->OnTxPropertyBitsChange(TXTBIT_PARAFORMATCHANGE, 0);
 }
 
 void CTxtWinHost::SetClientRect(RECT *prc) 
 {
-    rcClient = *prc;
+    m_rcClient = *prc;
 
     LONG xPerInch = ::GetDeviceCaps(m_re->GetManager()->GetPaintDC(), LOGPIXELSX); 
     LONG yPerInch =	::GetDeviceCaps(m_re->GetManager()->GetPaintDC(), LOGPIXELSY); 
-    sizelExtent.cx = DXtoHimetricX(rcClient.right - rcClient.left, xPerInch);
-    sizelExtent.cy = DYtoHimetricY(rcClient.bottom - rcClient.top, yPerInch);
+    m_sizelExtent.cx = DXtoHimetricX(m_rcClient.right - m_rcClient.left, xPerInch);
+    m_sizelExtent.cy = DYtoHimetricY(m_rcClient.bottom - m_rcClient.top, yPerInch);
 
-    pserv->OnTxPropertyBitsChange(TXTBIT_VIEWINSETCHANGE, TXTBIT_VIEWINSETCHANGE);
+    m_pserv->OnTxPropertyBitsChange(TXTBIT_VIEWINSETCHANGE, TXTBIT_VIEWINSETCHANGE);
 }
 
 BOOL CTxtWinHost::SetSaveSelection(BOOL f_SaveSelection)
 {
     BOOL fResult = f_SaveSelection;
 
-    fSaveSelection = f_SaveSelection;
+    m_fSaveSelection = f_SaveSelection;
 
     // notify text services of property change
-    pserv->OnTxPropertyBitsChange(TXTBIT_SAVESELECTION, 
-        fSaveSelection ? TXTBIT_SAVESELECTION : 0);
+    m_pserv->OnTxPropertyBitsChange(TXTBIT_SAVESELECTION, m_fSaveSelection ? TXTBIT_SAVESELECTION : 0);
 
     return fResult;		
 }
 
 HRESULT	CTxtWinHost::OnTxInPlaceDeactivate()
 {
-    HRESULT hr = pserv->OnTxInPlaceDeactivate();
+    HRESULT hr = m_pserv->OnTxInPlaceDeactivate();
 
     if (SUCCEEDED(hr))
     {
-        fInplaceActive = FALSE;
+        m_fInplaceActive = FALSE;
     }
 
     return hr;
@@ -1105,13 +1100,13 @@ HRESULT	CTxtWinHost::OnTxInPlaceDeactivate()
 
 HRESULT	CTxtWinHost::OnTxInPlaceActivate(LPCRECT prcClient)
 {
-    fInplaceActive = TRUE;
+    m_fInplaceActive = TRUE;
 
-    HRESULT hr = pserv->OnTxInPlaceActivate(prcClient);
+    HRESULT hr = m_pserv->OnTxInPlaceActivate(prcClient);
 
     if (FAILED(hr))
     {
-        fInplaceActive = FALSE;
+        m_fInplaceActive = FALSE;
     }
 
     return hr;
@@ -1119,14 +1114,13 @@ HRESULT	CTxtWinHost::OnTxInPlaceActivate(LPCRECT prcClient)
 
 BOOL CTxtWinHost::DoSetCursor(RECT *prc, POINT *pt)
 {
-    RECT rc = prc ? *prc : rcClient;
+    RECT rc = prc ? *prc : m_rcClient;
 
     // Is this in our rectangle?
     if (PtInRect(&rc, *pt))
     {
-        RECT *prcClient = (!fInplaceActive || prc) ? &rc : NULL;
-        pserv->OnTxSetCursor(DVASPECT_CONTENT,	-1, NULL, NULL,  m_re->GetManager()->GetPaintDC(),
-            NULL, prcClient, pt->x, pt->y);
+        RECT *prcClient = (!m_fInplaceActive || prc) ? &rc : NULL;
+        m_pserv->OnTxSetCursor(DVASPECT_CONTENT,	-1, NULL, NULL,  m_re->GetManager()->GetPaintDC(), NULL, prcClient, pt->x, pt->y);
 
         return TRUE;
     }
@@ -1136,92 +1130,88 @@ BOOL CTxtWinHost::DoSetCursor(RECT *prc, POINT *pt)
 
 void CTxtWinHost::GetControlRect(LPRECT prc)
 {
-    prc->top = rcClient.top;
-    prc->bottom = rcClient.bottom;
-    prc->left = rcClient.left;
-    prc->right = rcClient.right;
+    prc->top = m_rcClient.top;
+    prc->bottom = m_rcClient.bottom;
+    prc->left = m_rcClient.left;
+    prc->right = m_rcClient.right;
 }
 
 void CTxtWinHost::SetTransparent(BOOL f_Transparent)
 {
-    fTransparent = f_Transparent;
+    m_fTransparent = f_Transparent;
 
     // notify text services of property change
-    pserv->OnTxPropertyBitsChange(TXTBIT_BACKSTYLECHANGE, 0);
+    m_pserv->OnTxPropertyBitsChange(TXTBIT_BACKSTYLECHANGE, 0);
 }
 
 LONG CTxtWinHost::SetAccelPos(LONG l_accelpos)
 {
-    LONG laccelposOld = l_accelpos;
+    LONG laccelposOld = m_laccelpos;
 
-    laccelpos = l_accelpos;
+    m_laccelpos = l_accelpos;
 
     // notify text services of property change
-    pserv->OnTxPropertyBitsChange(TXTBIT_SHOWACCELERATOR, 0);
+    m_pserv->OnTxPropertyBitsChange(TXTBIT_SHOWACCELERATOR, 0);
 
     return laccelposOld;
 }
 
 WCHAR CTxtWinHost::SetPasswordChar(WCHAR ch_PasswordChar)
 {
-    WCHAR chOldPasswordChar = chPasswordChar;
+    WCHAR chOldPasswordChar = m_chPasswordChar;
 
-    chPasswordChar = ch_PasswordChar;
+    m_chPasswordChar = ch_PasswordChar;
 
     // notify text services of property change
-    pserv->OnTxPropertyBitsChange(TXTBIT_USEPASSWORD, 
-        (chPasswordChar != 0) ? TXTBIT_USEPASSWORD : 0);
+    m_pserv->OnTxPropertyBitsChange(TXTBIT_USEPASSWORD, (m_chPasswordChar != 0) ? TXTBIT_USEPASSWORD : 0);
 
     return chOldPasswordChar;
 }
 
 void CTxtWinHost::SetDisabled(BOOL fOn)
 {
-    cf.dwMask	 |= CFM_COLOR | CFM_DISABLED;
-    cf.dwEffects |= CFE_AUTOCOLOR | CFE_DISABLED;
+    m_cf.dwMask	 |= CFM_COLOR | CFM_DISABLED;
+    m_cf.dwEffects |= CFE_AUTOCOLOR | CFE_DISABLED;
 
     if( !fOn )
-    {
-        cf.dwEffects &= ~CFE_DISABLED;
-    }
+		m_cf.dwEffects &= ~CFE_DISABLED;
 
-    pserv->OnTxPropertyBitsChange(TXTBIT_CHARFORMATCHANGE, 
-        TXTBIT_CHARFORMATCHANGE);
+    m_pserv->OnTxPropertyBitsChange(TXTBIT_CHARFORMATCHANGE, TXTBIT_CHARFORMATCHANGE);
 }
 
 LONG CTxtWinHost::SetSelBarWidth(LONG l_SelBarWidth)
 {
-    LONG lOldSelBarWidth = lSelBarWidth;
+    LONG lOldSelBarWidth = m_lSelBarWidth;
 
-    lSelBarWidth = l_SelBarWidth;
+    m_lSelBarWidth = l_SelBarWidth;
 
-    if (lSelBarWidth)
+    if (m_lSelBarWidth)
     {
-        dwStyle |= ES_SELECTIONBAR;
+        m_dwStyle |= ES_SELECTIONBAR;
     }
     else
     {
-        dwStyle &= (~ES_SELECTIONBAR);
+        m_dwStyle &= (~ES_SELECTIONBAR);
     }
 
-    pserv->OnTxPropertyBitsChange(TXTBIT_SELBARCHANGE, TXTBIT_SELBARCHANGE);
+    m_pserv->OnTxPropertyBitsChange(TXTBIT_SELBARCHANGE, TXTBIT_SELBARCHANGE);
 
     return lOldSelBarWidth;
 }
 
 BOOL CTxtWinHost::GetTimerState()
 {
-    return fTimer;
+    return m_fTimer;
 }
 
 void CTxtWinHost::SetCharFormat(CHARFORMAT2W &c)
 {
-    cf = c;
+    m_cf = c;
 }
 
 void CTxtWinHost::SetParaFormat(PARAFORMAT2 &p)
 {
-    pf = p;
+    m_pf = p;
 }
 
 
