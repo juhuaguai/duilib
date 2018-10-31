@@ -46,6 +46,7 @@ public:
         LONG styleValue = ::GetWindowLong(*this, GWL_STYLE);
         styleValue &= ~WS_CAPTION;
         ::SetWindowLong(*this, GWL_STYLE, styleValue | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
+		//SetClassLong(this->m_hWnd, GCL_STYLE, GetClassLong(this->m_hWnd, GCL_STYLE) | CS_DROPSHADOW);
 
         m_pm.Init(m_hWnd);
         CDialogBuilder builder;

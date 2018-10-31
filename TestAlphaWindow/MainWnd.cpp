@@ -26,6 +26,7 @@ LRESULT CMainWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 	styleValue &= ~WS_CAPTION;	//取消标题框
 	styleValue &= ~WS_SIZEBOX;	//RWH 取消自动调整边框的风格,可以放置贴边自动最大化
 	::SetWindowLong(*this, GWL_STYLE, styleValue | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
+	SetClassLong(this->m_hWnd, GCL_STYLE, GetClassLong(this->m_hWnd, GCL_STYLE) | CS_DROPSHADOW);	//增加投影
 
 	m_PM.Init(m_hWnd);
 	CDialogBuilder builder; 
