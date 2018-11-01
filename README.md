@@ -5,7 +5,9 @@
 
 本仓库改动日志：
 1.将解决方案sln切换为vs2008打开。
+
 2.添加webbrowser控件对js方法window.close的响应
+
 3.给combo控件增加selectedid属性，以便于在xml中可以直接配置默认选中的item
 4.给combo控件增加textcolor/font/align属性，便于自由配置combo控件显示的文字的颜色/字体/水平对齐方式
 5.给combo控件的下拉窗口增加Notify过滤，将下拉窗口中的DUI_MSGTYPE_ITEMCLICK,DUI_MSGTYPE_ITEMACTIVATE,DUI_MSGTYPE_LINK ,DUI_MSGTYPE_CLICK异步转发到combo控件所在的窗口的notify中
