@@ -430,7 +430,7 @@
 				Optimization="0"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories=""
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;UILIB_STATIC;_USE_GDIPLUS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;UILIB_STATIC;_USE_GDIPLUS;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"

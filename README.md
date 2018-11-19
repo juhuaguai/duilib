@@ -66,6 +66,7 @@
 60.简单的给richedit增加个系统的复制粘贴右键弹出菜单<br />
 61.修复richedit里面的两处笔误；给richedit中CTxtWinHost类的成员变量名增加m_前缀<br />
 62.引入官方库的关于List排序的修复<br />
+63.引入官方库的关于List排序后选中错误的修复,同步关于SelectItem参数传递错误的修复，见https://github.com/duilib/duilib/pull/182<br />
 <br />
 其他改动：<br />
 1.修改了几处官方库中的笔误。<br />
