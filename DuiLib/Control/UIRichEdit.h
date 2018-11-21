@@ -132,6 +132,7 @@ public:
     void HomeLeft();
     void EndRight();
 
+	int EstimmateRichEditHeight(const int& nWidth,LPCTSTR lpszText);
     SIZE EstimateSize(SIZE szAvailable);
 	void SetPos(RECT rc, bool bNeedInvalidate = true);
 	void Move(SIZE szOffset, bool bNeedInvalidate = true);

@@ -2341,6 +2341,19 @@ SIZE CRichEditUI::EstimateSize(SIZE szAvailable)
     return CContainerUI::EstimateSize(szAvailable);
 }
 
+int CRichEditUI::EstimmateRichEditHeight(const int& nWidth,LPCTSTR lpszText)
+{
+	if (lpszText==NULL || _tcslen(lpszText)==0)
+		return 0;
+
+	RECT rcText = { 0, 0, nWidth, 9999};	
+	CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, lpszText, 0, m_iFont, DT_CALCRECT|DT_WORDBREAK);
+
+	int nHeight = (int)((rcText.bottom-rcText.top)*1.3);
+
+	return nHeight;	
+}
+
 void CRichEditUI::SetPos(RECT rc, bool bNeedInvalidate)
 {
     CControlUI::SetPos(rc, bNeedInvalidate);
