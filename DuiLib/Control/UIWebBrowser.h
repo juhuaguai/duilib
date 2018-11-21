@@ -83,7 +83,9 @@ namespace DuiLib
 		//js调用c++, 调用方法为window.external.strJSFuncName() //strJSFuncName-js中调用的函数名 pCallback-函数名对应的函数指针
 		void BindJSWindowExternalFunc(const CDuiString& strJSFuncName,PJSCall pCallback);
 
+		void SetSilent(bool bSilent);
 	protected:
+		bool m_bSilent;
 		CDuiPtrArray m_aJsCallInfo;			//js调用c++时,函数信息
 		IWebBrowser2*			m_pWebBrowser2; //浏览器指针
 		IHTMLWindow2*		_pHtmlWnd2;

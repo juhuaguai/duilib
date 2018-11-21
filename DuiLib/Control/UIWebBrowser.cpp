@@ -14,6 +14,7 @@ CWebBrowserUI::CWebBrowserUI()
 , m_bAutoNavi(false)
 , m_dwRef(0)
 , m_dwCookie(0)
+, m_bSilent(false)
 {
 	m_clsid=CLSID_WebBrowser;
 	m_sHomePage.Empty();
@@ -30,7 +31,30 @@ bool CWebBrowserUI::DoCreateControl()
 		this->Navigate2(m_sHomePage.GetData());
 	}
 	RegisterEventHandler(TRUE);
+	if (m_pWebBrowser2)
+	{
+		if (m_bSilent)
+			m_pWebBrowser2->put_Silent(VARIANT_TRUE);
+		else
+			m_pWebBrowser2->put_Silent(VARIANT_FALSE);
+	}
+	
 	return true;
+}
+
+void CWebBrowserUI::SetSilent(bool bSilent)
+{
+	if (m_bSilent!=bSilent)
+	{
+		m_bSilent = bSilent;
+		if (m_pWebBrowser2)
+		{
+			if (m_bSilent)
+				m_pWebBrowser2->put_Silent(VARIANT_TRUE);
+			else
+				m_pWebBrowser2->put_Silent(VARIANT_FALSE);
+		}
+	}
 }
 
 void CWebBrowserUI::ReleaseControl()
