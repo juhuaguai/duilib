@@ -79,7 +79,8 @@ LRESULT CPreviewWnd::OnNcHitTest( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 			if( pControl && _tcsicmp(pControl->GetClass(), DUI_CTR_BUTTON) != 0 && 
 				_tcsicmp(pControl->GetClass(), DUI_CTR_OPTION) != 0 &&
 				_tcsicmp(pControl->GetClass(), DUI_CTR_EDIT) != 0 &&
-				_tcsicmp(pControl->GetClass(), DUI_CTR_RICHEDIT) != 0 )
+				_tcsicmp(pControl->GetClass(), DUI_CTR_RICHEDIT) != 0 &&
+				_tcsicmp(pControl->GetClass(), DUI_CTR_COMBO) != 0)
 				return HTCAPTION;
 	}
 
