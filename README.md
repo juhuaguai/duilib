@@ -67,6 +67,8 @@
 61.修复richedit里面的两处笔误；给richedit中CTxtWinHost类的成员变量名增加m_前缀<br />
 62.引入官方库的关于List排序的修复<br />
 63.引入官方库的关于List排序后选中错误的修复,同步关于SelectItem参数传递错误的修复，见https://github.com/duilib/duilib/pull/182<br />
+64.引入官方库的修复UIRender某些情况下占用文件不释放的bug，见https://github.com/duilib/duilib/pull/186<br />
+
 <br />
 其他改动：<br />
 1.修改了几处官方库中的笔误。<br />
