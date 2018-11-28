@@ -548,8 +548,12 @@ void GetIpAdapterInfoList(deque<IP_ADAPTER_INFO>& theIpAdapterList)
 	{
 		theIpAdapterList.push_back(*pIpAdapterInfo);	
 		//ÊÍ·ÅÄÚ´æ¿Õ¼ä   
-		delete pIpAdapterInfo; 
-	} 	
+		delete []pIpAdapterInfo; 
+	}
+	else
+	{
+		delete []pIpAdapterInfo;
+	}
 }
 
 #ifndef __INCLUDE__STRINGTOOLS__H

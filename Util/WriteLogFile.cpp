@@ -51,6 +51,10 @@ void CWriteLogFile::SetLogFilePathName(const wstring& strLogFileName,int nLogFil
 	m_wstrFileName = strLogFileName;
 	m_dwLogFileMaxSize = nLogFileMaxSize;
 }
+wstring CWriteLogFile::GetLogFilePathName()
+{
+	return m_wstrFileName;
+}
 
 CWriteLogFile::~CWriteLogFile()
 {

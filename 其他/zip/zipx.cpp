@@ -82,6 +82,36 @@ bool CZipx::ZipFile(LPCTSTR lpszSrcFile, LPCTSTR lpszDstFile, const char *pszPas
 	HZIP hz = CreateZip(lpszDstFile, pszPassword);
 	ZipAdd(hz, strFileName.c_str(), lpszSrcFile);
 	CloseZip(hz);
+
+	return true;
+}
+bool CZipx::ZipFileList(deque<wstring>& dequeSrcFileList, const wstring& strDstFile, const char *pszPassword/*=NULL*/)
+{
+	wstring strDir,strName;
+	int nPos = strDstFile.find_last_of(L"/\\");
+	if (nPos != string::npos)
+	{
+		strDir = strDstFile.substr(0,nPos);
+		strName = strDstFile.substr(nPos+1);
+	}
+	else
+		return false;
+
+	//建立文件目录
+	CreateDir(strDir.c_str());	
+
+	HZIP hz = CreateZip(strDstFile.c_str(), pszPassword);
+
+	for (deque<wstring>::iterator itr=dequeSrcFileList.begin();itr!=dequeSrcFileList.end();itr++)
+	{
+		if (IsFileExist(*itr))
+		{
+			ZipAdd(hz, this->GetFileNameFromPath(itr->c_str()).c_str(), itr->c_str());
+		}
+	}
+
+	CloseZip(hz);
+	return true;
 }
 
 //目标文件必须指定
@@ -384,8 +414,11 @@ void CZipx::GetRelativePath(const xstring& strFilePath, xstring& strSubPath)
 	}
 }
 
-
-
-
-
-
+wstring CZipx::GetFileNameFromPath(const wstring& strPath)
+{
+	wstring strName = strPath;
+	int nPos = strName.find_last_of(L"/\\");
+	if (nPos != string::npos)
+		strName.erase(0,nPos+1);
+	return strName;
+}

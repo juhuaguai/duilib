@@ -6,6 +6,8 @@
 #include "unzip.h"
 
 #include <string>
+#include <deque>
+using namespace std;
 using std::string;
 using std::wstring;
 
@@ -30,6 +32,7 @@ public:
 	//压缩一个文件
 	bool ZipFile(LPCTSTR lpszSrcFile, LPCTSTR lpszDstFile=NULL, const char *pszPassword=NULL);
 	BOOL ZipFiles(LPCTSTR lpszSrcDir, LPCTSTR lpszDstFile, const char *pszPassword=NULL) ;
+	bool ZipFileList(deque<wstring>& dequeSrcFileList, const wstring& strDstFile, const char *pszPassword=NULL);
 
 	//压缩一个文件夹
 	bool UnZipFile(LPCTSTR lpszSrcFile, LPCTSTR lpszDstDir, const char *pszPassword=NULL);
@@ -42,7 +45,7 @@ private:
 	void GetRelativePath(const xstring& strFilePath, xstring& strSubPath) ;
 	void AddFileFromDir(HZIP hz, const xstring &strFileDir) ;
 	
-
+	wstring GetFileNameFromPath(const wstring& strPath);
 };
 
 void PathAddBackslash2(xstring &strFilePath);
