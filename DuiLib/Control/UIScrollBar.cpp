@@ -121,6 +121,27 @@ int CScrollBarUI::GetScrollPos() const
 	return m_nScrollPos;
 }
 
+//void CScrollBarUI::SetScrollPos(int nPos, bool bTriggerEvent)
+//{
+//	if( m_nScrollPos == nPos ) return;
+//
+//	int iOldScrollPos = m_nScrollPos;
+//	m_nScrollPos = nPos;
+//	if( m_nScrollPos < 0 ) m_nScrollPos = 0;
+//    if( m_nScrollUnit > 1 ) {
+//        int iLeftOffset = m_nScrollPos % m_nScrollUnit;
+//        if( iLeftOffset != 0 ) {
+//            if( iLeftOffset >= m_nScrollUnit/2 ) m_nScrollPos += m_nScrollUnit - iLeftOffset;
+//            else m_nScrollPos -= iLeftOffset;   
+//        }
+//    }
+//	if( m_nScrollPos > m_nRange ) m_nScrollPos = m_nRange;
+//
+//	SetPos(m_rcItem, true);
+//
+//	if(bTriggerEvent && m_pManager != NULL) 
+//		m_pManager->SendNotify(this, DUI_MSGTYPE_SCROLL, m_nScrollPos, iOldScrollPos, true, false);
+//}
 void CScrollBarUI::SetScrollPos(int nPos, bool bTriggerEvent)
 {
 	if( m_nScrollPos == nPos ) return;
@@ -128,13 +149,12 @@ void CScrollBarUI::SetScrollPos(int nPos, bool bTriggerEvent)
 	int iOldScrollPos = m_nScrollPos;
 	m_nScrollPos = nPos;
 	if( m_nScrollPos < 0 ) m_nScrollPos = 0;
-    if( m_nScrollUnit > 1 ) {
-        int iLeftOffset = m_nScrollPos % m_nScrollUnit;
-        if( iLeftOffset != 0 ) {
-            if( iLeftOffset >= m_nScrollUnit/2 ) m_nScrollPos += m_nScrollUnit - iLeftOffset;
-            else m_nScrollPos -= iLeftOffset;   
-        }
-    }
+	if( m_nScrollUnit > 1 ) {
+		int iLeftOffset = m_nScrollPos % m_nScrollUnit;
+		if( iLeftOffset != 0 ) {
+			m_nScrollPos += m_nScrollUnit - iLeftOffset; 
+		}
+	}
 	if( m_nScrollPos > m_nRange ) m_nScrollPos = m_nRange;
 
 	SetPos(m_rcItem, true);
