@@ -3,6 +3,7 @@
 #include <WinBase.h>
 #include <string>
 #include <deque>
+#include <map>
 #include <IPHlpApi.h>
 #pragma comment(lib,"Iphlpapi.lib") //需要添加Iphlpapi.lib库  
 #include <ShlObj.h>
@@ -116,6 +117,7 @@ void GetOSVersion(int& nMajorVersion,int& nMinorVersion);
 //查找进程ID (32位进程只能查找32位进程) //此函数获取到当前进程的PID可能是0
 int GetProcesssIdFromName(const xstring& strPorcessName,bool bCaseSensitive = false);
 void GetProcesssIdFromName(const xstring& strPorcessName,deque<int>& dequeOutID,bool bCaseSensitive = false);
+void GetProcesssInfoFromName(const xstring& strPorcessName,map<int,wstring>& mapOutID,bool bCaseSensitive = false);
 
 //获取文件大小(字节) //最大2G
 long GetFileSizeByte(const xstring& strFile);

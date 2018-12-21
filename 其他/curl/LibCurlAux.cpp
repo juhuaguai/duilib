@@ -344,7 +344,6 @@ long CLibCurlAux::OpenUrl(const char *szWebUrl, bool bHttpGet, string& strRepDat
 	return lRetCode;
 }
 
-
 string CLibCurlAux::sendSyncRequest(const string &url,const map<string,string> &paramsMap,const map<string, string> &headers /* = map<string, string>()*/)
 {
 	string requestEntity;
@@ -433,16 +432,20 @@ bool CLibCurlAux::ConnectOnly(const string& strUrl,int nTimeOut)
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
 		CURLcode ret;
-		curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1L);
+		//curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1L);
 		curl_easy_setopt(curl, CURLOPT_URL, strUrl.c_str());		
 		ret = curl_easy_perform(curl);
 		if(ret == CURLE_OK) 
 		{
 			/* only connected! */
-
-			curl_easy_cleanup(curl);
-			curl = NULL;
-			return true;
+			long lInfo = 0;
+			CURLcode retCode = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &lInfo); 
+			if (lInfo<400)
+			{
+				curl_easy_cleanup(curl);
+				curl = NULL;
+				return true;
+			}
 		}
 
 		curl_easy_cleanup(curl);
@@ -450,4 +453,94 @@ bool CLibCurlAux::ConnectOnly(const string& strUrl,int nTimeOut)
 	}
 	
 	return false;
+}
+
+
+size_t write_callback(char *buffer, size_t size, size_t nmemb, void *userdata)
+{
+	FILE *fp = static_cast<FILE *>(userdata);
+	size_t length = fwrite(buffer, size, nmemb, fp);
+	if (length != nmemb)
+	{
+		return length;
+	}
+
+	return size * nmemb;
+}
+int progress_callback(void *userdata, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow)
+{
+	typedef struct tagUserData
+	{
+		LPVOID pVoid;
+		CURL *handle;
+		PDownloadProcessingCallback pCallBack;
+	}Progress_User_Data;
+	Progress_User_Data *pdata = static_cast<Progress_User_Data *>(userdata);
+	CURL *easy_handle = pdata->handle;
+
+	// Defaults to bytes/second
+	double speed = 0;
+	curl_easy_getinfo(easy_handle, CURLINFO_SPEED_DOWNLOAD, &speed);	// 用以接收下载的平均速度，这个速度不是即时速度，而是下载完成后的速度，单位是 字节/秒 
+	if (pdata->pCallBack(pdata->pVoid,dltotal,dlnow,speed) == false)
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
+bool CLibCurlAux::SyncDownLoadFile(LPVOID pUserData, const char *szWebUrl, const wstring& strFile,PDownloadProcessingCallback pDownloadProingCall)
+{
+	DeleteFileW(strFile.c_str());
+
+	FILE* fp = _wfopen(strFile.c_str(),L"ab+");
+	if (fp == NULL)
+		return false;
+
+	CURL *curl;
+	CURLcode res = CURLE_OK;
+
+	curl = curl_easy_init();
+	if(curl == NULL) 
+		return false;
+	curl_easy_setopt(curl, CURLOPT_URL, szWebUrl);	//下载地址
+	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);					//进度回调
+	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER,0L);				//禁止CURL验证对等证书(也有说是证书时效性)
+	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);				//不检查证书
+	curl_easy_setopt(curl, CURLOPT_HEADER, 0L);						//输出内容时不输出信息头
+
+	//设置下载回调函数
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback); 
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA,fp); 
+	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);					//调试信息打开 
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);				//跟踪重定向 
+
+	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);					//跟踪进度,开启进度回调
+	curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, &progress_callback);		//设置进度回调函数
+	typedef struct tagUserData
+	{
+		LPVOID pVoid;
+		CURL *handle;
+		PDownloadProcessingCallback pCallBack;
+	}Progress_User_Data;
+	Progress_User_Data theUserData;
+	theUserData.pVoid = pUserData;
+	theUserData.handle = curl;
+	theUserData.pCallBack = pDownloadProingCall;
+	curl_easy_setopt(curl, CURLOPT_XFERINFODATA, &theUserData);				//进度回调函数的第一个参数
+	curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);				//当HTTP返回值大于等于300的时候，请求失败
+
+	//curl_easy_setopt(curl, CURLOPT_RESUME_FROM_LARGE, resumeByte);	//断点续传用.告诉服务器本地已经下载多少字节了
+
+	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
+	//curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30);			//设置超时
+	//curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30);	//设置超时
+
+	int ret = curl_easy_perform(curl);
+	curl_easy_cleanup(curl);
+	fclose(fp);
+	if (res != CURLE_OK)
+		return false;
+
+	return true;
 }

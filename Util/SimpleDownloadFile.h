@@ -39,7 +39,7 @@ typedef struct tagDownloadInfo
 	LPVOID pVoid;
 }SDownloadInfo;
 
-class CSimpleDownloadFile :	public IBindStatusCallback
+class CSimpleDownloadFile :	public IBindStatusCallback, public IHttpSecurity
 {
 public:
 	CSimpleDownloadFile(void);
@@ -55,11 +55,15 @@ public:
 	HRESULT STDMETHODCALLTYPE OnStopBinding(/* [in] */ HRESULT hresult,/* [unique][in] */ __RPC__in_opt LPCWSTR szError);
 	HRESULT STDMETHODCALLTYPE GetBindInfo(/* [out] */ DWORD *grfBINDF,/* [unique][out][in] */ BINDINFO *pbindinfo);
 	HRESULT STDMETHODCALLTYPE OnDataAvailable(/* [in] */ DWORD grfBSCF,/* [in] */ DWORD dwSize,/* [in] */ FORMATETC *pformatetc,/* [in] */ STGMEDIUM *pstgmed);
-	HRESULT STDMETHODCALLTYPE QueryInterface(/* [in] */ REFIID riid,/* [iid_is][out] */ __RPC__deref_out void __RPC_FAR *__RPC_FAR *ppvObject);
 	ULONG STDMETHODCALLTYPE AddRef( void);
 	ULONG STDMETHODCALLTYPE Release( void);
 	HRESULT STDMETHODCALLTYPE OnObjectAvailable(/* [in] */ __RPC__in REFIID riid,/* [iid_is][in] */ __RPC__in_opt IUnknown *punk);
 	HRESULT STDMETHODCALLTYPE OnProgress(/* [in] */ ULONG ulProgress,/* [in] */ ULONG ulProgressMax,/* [in] */ ULONG ulStatusCode,/* [unique][in] */ __RPC__in_opt LPCWSTR szStatusText);
+
+	HRESULT STDMETHODCALLTYPE QueryInterface(/* [in] */ REFIID riid,/* [iid_is][out] */ __RPC__deref_out void __RPC_FAR *__RPC_FAR *ppvObject);
+
+	HRESULT STDMETHODCALLTYPE OnSecurityProblem(/* [in] */ DWORD dwProblem);
+	HRESULT STDMETHODCALLTYPE GetWindow(/* [in] */ REFGUID rguidReason,/* [out] */ HWND *phwnd);
 
 	//添加到下载列表尾部
 	void AddTailToDownloadDeque(SDownloadInfo& tInfo);

@@ -8,6 +8,9 @@ using namespace std;
 #pragma comment ( lib, "ws2_32.lib" )
 #pragma comment ( lib, "wldap32.lib" )
 
+//下载进度回调 下载完成是不走这个回调的 返回值:true-继续 false-取消下载
+typedef bool (*PDownloadProcessingCallback)(LPVOID pVoid,__int64 nTotal,__int64 nCurDownload,double dbSpeed);	//下载结果回调
+
 class CLibCurlAux
 {
 public:
@@ -30,29 +33,30 @@ public:
 	static bool InitGlobalCurl();
 	static void UninitGlobalCurl();
 
-	void ReceiveData(void* buffer, size_t size, size_t nmemb);
-	void ReceiveHdr(void* buffer, size_t size, size_t nmemb);
-	//默认设置10秒连接超时10秒接收超时
 	bool InitLibCurl(LPCSTR lpszCookieFile=NULL);
-	//nTransTimeOut-接收数据超时(单位:秒) nConnTimeOut-连接超时(单位:秒) 
+	//nTransTimeOut-接收数据超时(单位:秒) nConnTimeOut-连接超时(单位:秒)
 	bool SetTimeOut(int nTransTimeOut, int nConnTimeOut);
 	void UninitLibCurl();
+	long OpenUrl(const char *szWebUrl, bool bHttpGet, string& strRepData, const char *pszAppendHeads=NULL,const wstring& strFile=L"");
+	void SetSimplePostData(const char *pszPostData);
+	void AddMultiPartPostData(const char *pszKey, const char *pszVal);
+
+	void ReceiveData(void* buffer, size_t size, size_t nmemb);
+	void ReceiveHdr(void* buffer, size_t size, size_t nmemb);
 	bool SendHttpQuest(const char *pszUrl, bool bHttpGet=true, const char *pszAppendHeaders = NULL);
 	long  GetResponseInfo();
 	string& GetResponseHdr();
 	string& GetResponseData();
-
-	string GetErrText(){return m_strErrTxt;};
-
-	long OpenUrl(const char *szWebUrl, bool bHttpGet, string& strRepData, const char *pszAppendHeads=NULL,const wstring& strFile=L"");
-
-	void SetSimplePostData(const char *pszPostData);
-	void AddMultiPartPostData(const char *pszKey, const char *pszVal);
+	string GetErrText(){return m_strErrTxt;};	
 
 	string sendSyncRequest(const string &url,const map<string, string> &paramsMap,const map<string, string> &headers = map<string, string>());
 
 public:
 	//独立的接口和句柄,无需预先调用InitLibCurl,完毕后也无需调用UninitLibCurl
 	bool ConnectOnly(const string& strUrl,int nTimeOut);
+
+	//同步下载函数，返回值表示下载有没有出错。注意：没出错也不代表文件一定下载正确。
+	//独立的接口和句柄,无需预先调用InitLibCurl,完毕后也无需调用UninitLibCurl
+	bool SyncDownLoadFile(LPVOID pUserData, const char *szWebUrl, const wstring& strFile,PDownloadProcessingCallback pDownloadProingCall);
 };
 

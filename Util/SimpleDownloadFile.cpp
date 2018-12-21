@@ -24,7 +24,14 @@ CSimpleDownloadFile::~CSimpleDownloadFile(void)
 
 HRESULT STDMETHODCALLTYPE CSimpleDownloadFile::QueryInterface(/* [in] */ REFIID riid,/* [iid_is][out] */ __RPC__deref_out void __RPC_FAR *__RPC_FAR *ppvObject)
 {
-	return E_NOTIMPL;
+	*ppvObject = NULL;
+
+	if( riid == IID_IBindStatusCallback)
+		*ppvObject = static_cast<IBindStatusCallback*>(this);
+	else if( riid == IID_IHttpSecurity)
+		*ppvObject = static_cast<IHttpSecurity*>(this);
+
+	return *ppvObject == NULL ? E_NOINTERFACE : S_OK;
 }
 ULONG STDMETHODCALLTYPE CSimpleDownloadFile::AddRef( void)
 {
@@ -51,11 +58,10 @@ HRESULT STDMETHODCALLTYPE CSimpleDownloadFile::OnStopBinding(/* [in] */ HRESULT 
 	return E_NOTIMPL;
 }
 HRESULT STDMETHODCALLTYPE CSimpleDownloadFile::GetBindInfo(/* [out] */ DWORD *grfBINDF,/* [unique][out][in] */ BINDINFO *pbindinfo)
-{//不使用缓存,似乎不生效,为了保险起见,采用在请求后面加随机数来保证不请求到缓存
-	*grfBINDF = BINDF_GETNEWESTVERSION | BINDF_NOWRITECACHE;
+{
+	*grfBINDF = BINDF_PRAGMA_NO_CACHE | BINDF_RESYNCHRONIZE | BINDF_NOWRITECACHE | BINDF_IGNORESECURITYPROBLEM;
 	pbindinfo->cbSize = sizeof(BINDINFO);
 	return S_OK;
-	//return E_NOTIMPL;
 }
 HRESULT STDMETHODCALLTYPE CSimpleDownloadFile::OnDataAvailable(/* [in] */ DWORD grfBSCF,/* [in] */ DWORD dwSize,/* [in] */ FORMATETC *pformatetc,/* [in] */ STGMEDIUM *pstgmed)
 {
@@ -77,6 +83,16 @@ HRESULT STDMETHODCALLTYPE CSimpleDownloadFile::OnProgress(/* [in] */ ULONG ulPro
 	//return S_OK;
 	return E_NOTIMPL;
 }
+
+HRESULT STDMETHODCALLTYPE CSimpleDownloadFile::OnSecurityProblem(/* [in] */ DWORD dwProblem)
+{
+	return RPC_E_RETRY;
+};
+HRESULT STDMETHODCALLTYPE CSimpleDownloadFile::GetWindow(/* [in] */ REFGUID rguidReason,/* [out] */ HWND *phwnd)
+{
+	*phwnd = NULL;
+	return E_NOTIMPL;
+};
 
 void CSimpleDownloadFile::DownloadFile(LPVOID pVoid,LPCTSTR pszUrl,LPCTSTR pszPath,PDownloadResultCallback pCallback /* = NULL */,bool bDeleteOld /* = true */)
 {
@@ -144,6 +160,7 @@ DWORD WINAPI DownloadFileThreadFunc(LPVOID lpParameter)
 		{
 			if (pThis->GetHeadFromDownloadDeque(tInfo))
 			{
+				URLDownloadToFile(tInfo.strUrl.c_str());
 				if (URLDownloadToFile(NULL,tInfo.strUrl.c_str(),tInfo.strPath.c_str(),0,pThis) == S_OK)
 					tInfo.pCallback(tInfo.pVoid,true,tInfo.strPath.c_str());
 				else

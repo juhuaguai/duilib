@@ -418,30 +418,25 @@ string GetLocalIp()
 	WSADATA     wsaData; 
 	WSAStartup(0x0202, &wsaData);
 	//Before calling AddIPAddress we use GetIpAddrTable to get an adapter to which we can add the IP.
-	PMIB_IPADDRTABLE pIPAddrTable;
+	PMIB_IPADDRTABLE pIPAddrTable = NULL;
 	DWORD dwSize = 0;
 	DWORD dwRetVal = 0;
-
-	pIPAddrTable = (MIB_IPADDRTABLE*) malloc( sizeof( MIB_IPADDRTABLE) );
-
 	// Make an initial call to GetIpAddrTable to get the necessary size into the dwSize variable
 	if (GetIpAddrTable(pIPAddrTable, &dwSize, 0) == ERROR_INSUFFICIENT_BUFFER) 
 	{
-		free( pIPAddrTable );
 		pIPAddrTable = (MIB_IPADDRTABLE *) malloc ( dwSize );
-	}
-	else
-	{
-		free( pIPAddrTable );
-		WSACleanup();
-		return "";
 	}
 
 	// Make a second call to GetIpAddrTable to get the actual data we want
 	dwRetVal = GetIpAddrTable( pIPAddrTable, &dwSize, 0 );
 	if ( dwRetVal != NO_ERROR ) 
 	{
-		free( pIPAddrTable );
+		if (pIPAddrTable)
+		{
+			free( pIPAddrTable );
+			pIPAddrTable = NULL;
+		}
+		
 		WSACleanup();
 		return "";
 	}
@@ -460,14 +455,22 @@ string GetLocalIp()
 			inAddr.S_un.S_addr  = prow->dwAddr;
 			inMask.S_un.S_addr = prow->dwMask;
 
-			free(pIPAddrTable);
+			if (pIPAddrTable)
+			{
+				free( pIPAddrTable );
+				pIPAddrTable = NULL;
+			}
 			string strIP = inet_ntoa(inAddr);
 			WSACleanup();
 			return strIP;
 		}
 	}
 
-	free( pIPAddrTable );
+	if (pIPAddrTable)
+	{
+		free( pIPAddrTable );
+		pIPAddrTable = NULL;
+	}
 	WSACleanup();
 	return "";
 }
@@ -475,14 +478,10 @@ string GetLocalIp()
 string GetMAC()
 {
 	string strMac;
-	ULONG outBufLen = sizeof(IP_ADAPTER_ADDRESSES);
-	PIP_ADAPTER_ADDRESSES pAddresses = (IP_ADAPTER_ADDRESSES*)malloc(outBufLen);
-	if (pAddresses == NULL) 
-		return strMac;
-	// Make an initial call to GetAdaptersAddresses to get the necessary size into the ulOutBufLen variable
+	ULONG outBufLen = 0;
+	PIP_ADAPTER_ADDRESSES pAddresses = NULL;
 	if(GetAdaptersAddresses(AF_UNSPEC, 0, NULL, pAddresses, &outBufLen) == ERROR_BUFFER_OVERFLOW)
 	{
-		free(pAddresses);
 		pAddresses = (IP_ADAPTER_ADDRESSES*)malloc(outBufLen);
 		if (pAddresses == NULL) 
 			return strMac;
@@ -508,28 +507,23 @@ string GetMAC()
 			break;
 		}
 	} 
-	free(pAddresses);
+	if (pAddresses)
+	{
+		free(pAddresses);
+		pAddresses = NULL;
+	}	
 	return strMac;
 }
 
 void GetIpAdapterInfoList(deque<IP_ADAPTER_INFO>& theIpAdapterList)
 {
 	//PIP_ADAPTER_INFO结构体指针存储本机网卡信息  
-	PIP_ADAPTER_INFO pIpAdapterInfo = new IP_ADAPTER_INFO();  
-	//得到结构体大小,用于GetAdaptersInfo参数  
-	unsigned long stSize = sizeof(IP_ADAPTER_INFO);  
-	//调用GetAdaptersInfo函数,填充pIpAdapterInfo指针变量;其中stSize参数既是一个输入量也是一个输出量  
+	PIP_ADAPTER_INFO pIpAdapterInfo = NULL;  
+	unsigned long stSize = 0;  
 	int nRel = GetAdaptersInfo(pIpAdapterInfo,&stSize);  
 	if (ERROR_BUFFER_OVERFLOW == nRel)  
-	{  
-		//如果函数返回的是ERROR_BUFFER_OVERFLOW  
-		//则说明GetAdaptersInfo参数传递的内存空间不够,同时其传出stSize,表示需要的空间大小  
-		//这也是说明为什么stSize既是一个输入量也是一个输出量  
-		//释放原来的内存空间  
-		delete pIpAdapterInfo;  
-		//重新申请内存空间用来存储所有网卡信息  
-		pIpAdapterInfo = (PIP_ADAPTER_INFO)new BYTE[stSize];  
-		//再次调用GetAdaptersInfo函数,填充pIpAdapterInfo指针变量  
+	{
+		pIpAdapterInfo = (PIP_ADAPTER_INFO)malloc(stSize);  
 		nRel=GetAdaptersInfo(pIpAdapterInfo,&stSize);   
 		if (ERROR_SUCCESS == nRel)  
 		{  
@@ -540,19 +534,20 @@ void GetIpAdapterInfoList(deque<IP_ADAPTER_INFO>& theIpAdapterList)
 				theIpAdapterList.push_back(*pIpAdapterInfo);
 				pIpAdapterInfo = pIpAdapterInfo->Next;  
 			}  
-		}  
-		//释放内存空间   
-		delete []pIpAdapterInfo;   
-	} 
-	else if(ERROR_SUCCESS == nRel)
-	{
-		theIpAdapterList.push_back(*pIpAdapterInfo);	
-		//释放内存空间   
-		delete []pIpAdapterInfo; 
+		}   
+		if (pIpAdapterInfo)
+		{
+			free(pIpAdapterInfo);  
+			pIpAdapterInfo = NULL;
+		}		 
 	}
 	else
 	{
-		delete []pIpAdapterInfo;
+		if (pIpAdapterInfo)
+		{
+			free(pIpAdapterInfo);  
+			pIpAdapterInfo = NULL;
+		}	
 	}
 }
 
@@ -1266,6 +1261,57 @@ void GetProcesssIdFromName(const xstring& strPorcessName,deque<int>& dequeOutID,
 	CloseHandle( hProcess );
 }
 
+void GetProcesssInfoFromName(const xstring& strPorcessName,map<int,wstring>& mapOutID,bool bCaseSensitive/* = false*/)
+{
+	mapOutID.clear();
+	HANDLE hProcess = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	if( hProcess == INVALID_HANDLE_VALUE )
+	{
+		return ;
+	}
+
+	TCHAR szShortPath[MAX_PATH*2] = { 0 };
+	PROCESSENTRY32 pinfo; 
+	MODULEENTRY32 minfo;
+	pinfo.dwSize = sizeof(PROCESSENTRY32);
+	minfo.dwSize = sizeof( MODULEENTRY32);
+
+	BOOL report = Process32First(hProcess, &pinfo); 
+	while(report) 
+	{ 
+		HANDLE hModule = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, pinfo.th32ProcessID); 
+		if( hModule != INVALID_HANDLE_VALUE )
+		{
+			if( Module32First( hModule, &minfo ) )
+			{
+				xstring strCurExeName = minfo.szExePath;
+				int nPos = strCurExeName.rfind(_T('\\'));
+				strCurExeName = strCurExeName.substr(nPos+1);
+				if (bCaseSensitive)
+				{
+					if (strPorcessName == strCurExeName)
+					{
+						mapOutID[pinfo.th32ProcessID] = minfo.szExePath;
+					}
+				}
+				else
+				{
+					if (_tcsicmp(strPorcessName.c_str(),strCurExeName.c_str()) == 0)
+					{
+						mapOutID[pinfo.th32ProcessID] = minfo.szExePath;
+					}
+				}
+
+			}
+
+			CloseHandle( hModule );
+		}
+		report = Process32Next(hProcess, &pinfo);
+	}
+
+	CloseHandle( hProcess );
+}
+
 long GetFileSizeByte(const xstring& strFile)
 {
 	FILE* file = NULL;
@@ -1650,4 +1696,25 @@ wstring GetFileNameFromPath(const wstring& strPath)
 	if (nPos != string::npos)
 		strName.erase(0,nPos+1);
 	return strName;
+}
+
+bool CopyStringToClipboard(const wstring& strValue)
+{
+	if(OpenClipboard(NULL))
+	{  
+		EmptyClipboard();
+		HANDLE hClip=GlobalAlloc(GMEM_MOVEABLE,strValue.length()*2+2); 
+		wchar_t* pszBuf =(wchar_t*)GlobalLock(hClip);
+		wcscpy(pszBuf,strValue.c_str());
+		GlobalUnlock(hClip);
+
+		SetClipboardData(CF_UNICODETEXT,hClip);
+		CloseClipboard();
+		
+		GlobalFree(hClip);
+		hClip = NULL;
+		return true;
+	} 
+
+	return false;
 }
