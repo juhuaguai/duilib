@@ -70,6 +70,7 @@
 64.引入官方库的修复UIRender某些情况下占用文件不释放的bug，见https://github.com/duilib/duilib/pull/186<br />
 65.滚动条滚动后位置优化。<br />
 66.同步官方库的一个pr，关于CDuiStringPtrMap Remove函数问题修复<br />
+67.修复win10系统上，存在Showmodal子窗口时，主窗口仍然能够响应鼠标滚轮消息的问题
 
 <br />
 其他改动：<br />
