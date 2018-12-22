@@ -1260,7 +1260,14 @@ void CRenderEngine::DrawRect(HDC hDC, const RECT& rc, int nSize, DWORD dwPenColo
 	if (dwPenColor == 0 || dwPenColor == 0xFF000000)
 		dwPenColor = 0xFF000001;
 
-    HPEN hPen = ::CreatePen(nStyle | PS_INSIDEFRAME, nSize, RGB(GetBValue(dwPenColor), GetGValue(dwPenColor), GetRValue(dwPenColor)));
+	HPEN hPen = NULL;
+	if (nSize==1)
+	{
+		if ( (nStyle & PS_DASH) || (nStyle & PS_DOT) || (nStyle & PS_DASHDOT) || (nStyle & PS_DASHDOTDOT) )
+			hPen = ::CreatePen(nStyle, nSize, RGB(GetBValue(dwPenColor), GetGValue(dwPenColor), GetRValue(dwPenColor)));
+	}
+	if (hPen==NULL)
+	    hPen = ::CreatePen(nStyle | PS_INSIDEFRAME, nSize, RGB(GetBValue(dwPenColor), GetGValue(dwPenColor), GetRValue(dwPenColor)));
     HPEN hOldPen = (HPEN)::SelectObject(hDC, hPen);
     ::SelectObject(hDC, ::GetStockObject(HOLLOW_BRUSH));
     ::Rectangle(hDC, rc.left, rc.top, rc.right, rc.bottom);
