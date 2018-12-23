@@ -2694,6 +2694,12 @@ void CRichEditUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	else if( _tcscmp(pstrName, _T("maxchar")) == 0 ) SetLimitText(_ttoi(pstrValue));
 	else if( _tcscmp(pstrName, _T("focusedimage")) == 0 ) SetFocusedImage(pstrValue);
 	else if( _tcscmp(pstrName, _T("disabledimage")) == 0 ) SetDisabledImage(pstrValue);
+	else if( _tcscmp(pstrName, _T("showcaret")) == 0 ) {
+		if( _tcscmp(pstrValue, _T("true")) == 0 ) 
+			SetCaret(true);
+		else
+			SetCaret(false);
+	}
     else CContainerUI::SetAttribute(pstrName, pstrValue);
 }
 
