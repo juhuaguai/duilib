@@ -148,3 +148,47 @@ void CWriteLogFile::SetWriteLog(bool bIsWrite)
 {
 	m_bWrite = bIsWrite;
 }
+
+void CWriteLogFile::WriteLogW(LPCWSTR lpszLog)
+{
+	if (m_bWrite == false)
+		return ;
+
+	WaitForSingleObject(m_hEvent,3000);
+	if (m_hEvent == INVALID_HANDLE_VALUE)
+		return ;
+	ResetEvent(m_hEvent);
+	try
+	{
+		if ( GetLogFileCurSize(m_wstrFileName)>m_dwLogFileMaxSize*1024)
+			DeleteFileW(m_wstrFileName.c_str());
+
+		WIN32_FILE_ATTRIBUTE_DATA attrs = {0};
+		BOOL bHave = GetFileAttributesExW(m_wstrFileName.c_str(), GetFileExInfoStandard, &attrs);
+
+		//输出
+		FILE* fp = NULL;
+		_wfopen_s(&fp,m_wstrFileName.c_str(),L"ab+");	
+		if (fp)
+		{
+
+			if ( !bHave )  
+			{  
+				// 新创建的日志文件，则写入Unicode头  
+				BYTE chUnicodeHead[2] = { 0xff, 0xfe }; // Unicode头  
+				fwrite( chUnicodeHead, sizeof(BYTE), sizeof(chUnicodeHead), fp );  
+			}  
+
+			//内容
+			SYSTEMTIME time;  
+			::GetLocalTime( &time );  
+			fwprintf(fp, L"[%04d-%02d-%02d %02d:%02d:%02d]", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);  
+			fwrite(lpszLog,wcslen(lpszLog)*2,1,fp);
+			fwrite(L"\r\n",wcslen(L"\r\n")*2,1,fp);			
+			fclose( fp );  
+		}
+	}
+	catch (...)
+	{}
+	SetEvent(m_hEvent);
+}

@@ -19,6 +19,7 @@ public:
 	wstring GetLogFilePathName();
 	void WriteLogW(bool bPrintToConsole,LPCWSTR format, ...);
 	void SetWriteLog(bool bIsWrite);	
+	void WriteLogW(LPCWSTR lpszLog);
 
 protected:
 	//获取日志文件当前大小

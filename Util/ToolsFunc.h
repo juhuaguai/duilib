@@ -161,3 +161,6 @@ void SetIEWebbrowserVersion(DWORD dwIEVersion = 8000);
 
 //获取CPU序列号
 string GetCpuIndex();
+
+//复制字符串到剪切板
+bool CopyStringToClipboard(const wstring& strValue);
