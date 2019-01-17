@@ -57,6 +57,9 @@ public:
 
 	//同步下载函数，返回值表示下载有没有出错。注意：没出错也不代表文件一定下载正确。
 	//独立的接口和句柄,无需预先调用InitLibCurl,完毕后也无需调用UninitLibCurl
-	bool SyncDownLoadFile(LPVOID pUserData, const char *szWebUrl, const wstring& strFile,PDownloadProcessingCallback pDownloadProingCall);
+	bool SyncDownLoadFile(LPVOID pUserData, const char *szWebUrl, const wstring& strFile,PDownloadProcessingCallback pDownloadProingCall=NULL);
+
+	//创建目录,可一次创建多级目录
+	BOOL CreateDirW(const wstring& strDir);
 };
 

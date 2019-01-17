@@ -39,8 +39,8 @@ BOOL IsPathExistA(const string& strPath);
 bool IsDirOrFileExist(const TCHAR* szPath);
 //文件是否存在
 bool IsDirOrFileExistA(const char* szPath);
-//创建一个目录,若存在也会返回true,当不存在且创建失败时返回false 注意：不能一次创建多级目录
-BOOL CreateDir(const xstring& strDir);
+//创建一个目录,若存在也会返回true,当不存在且创建失败时返回false
+BOOL CreateDirW(const wstring& strDir);
 //复制目录 //如果是目录不要以"\\"或者"/"结尾
 int CopyFolder(const xstring& strSource,const xstring& strDest);
 int CopyFolderA(const string& strSource,const string& strDest);

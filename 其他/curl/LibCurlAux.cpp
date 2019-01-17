@@ -1,4 +1,5 @@
 #include "LibCurlAux.h"
+#include <Shlwapi.h>
 
 size_t data_callback(void* data, size_t size, size_t nmemb, void *userPtr)
 {
@@ -294,7 +295,15 @@ long CLibCurlAux::OpenUrl(const char *szWebUrl, bool bHttpGet, string& strRepDat
 {
 	long lRetCode = 0;
 	m_strDestFile = strFile;
+
 	DeleteFileW(strFile.c_str());
+
+	int nPos = strFile.find_last_of(L"\\/");
+	if (nPos!=string::npos)
+	{
+		wstring strDir = strFile.substr(0,nPos);
+		CreateDirW(strDir);
+	}
 
 	std::string szbuffer;  
 	std::string szheader_buffer;  
@@ -428,6 +437,7 @@ bool CLibCurlAux::ConnectOnly(const string& strUrl,int nTimeOut)
 	{
 		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, nTimeOut);        //设置超时
+		curl_easy_setopt(curl, CURLOPT_TIMEOUT, nTimeOut);        //设置超时
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER,0L); 
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
@@ -483,15 +493,50 @@ int progress_callback(void *userdata, curl_off_t dltotal, curl_off_t dlnow, curl
 	curl_easy_getinfo(easy_handle, CURLINFO_SPEED_DOWNLOAD, &speed);	// 用以接收下载的平均速度，这个速度不是即时速度，而是下载完成后的速度，单位是 字节/秒 
 	if (pdata->pCallBack(pdata->pVoid,dltotal,dlnow,speed) == false)
 	{
-		return 1;
+		return 1;	//返回非0值将终止传输
 	}
 
-	return 0;
+	return 0;		//返回0继续传输
 }
 
-bool CLibCurlAux::SyncDownLoadFile(LPVOID pUserData, const char *szWebUrl, const wstring& strFile,PDownloadProcessingCallback pDownloadProingCall)
+BOOL CLibCurlAux::CreateDirW(const wstring& strDir)
+{
+	if (PathIsDirectoryW(strDir.c_str()))
+		return TRUE;
+
+	int nPos = strDir.find_last_of(L"\\/");
+	if (nPos!=string::npos)
+	{
+		wstring strParentDir = strDir.substr(0,nPos);
+		if (PathIsDirectoryW(strParentDir.c_str()) == FALSE)
+		{
+			if (CreateDirW(strParentDir)==FALSE)
+			{
+				return FALSE;
+			}
+		}
+
+		if (CreateDirectoryW(strDir.c_str(), NULL) == FALSE)
+		{
+			return FALSE;
+		}		
+	}
+	else
+		return FALSE;
+
+	return TRUE;
+}
+
+bool CLibCurlAux::SyncDownLoadFile(LPVOID pUserData, const char *szWebUrl, const wstring& strFile,PDownloadProcessingCallback pDownloadProingCall/* =NULL */)
 {
 	DeleteFileW(strFile.c_str());
+
+	int nPos = strFile.find_last_of(L"\\/");
+	if (nPos!=string::npos)
+	{
+		wstring strDir = strFile.substr(0,nPos);
+		CreateDirW(strDir);
+	}
 
 	FILE* fp = _wfopen(strFile.c_str(),L"ab+");
 	if (fp == NULL)
@@ -504,7 +549,6 @@ bool CLibCurlAux::SyncDownLoadFile(LPVOID pUserData, const char *szWebUrl, const
 	if(curl == NULL) 
 		return false;
 	curl_easy_setopt(curl, CURLOPT_URL, szWebUrl);	//下载地址
-	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);					//进度回调
 	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER,0L);				//禁止CURL验证对等证书(也有说是证书时效性)
 	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);				//不检查证书
 	curl_easy_setopt(curl, CURLOPT_HEADER, 0L);						//输出内容时不输出信息头
@@ -515,20 +559,23 @@ bool CLibCurlAux::SyncDownLoadFile(LPVOID pUserData, const char *szWebUrl, const
 	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);					//调试信息打开 
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);				//跟踪重定向 
 
-	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);					//跟踪进度,开启进度回调
-	curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, &progress_callback);		//设置进度回调函数
-	typedef struct tagUserData
+	if (pDownloadProingCall)
 	{
-		LPVOID pVoid;
-		CURL *handle;
-		PDownloadProcessingCallback pCallBack;
-	}Progress_User_Data;
-	Progress_User_Data theUserData;
-	theUserData.pVoid = pUserData;
-	theUserData.handle = curl;
-	theUserData.pCallBack = pDownloadProingCall;
-	curl_easy_setopt(curl, CURLOPT_XFERINFODATA, &theUserData);				//进度回调函数的第一个参数
-	curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);				//当HTTP返回值大于等于300的时候，请求失败
+		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);					//跟踪进度,开启进度回调
+		curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, &progress_callback);		//设置进度回调函数
+		typedef struct tagUserData
+		{
+			LPVOID pVoid;
+			CURL *handle;
+			PDownloadProcessingCallback pCallBack;
+		}Progress_User_Data;
+		Progress_User_Data theUserData;
+		theUserData.pVoid = pUserData;
+		theUserData.handle = curl;
+		theUserData.pCallBack = pDownloadProingCall;
+		curl_easy_setopt(curl, CURLOPT_XFERINFODATA, &theUserData);				//进度回调函数的第一个参数
+		curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);						//当HTTP返回值大于等于300的时候，请求失败
+	}	
 
 	//curl_easy_setopt(curl, CURLOPT_RESUME_FROM_LARGE, resumeByte);	//断点续传用.告诉服务器本地已经下载多少字节了
 

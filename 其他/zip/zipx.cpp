@@ -1,7 +1,8 @@
 #include "zipx.h"
 #include <stdio.h>
+#include <Shlwapi.h>
 
-void PathAddBackslash2(xstring &strFilePath)
+void CZipx::PathAddBackslash2(xstring &strFilePath)
 {
 	int nLen = strFilePath.size();
 	if(nLen > 0)
@@ -14,31 +15,23 @@ void PathAddBackslash2(xstring &strFilePath)
 }
 
 // 判断文件是否存在
-bool IsFileExist(const xstring& strFilePath)
+bool CZipx::IsFileExist(const xstring& strFilePath)
 {
 	DWORD dwAttrib = GetFileAttributes(strFilePath.c_str());
 	return ((INVALID_FILE_ATTRIBUTES != dwAttrib) && (0 == (dwAttrib & FILE_ATTRIBUTE_DIRECTORY)));
 }
 // 判断文件夹是否存在
-bool IsDirExist(const xstring & strFilePath)
+bool CZipx::IsDirExist(const xstring & strFilePath)
 {
 	DWORD dwAttrib = GetFileAttributes(strFilePath.c_str());
 	return ((INVALID_FILE_ATTRIBUTES != dwAttrib) && (0 != (dwAttrib & FILE_ATTRIBUTE_DIRECTORY)));
 }
 // 判断文件或文件夹是否存在
-bool IsPathExist(const xstring & strFilePath)
+bool CZipx::IsPathExist(const xstring & strFilePath)
 {
 	DWORD dwAttrib = GetFileAttributes(strFilePath.c_str());
 	return (INVALID_FILE_ATTRIBUTES != dwAttrib);
 }
-
-// 变变变变变种(听说会更快一点)，见备注1
-bool IsPathExistEx(const xstring & strFilePath)
-{
-	WIN32_FILE_ATTRIBUTE_DATA attrs = { 0 };
-	return (0 != GetFileAttributesEx(strFilePath.c_str(), GetFileExInfoStandard, &attrs));
-}
-
 
 CZipx::CZipx(void)
 {
@@ -374,35 +367,32 @@ bool CZipx::UnZipFileFromMem(void* pData,DWORD dwDataSize,LPCTSTR lpszDstDir, co
 	return true;
 }
 
-bool CZipx::CreateDir(LPCTSTR lpszDir)
+bool CZipx::CreateDir(const xstring& strDir)
 {
-	if (IsDirExist(lpszDir))       //如果目录已存在，直接返回
-	{
-		return TRUE;
-	}
+	if (PathIsDirectory(strDir.c_str()))
+		return true;
 
-	std::xstring strPath;
-	TCHAR pszSrc[MAX_PATH] = { 0 };
-	_tcscpy_s(pszSrc, lpszDir);
-	TCHAR *pszContent;
-	TCHAR *ptoken = _tcstok_s(pszSrc, _T("\\/"), &pszContent);
-	while (ptoken)
+	int nPos = strDir.find_last_of(_T("\\/"));
+	if (nPos!=string::npos)
 	{
-		strPath += ptoken;
-		strPath += _T("\\");
-		if (!IsDirExist(strPath.c_str()))
+		xstring strParentDir = strDir.substr(0,nPos);
+		if (PathIsDirectory(strParentDir.c_str()) == FALSE)
 		{
-			//创建失败时还应删除已创建的上层目录，此次略
-			if (!CreateDirectory(strPath.c_str(), NULL))
+			if (CreateDir(strParentDir)==FALSE)
 			{
-				DWORD dw = GetLastError();
-				return FALSE;
+				return false;
 			}
 		}
-		ptoken = _tcstok_s(NULL, _T("\\"), &pszContent);
-	}
-	return TRUE;
 
+		if (CreateDirectory(strDir.c_str(), NULL) == FALSE)
+		{
+			return false;
+		}		
+	}
+	else
+		return false;
+
+	return true;
 }
 
 void CZipx::GetRelativePath(const xstring& strFilePath, xstring& strSubPath) 

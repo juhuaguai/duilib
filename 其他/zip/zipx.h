@@ -39,16 +39,17 @@ public:
 	bool UnZipFile(LPCTSTR lpszSrcFile, LPCTSTR lpszFileName, LPCTSTR lpszDstDir, const char *pszPassword=NULL);
 	bool UnZipFileFromMem(void* pData,DWORD dwDataSize,LPCTSTR lpszDstDir, const char *pszPassword=NULL);
 
+public:
+	void PathAddBackslash2(xstring &strFilePath);
+	bool IsFileExist(const xstring& strFilePath);
+	bool IsDirExist(const xstring & strFilePath);
+	bool IsPathExist(const xstring & strFilePath);
+
 private:
-	bool CreateDir(LPCTSTR lpszDir);
+	bool CreateDir(const xstring& strDir);
 	//bool IsFolderExist(LPCTSTR lpszPath) ;
 	void GetRelativePath(const xstring& strFilePath, xstring& strSubPath) ;
 	void AddFileFromDir(HZIP hz, const xstring &strFileDir) ;
 	
 	wstring GetFileNameFromPath(const wstring& strPath);
 };
-
-void PathAddBackslash2(xstring &strFilePath);
-bool IsFileExist(const xstring& strFilePath);
-bool IsDirExist(const xstring & strFilePath);
-bool IsPathExist(const xstring & strFilePath);

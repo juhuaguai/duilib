@@ -15,10 +15,30 @@
 
 #pragma comment(lib,"version.lib")
 
-BOOL CreateDir(const xstring& strDir)
+BOOL CreateDirW(const wstring& strDir)
 {
-	if (PathIsDirectory(strDir.c_str()) == FALSE)
-		return CreateDirectory(strDir.c_str(),NULL);
+	if (PathIsDirectoryW(strDir.c_str()))
+		return TRUE;
+
+	int nPos = strDir.find_last_of(L"\\/");
+	if (nPos!=string::npos)
+	{
+		wstring strParentDir = strDir.substr(0,nPos);
+		if (PathIsDirectoryW(strParentDir.c_str()) == FALSE)
+		{
+			if (CreateDirW(strParentDir)==FALSE)
+			{
+				return FALSE;
+			}
+		}
+
+		if (CreateDirectoryW(strDir.c_str(), NULL) == FALSE)
+		{
+			return FALSE;
+		}		
+	}
+	else
+		return FALSE;
 
 	return TRUE;
 }
