@@ -1845,7 +1845,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
             case _T('n'):  // Newline
                 {
                     pstrText++;
-                    if( (uStyle & DT_SINGLELINE) != 0 ) break;
+                    //if( (uStyle & DT_SINGLELINE) != 0 ) break;
                     bLineEnd = true;
                 }
                 break;

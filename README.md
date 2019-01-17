@@ -72,6 +72,7 @@
 66.同步官方库的一个pr，关于CDuiStringPtrMap Remove函数问题修复<br />
 67.修复win10系统上，存在Showmodal子窗口时，主窗口仍然能够响应鼠标滚轮消息的问题<br />
 68.修复画边框border时，指定为虚线风格不生效的bug.(虚线风格要求border的宽度只能为1)<br />
+69.修改showhtml绘制时，<n>标签还需要配合multiline="true"才能生效的问题<br />
 
 <br />
 其他改动：<br />
