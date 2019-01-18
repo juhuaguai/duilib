@@ -1,5 +1,6 @@
 #include "LibCurlAux.h"
 #include <Shlwapi.h>
+#pragma comment(lib,"Shlwapi.lib")
 
 size_t data_callback(void* data, size_t size, size_t nmemb, void *userPtr)
 {
