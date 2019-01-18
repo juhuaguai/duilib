@@ -2356,6 +2356,19 @@ int CRichEditUI::EstimmateRichEditHeight(const int& nWidth,LPCTSTR lpszText)
 
 void CRichEditUI::SetPos(RECT rc, bool bNeedInvalidate)
 {
+	int oldW = m_rcItem.right-m_rcItem.left;
+	int oldH = m_rcItem.bottom-m_rcItem.top;
+	if (rc.right-rc.left != oldW)
+	{
+		if (m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible())
+			m_pHorizontalScrollBar->SetScrollRange(0);
+	}
+	if (rc.bottom-rc.top != oldH)
+	{
+		if (m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible())
+			m_pVerticalScrollBar->SetScrollRange(0);
+	}
+
     CControlUI::SetPos(rc, bNeedInvalidate);
     rc = m_rcItem;
 
