@@ -276,8 +276,26 @@ void CListUI::RemoveAll()
     m_pList->RemoveAll();
 }
 
+
 void CListUI::SetPos(RECT rc, bool bNeedInvalidate)
 {
+	int oldW = m_rcItem.right-m_rcItem.left;
+	int oldH = m_rcItem.bottom-m_rcItem.top;
+	SIZE sizePos = m_pList->GetScrollPos();
+	bool bSetScrollPos = false;
+	if (rc.right-rc.left != oldW)
+	{
+		sizePos.cx=0;
+		bSetScrollPos = true;
+	}
+	if (rc.bottom-rc.top != oldH)
+	{
+		sizePos.cy=0;
+		bSetScrollPos = true;
+	}
+	if (bSetScrollPos)
+		m_pList->SetScrollPos(sizePos,false);
+
 	if( m_pHeader != NULL ) { // 设置header各子元素x坐标,因为有些listitem的setpos需要用到(临时修复)
 		int iLeft = rc.left + m_rcInset.left;
 		int iRight = rc.right - m_rcInset.right;
@@ -321,19 +339,6 @@ void CListUI::SetPos(RECT rc, bool bNeedInvalidate)
 	rc.top += m_rcInset.top;
 	rc.right -= m_rcInset.right;
 	rc.bottom -= m_rcInset.bottom;
-
-	if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) {
-		rc.top -= m_pVerticalScrollBar->GetScrollPos();
-		rc.bottom -= m_pVerticalScrollBar->GetScrollPos();
-		rc.bottom += m_pVerticalScrollBar->GetScrollRange();
-		rc.right -= m_pVerticalScrollBar->GetFixedWidth();
-	}
-	if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
-		rc.left -= m_pHorizontalScrollBar->GetScrollPos();
-		rc.right -= m_pHorizontalScrollBar->GetScrollPos();
-		rc.right += m_pHorizontalScrollBar->GetScrollRange();
-		rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
-	}
 
 	m_ListInfo.nColumns = MIN(m_pHeader->GetCount(), UILIST_MAX_COLUMNS);
 
