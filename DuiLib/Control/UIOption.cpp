@@ -201,7 +201,7 @@ namespace DuiLib
 
 	void COptionUI::PaintStatusImage(HDC hDC)
 	{
-		if( (m_uButtonState & UISTATE_SELECTED) != 0 ) {
+		if(IsEnabled() && (m_uButtonState & UISTATE_SELECTED) != 0 ) {
 			if ((m_uButtonState & UISTATE_HOT) != 0)
 			{
 				if (DrawImage(hDC, m_diSelectedHot)) goto Label_ForeImage;
@@ -225,7 +225,7 @@ Label_ForeImage:
 
 	void COptionUI::PaintText(HDC hDC)
 	{
-		if( (m_uButtonState & UISTATE_SELECTED) != 0 )
+		if(IsEnabled() && (m_uButtonState & UISTATE_SELECTED) != 0 )
 		{
 			DWORD oldTextColor = m_dwTextColor;
 			if( m_dwSelectedTextColor != 0 ) m_dwTextColor = m_dwSelectedTextColor;
