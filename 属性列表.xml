@@ -1102,4 +1102,11 @@
 		<Attribute name="autoplay" default="true" type="BOOL" comment="是否自动播放GIF动画"/>
 		<Attribute name="autosize" default="false" type="BOOL" comment="是否根据图片自动设置控件大小(开启后width和height属性失效)"/>
 	</GifAnim>
+	<ChrysanthemumLoading parent="Control" notifies="setfocus killfocus timer menu windowinit(root)">
+		<Attribute name="timeinterval" default="40" type="INT" comment="loading每一帧的间隔"/>
+		<Attribute name="spokenum" default="10" type="INT" comment="辐条数量"/>
+		<Attribute name="thickness" default="4" type="INT" comment="辐条粗细"/>
+		<Attribute name="outradius" default="0" type="INT" comment="外圆半径"/>
+		<Attribute name="innerradius" default="0" type="INT" comment="內圆半径"/>
+	</ChrysanthemumLoading>
 </Controls>

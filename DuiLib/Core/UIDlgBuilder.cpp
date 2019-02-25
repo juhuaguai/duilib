@@ -353,6 +353,7 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
                 break;
             case 20:
                 if( _tcsicmp(pstrClass, DUI_CTR_LISTCONTAINERELEMENT) == 0 )  pControl = new CListContainerElementUI;
+				if( _tcsicmp(pstrClass, DUI_CTR_CHRYSANTHEMUMLOADING) == 0 )  pControl = new CChrysanthemumLoadingUI;
                 break;
             }
             // User-supplied control factory

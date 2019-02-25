@@ -658,6 +658,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Control\UIChrysanthemumLoading.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Control\UICombo.cpp"
 					>
 				</File>
@@ -840,6 +844,10 @@
 				</File>
 				<File
 					RelativePath=".\Control\UICheckBox.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Control\UIChrysanthemumLoading.h"
 					>
 				</File>
 				<File

@@ -121,4 +121,5 @@
 #include "Control/UIActiveX.h"
 #include "Control/UIWebBrowser.h"
 #include "Control/UIGifAnim.h"
+#include "Control/UIChrysanthemumLoading.h"
 //#include "Control/UIFlash.h"

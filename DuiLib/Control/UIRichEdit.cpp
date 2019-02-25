@@ -520,12 +520,16 @@ BOOL CTxtWinHost::TxSetScrollPos (INT fnBar, INT nPos, BOOL fRedraw)
 
 void CTxtWinHost::TxInvalidateRect(LPCRECT prc, BOOL fMode)
 {
-    if( prc == NULL ) {
+    if( prc == NULL ) 
+	{
         m_re->GetManager()->Invalidate(m_rcClient);
         return;
     }
-    RECT rc = *prc;
-    m_re->GetManager()->Invalidate(rc);
+	else
+	{
+		RECT rc = *prc;
+		m_re->GetManager()->Invalidate(rc);
+	}
 }
 
 void CTxtWinHost::TxViewChange(BOOL fUpdate) 

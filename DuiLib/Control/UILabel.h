@@ -3,17 +3,6 @@
 
 #pragma once
 
-//#define _USE_GDIPLUS 1
-
-//#ifdef _USE_GDIPLUS
-//#include <GdiPlus.h>
-//#pragma comment( lib, "GdiPlus.lib" )
-//using namespace Gdiplus;
-//class DUILIB_API Gdiplus::RectF;
-//struct DUILIB_API Gdiplus::GdiplusStartupInput;
-//#endif
-
-
 namespace DuiLib
 {
 	class DUILIB_API CLabelUI : public CControlUI
@@ -108,10 +97,6 @@ namespace DuiLib
 		DWORD					m_dwStrokeColor;
 		RectF					m_ShadowOffset;
 		TextRenderingHint		m_TextRenderingAlias;	//ÎÄ×Ö¿¹¾â³Ý¼¶±ð
-//		ULONG_PTR				m_gdiplusToken;
-//#ifdef _USE_GDIPLUS
-//		GdiplusStartupInput		m_gdiplusStartupInput;
-//#endif
 	};
 }
 
