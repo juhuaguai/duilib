@@ -338,6 +338,7 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
                 break;
 			case 11:
 				if (_tcsicmp(pstrClass, DUI_CTR_CHILDLAYOUT) == 0)			  pControl = new CChildLayoutUI;
+				else if (_tcsicmp(pstrClass, DUI_CTR_ROTATEIMAGE) == 0)		  pControl = new CRotateImageUI;				
 				break;
             case 14:
                 if( _tcsicmp(pstrClass, DUI_CTR_VERTICALLAYOUT) == 0 )        pControl = new CVerticalLayoutUI;
@@ -353,7 +354,7 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
                 break;
             case 20:
                 if( _tcsicmp(pstrClass, DUI_CTR_LISTCONTAINERELEMENT) == 0 )  pControl = new CListContainerElementUI;
-				if( _tcsicmp(pstrClass, DUI_CTR_CHRYSANTHEMUMLOADING) == 0 )  pControl = new CChrysanthemumLoadingUI;
+				else if( _tcsicmp(pstrClass, DUI_CTR_CHRYSANTHEMUMLOADING) == 0 )  pControl = new CChrysanthemumLoadingUI;
                 break;
             }
             // User-supplied control factory

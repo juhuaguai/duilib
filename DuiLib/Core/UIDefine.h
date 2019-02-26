@@ -266,6 +266,7 @@ protected:                                                                \
 #define  DUI_CTR_CHILDLAYOUT                     (_T("ChildLayout"))
 #define  DUI_CTR_LISTELEMENT                     (_T("ListElement"))
 #define  DUI_CTR_VIRTUALLIST                     (_T("VirtualList"))
+#define  DUI_CTR_ROTATEIMAGE                     (_T("RotateImage"))
 
 #define  DUI_CTR_VERTICALLAYOUT                  (_T("VerticalLayout"))
 #define  DUI_CTR_LISTHEADERITEM                  (_T("ListHeaderItem"))

@@ -13,7 +13,7 @@ namespace DuiLib
 		LPCTSTR GetClass() const;
 		LPVOID GetInterface(LPCTSTR pstrName);
 
-		void	DoInit() override;
+		void	DoInit();
 		bool	DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
 		void	DoEvent(TEventUI& event);		
 		void	SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);

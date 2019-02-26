@@ -1109,4 +1109,11 @@
 		<Attribute name="outradius" default="0" type="INT" comment="外圆半径"/>
 		<Attribute name="innerradius" default="0" type="INT" comment="內圆半径"/>
 	</ChrysanthemumLoading>
+	<RotateImage parent="Control" notifies="setfocus killfocus timer menu windowinit(root)">
+		<Attribute name="timeinterval" default="40" type="INT" comment="loading每一帧的间隔"/>
+		<Attribute name="eachtimeangle" default="1" type="INT" comment="每次旋转的角度"/>
+		<Attribute name="fixangle" default="1" type="INT" comment="固定旋转角度"/>
+		<Attribute name="stretch" default="false" type="BOOL" comment="是否拉伸图片不拉伸图片则图片默认居中"/>
+		<Attribute name="autostart" default="true" type="BOOL" comment="是否自动开始旋转"/>
+	</RotateImage>	
 </Controls>

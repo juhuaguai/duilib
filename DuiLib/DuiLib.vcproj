@@ -698,6 +698,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Control\UIRotateImage.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Control\UIScrollBar.cpp"
 					>
 				</File>
@@ -884,6 +888,10 @@
 				</File>
 				<File
 					RelativePath=".\Control\UIRichEdit.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Control\UIRotateImage.h"
 					>
 				</File>
 				<File
