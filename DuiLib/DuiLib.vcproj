@@ -678,6 +678,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Control\UIGifButton.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Control\UILabel.cpp"
 					>
 				</File>
@@ -868,6 +872,10 @@
 				</File>
 				<File
 					RelativePath=".\Control\UIGifAnim.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Control\UIGifButton.h"
 					>
 				</File>
 				<File

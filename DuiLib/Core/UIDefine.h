@@ -256,6 +256,7 @@ protected:                                                                \
 #define  DUI_CTR_CONTAINER                       (_T("Container"))
 #define  DUI_CTR_TABLAYOUT                       (_T("TabLayout"))
 #define  DUI_CTR_SCROLLBAR                       (_T("ScrollBar"))
+#define  DUI_CTR_GIFBUTTON						 (_T("GifButton"))
 
 #define  DUI_CTR_ICONTAINER                      (_T("IContainer"))
 #define  DUI_CTR_ILISTOWNER                      (_T("IListOwner"))

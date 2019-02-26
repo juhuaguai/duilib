@@ -500,7 +500,6 @@ namespace DuiLib
 		}
 		else
 		{
-#ifdef _USE_GDIPLUS
 			Font	nFont(hDC,m_pManager->GetFont(GetFont()));
 			Graphics nGraphics(hDC);
 			nGraphics.SetTextRenderingHint(GetTextRenderingAlias());
@@ -524,7 +523,6 @@ namespace DuiLib
 			int iLen = wcslen(m_pWideText);
 			nGraphics.DrawString(m_pWideText,iLen,&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
 #endif	//_UNICODE
-#endif	//_USE_GDIPLUS
 		}
 	}
 

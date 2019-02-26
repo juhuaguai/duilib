@@ -1418,7 +1418,6 @@ void CComboUI::PaintText(HDC hDC)
 			}
 			else
 			{
-#ifdef _USE_GDIPLUS
 				Font	nFont(hDC,m_pManager->GetFont(m_iFont));
 				Graphics nGraphics(hDC);
 				nGraphics.SetTextRenderingHint(GetTextRenderingAlias());
@@ -1449,7 +1448,6 @@ void CComboUI::PaintText(HDC hDC)
 				nGraphics.DrawString(pWideText,iLen,&nFont,RectF((float)rcText.left,(float)rcText.top,(float)rcText.right-rcText.left,(float)rcText.bottom-rcText.top),&format,&nSolidBrush);
 				delete []pWideText;
 #endif	//_UNICODE
-#endif	//_USE_GDIPLUS
 			}
 		}
 		else 

@@ -693,7 +693,6 @@ namespace DuiLib
 		}
 		else
 		{
-#ifdef _USE_GDIPLUS
 			Font	nFont(hDC,m_pManager->GetFont(GetFont()));
 			Graphics nGraphics(hDC);
 			nGraphics.SetTextRenderingHint(GetTextRenderingAlias());
@@ -728,7 +727,6 @@ namespace DuiLib
 
 			delete[] pWideText;
 #endif	//_UNICODE
-#endif	//_USE_GDIPLUS
 		}
 
 	}

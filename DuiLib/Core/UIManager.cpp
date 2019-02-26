@@ -170,10 +170,8 @@ m_bLayeredChanged(false)
 	::ZeroMemory(&m_rcLayeredUpdate, sizeof(m_rcLayeredUpdate));
     m_ptLastMousePos.x = m_ptLastMousePos.y = -1;
 
-#ifdef _USE_GDIPLUS
 	m_gdiplusToken = NULL;
 	GdiplusStartup( &m_gdiplusToken,&m_gdiplusStartupInput, NULL);
-#endif
 }
 
 CPaintManagerUI::~CPaintManagerUI()
@@ -206,9 +204,7 @@ CPaintManagerUI::~CPaintManagerUI()
     if( m_hDcPaint != NULL ) ::ReleaseDC(m_hWndPaint, m_hDcPaint);
     m_aPreMessages.Remove(m_aPreMessages.Find(this));
 
-#ifdef _USE_GDIPLUS
 	GdiplusShutdown( m_gdiplusToken );
-#endif
 }
 
 void CPaintManagerUI::Init(HWND hWnd, LPCTSTR pstrName)

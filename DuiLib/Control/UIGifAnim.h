@@ -31,14 +31,14 @@ namespace DuiLib
 		void	PauseGif();
 		void	StopGif();
 
-	private:
+	protected:
 		void	InitGifImage();
 		void	DeleteGif();
 		void    OnTimer( UINT_PTR idEvent );
 		void	DrawFrame( HDC hDC );		// 绘制GIF每帧
 		Gdiplus::Image*	LoadGifFromFile(LPCTSTR pstrGifPath);
 		Gdiplus::Image* LoadGifFromMemory( LPVOID pBuf,size_t dwSize );
-	private:
+	protected:
 		Gdiplus::Image	*m_pGifImage;
 		UINT			m_nFrameCount;				// gif图片总帧数
 		UINT			m_nFramePosition;			// 当前放到第几帧

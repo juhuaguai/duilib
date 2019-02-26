@@ -42,7 +42,6 @@ namespace DuiLib
 		void PaintBkColor(HDC hDC);
 		void PaintText(HDC hDC);
 
-#ifdef _USE_GDIPLUS
 		void		SetEnabledEffect(bool _EnabledEffect);
 		void		SetTextRenderingAlias(int nTextRenderingAlias);
 		TextRenderingHint GetTextRenderingAlias();
@@ -69,8 +68,7 @@ namespace DuiLib
 		bool		GetEnabledStroke();
 		void		SetEnabledShadow(bool _EnabledShadowe);
 		bool		GetEnabledShadow();
-#endif
-	
+
 	protected:
 		LPWSTR  m_pWideText;
 		DWORD	m_dwTextColor;

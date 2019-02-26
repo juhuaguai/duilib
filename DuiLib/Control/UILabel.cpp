@@ -39,10 +39,6 @@ namespace DuiLib
         m_cxyFixedLast.cx = m_cxyFixedLast.cy = 0;
         m_szAvailableLast.cx = m_szAvailableLast.cy = 0;
 		::ZeroMemory(&m_rcTextPadding, sizeof(m_rcTextPadding));
-
-//#ifdef _USE_GDIPLUS
-//        GdiplusStartup( &m_gdiplusToken,&m_gdiplusStartupInput, NULL);
-//#endif
 	}
 
 	CLabelUI::~CLabelUI()
@@ -52,10 +48,6 @@ namespace DuiLib
 #else
 		if( m_pWideText ) delete[] m_pWideText;
 #endif
-
-//#ifdef _USE_GDIPLUS
-//		GdiplusShutdown( m_gdiplusToken );
-//#endif
 	}
 
 	LPCTSTR CLabelUI::GetClass() const
@@ -464,7 +456,6 @@ namespace DuiLib
 		}
 		else
 		{
-#ifdef _USE_GDIPLUS
 			Font	nFont(hDC,m_pManager->GetFont(GetFont()));
 			Graphics nGraphics(hDC);
 			nGraphics.SetTextRenderingHint(GetTextRenderingAlias());
@@ -562,7 +553,6 @@ namespace DuiLib
 				nGraphics.DrawString(m_pWideText,iLen,&nFont,nShadowRc,&format,&nLineGrBrushA);
 
 			nGraphics.DrawString(m_pWideText,iLen,&nFont,nRc,&format,&nLineGrBrushB);
-#endif
 #endif
 		}
 	}

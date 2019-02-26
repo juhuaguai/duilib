@@ -123,4 +123,5 @@
 #include "Control/UIGifAnim.h"
 #include "Control/UIChrysanthemumLoading.h"
 #include "Control/UIRotateImage.h"
+#include "Control/UIGifButton.h"
 //#include "Control/UIFlash.h"

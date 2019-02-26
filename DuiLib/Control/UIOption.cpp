@@ -252,7 +252,6 @@ Label_ForeImage:
 			}
 			else
 			{
-#ifdef _USE_GDIPLUS
 				Font	nFont(hDC,m_pManager->GetFont(m_iFont));
 				Graphics nGraphics(hDC);
 				nGraphics.SetTextRenderingHint(GetTextRenderingAlias());
@@ -276,7 +275,6 @@ Label_ForeImage:
 				int iLen = wcslen(m_pWideText);
 				nGraphics.DrawString(m_pWideText,iLen,&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
 #endif	//_UNICODE
-#endif	//_USE_GDIPLUS
 			}
 
 			m_dwTextColor = oldTextColor;
