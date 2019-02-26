@@ -29,7 +29,10 @@ namespace DuiLib
 		void SetInnerCircleRadius(const int& nValue);
 		int GetInnerCircleRadius();
 
+		DWORD GetBkColor() const;
 		void SetBkColor(DWORD dwBackColor);
+		DWORD GetSpokeColor() const;
+		void SetSpokeColor(DWORD dwSpokeColor);
 
 	protected:
 		void InitChrysanthemumLoading();
@@ -42,6 +45,7 @@ namespace DuiLib
 		int		m_nOuterCircleRadius;		//外圈半径 单位：像素
 		int		m_nInnerCircleRadius;		//内圈半径
 		PointF	m_CenterPoint;				//中心圆点
+		DWORD	m_dwSpokeColor;				//辐条颜色
 
 		Color*	m_pColors;					//辐条的颜色
 		double* m_pAngles;					//辐条的角度

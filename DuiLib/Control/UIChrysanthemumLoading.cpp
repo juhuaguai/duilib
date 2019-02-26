@@ -4,6 +4,8 @@
 
 namespace DuiLib
 {
+	extern Color ARGB2Color(DWORD dwColor);
+
 	CChrysanthemumLoadingUI::CChrysanthemumLoadingUI(void)	: 
 		m_nTimeInterval(40), 
 		m_nNumberOfSpoke(10),
@@ -13,7 +15,8 @@ namespace DuiLib
 		m_nInnerCircleRadius(0),
 		m_pColors(NULL),
 		m_pAngles(NULL),
-		m_CenterPoint(0,0)
+		m_CenterPoint(0,0),
+		m_dwSpokeColor(0xFF000000)
 	{
 	}
 
@@ -64,14 +67,14 @@ namespace DuiLib
 		{
 			if (intCursor == 0)
 			{
-				m_pColors[intCursor] = Color(m_dwBackColor);
+				m_pColors[intCursor] = Color(m_dwSpokeColor);
 			}
 			else
 			{
 				PERCENTAGE_OF_DARKEN += bytIncrement;
 				if (PERCENTAGE_OF_DARKEN > 255)
 					PERCENTAGE_OF_DARKEN = 255;
-				m_pColors[intCursor] = Color(PERCENTAGE_OF_DARKEN,GetRValue(m_dwBackColor),GetGValue(m_dwBackColor),GetBValue(m_dwBackColor));
+				m_pColors[intCursor] = Color(PERCENTAGE_OF_DARKEN,GetBValue(m_dwSpokeColor),GetGValue(m_dwSpokeColor),GetRValue(m_dwSpokeColor));
 			}
 		}
 	}
@@ -96,6 +99,8 @@ namespace DuiLib
 			Bitmap btm(nWidth, nHeight);
 			Graphics g(&btm);
 			g.SetSmoothingMode(SmoothingMode::SmoothingModeHighQuality);
+			SolidBrush backBrush(ARGB2Color(m_dwBackColor));
+			g.FillRectangle(&backBrush,0,0,nWidth,nHeight);
 
 			m_nProgressValue = ++m_nProgressValue % m_nNumberOfSpoke;
 			int intPosition = m_nProgressValue;
@@ -173,17 +178,39 @@ namespace DuiLib
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetBkColor(clrColor);
 		}
+		else if( _tcscmp(pstrName, _T("spokecolor")) == 0) 
+		{
+			while( *pstrValue > _T('\0') && *pstrValue <= _T(' ') ) pstrValue = ::CharNext(pstrValue);
+			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+			LPTSTR pstr = NULL;
+			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			SetSpokeColor(clrColor);
+		}
 		else
 		{
 			__super::SetAttribute(pstrName, pstrValue);
 		}
 	}
 
+	DWORD CChrysanthemumLoadingUI::GetBkColor() const
+	{
+		return m_dwBackColor;
+	}
 	void CChrysanthemumLoadingUI::SetBkColor(DWORD dwBackColor)
 	{
 		if (m_dwBackColor == dwBackColor)
 			return;
 		m_dwBackColor = dwBackColor;
+	}
+	DWORD CChrysanthemumLoadingUI::GetSpokeColor() const
+	{
+		return m_dwSpokeColor;
+	}
+	void CChrysanthemumLoadingUI::SetSpokeColor(DWORD dwSpokeColor)
+	{
+		if (m_dwSpokeColor == dwSpokeColor)
+			return;
+		m_dwSpokeColor = dwSpokeColor;
 		InitChrysanthemumLoading();
 	}
 

@@ -1115,6 +1115,7 @@
 	</GifButton>
 	<ChrysanthemumLoading parent="Control" notifies="setfocus killfocus timer menu windowinit(root)">
 		<Attribute name="timeinterval" default="40" type="INT" comment="loading每一帧的间隔"/>
+		<Attribute name="spokecolor" default="0x00000000" type="DWORD" comment="辐条的颜色"/>
 		<Attribute name="spokenum" default="10" type="INT" comment="辐条数量"/>
 		<Attribute name="thickness" default="4" type="INT" comment="辐条粗细"/>
 		<Attribute name="outradius" default="0" type="INT" comment="外圆半径"/>
