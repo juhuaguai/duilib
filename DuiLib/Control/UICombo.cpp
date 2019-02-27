@@ -227,11 +227,10 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         if( pDefaultAttributes ) {
             m_pLayout->SetAttributeList(pDefaultAttributes);
         }
-        //m_pLayout->SetInset(CDuiRect(1, 1, 1, 1));
-        //m_pLayout->SetBkColor(0xFFFFFFFF);
-        //m_pLayout->SetBorderColor(0xFFC6C7D2);
-        //m_pLayout->SetBorderSize(1);
 		m_pLayout->SetBkColor(m_pOwner->GetItemBkColor());
+		m_pLayout->SetBorderColor(m_pOwner->GetDropBorderColor());
+		m_pLayout->SetBorderSize(m_pOwner->GetDropBorderSize());
+		m_pLayout->SetInset(m_pOwner->GetDropBorderSize());
         m_pLayout->SetAutoDestroy(false);
         m_pLayout->EnableScrollBar();
         m_pLayout->SetAttributeList(m_pOwner->GetDropBoxAttributeList().GetData());
@@ -375,10 +374,11 @@ UINT CComboWnd::GetClassStyle() const
 ////////////////////////////////////////////////////////
 
 
-CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0),m_dwTextColor(0),m_dwDisabledTextColor(0),m_iFont(-1),m_uTextStyle(DT_VCENTER|DT_SINGLELINE|DT_LEFT),m_EnableEffect(false),m_TextRenderingAlias(TextRenderingHintAntiAlias)
+CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0),m_dwTextColor(0),m_dwDisabledTextColor(0),m_iFont(-1),m_uTextStyle(DT_VCENTER|DT_SINGLELINE|DT_LEFT),m_EnableEffect(false),m_TextRenderingAlias(TextRenderingHintAntiAlias),m_dwDropBorderColor(0xFF000000)
 {
     m_szDropBox = CDuiSize(0, 150);
     ::ZeroMemory(&m_rcTextPadding, sizeof(m_rcTextPadding));
+	m_rcDropBorderSize.left = m_rcDropBorderSize.right = m_rcDropBorderSize.top = m_rcDropBorderSize.bottom = 0;
 
     m_ListInfo.nColumns = 0;
     m_ListInfo.uFixedHeight = 0;
@@ -1155,6 +1155,36 @@ void CComboUI::Move(SIZE szOffset, bool bNeedInvalidate)
 	CControlUI::Move(szOffset, bNeedInvalidate);
 }
 
+RECT CComboUI::GetDropBorderSize() const
+{
+	return m_rcDropBorderSize;
+}
+
+void CComboUI::SetDropBorderSize( RECT rc )
+{
+	m_rcDropBorderSize = rc;
+	Invalidate();
+}
+
+void CComboUI::SetDropBorderSize(int iSize)
+{
+	m_rcDropBorderSize.left = m_rcDropBorderSize.top = m_rcDropBorderSize.right = m_rcDropBorderSize.bottom = iSize;
+	Invalidate();
+}
+
+DWORD CComboUI::GetDropBorderColor() const
+{
+	return m_dwDropBorderColor;
+}
+
+void CComboUI::SetDropBorderColor(DWORD dwColor)
+{
+	if( m_dwDropBorderColor == dwColor ) return;
+
+	m_dwDropBorderColor = dwColor;
+	Invalidate();
+}
+
 void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
     if( _tcscmp(pstrName, _T("textpadding")) == 0 ) {
@@ -1209,6 +1239,29 @@ void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		szDropBoxSize.cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
 		szDropBoxSize.cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
 		SetDropBoxSize(szDropBoxSize);
+	}
+	else if( _tcscmp(pstrName, _T("dropbordercolor")) == 0 ) {
+		if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+		LPTSTR pstr = NULL;
+		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		SetDropBorderColor(clrColor);
+	}
+	else if( _tcscmp(pstrName, _T("dropbordersize")) == 0 ) {
+		CDuiString nValue = pstrValue;
+		if(nValue.Find(',') < 0)
+		{
+			SetDropBorderSize(_ttoi(pstrValue));
+		}
+		else
+		{
+			RECT rcBorder = { 0 };
+			LPTSTR pstr = NULL;
+			rcBorder.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);
+			rcBorder.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
+			rcBorder.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
+			rcBorder.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+			SetDropBorderSize(rcBorder);
+		}
 	}
     else if( _tcscmp(pstrName, _T("itemheight")) == 0 ) m_ListInfo.uFixedHeight = _ttoi(pstrValue);
     else if( _tcscmp(pstrName, _T("itemfont")) == 0 ) m_ListInfo.nFont = _ttoi(pstrValue);

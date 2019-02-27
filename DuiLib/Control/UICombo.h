@@ -67,6 +67,12 @@ public:
     CDuiString GetDisabledImage() const;
     void SetDisabledImage(const CDuiString& strImage);
 
+	DWORD GetDropBorderColor() const;
+	void SetDropBorderColor(DWORD dwColor);		
+	RECT GetDropBorderSize() const;
+	void SetDropBorderSize(int iSize);
+	void SetDropBorderSize(RECT rc);
+
     TListInfoUI* GetListInfo();
     UINT GetItemFixedHeight();
     void SetItemFixedHeight(UINT nHeight);
@@ -151,6 +157,8 @@ protected:
 	DWORD	m_dwTextColor;
 	DWORD	m_dwDisabledTextColor;
 	UINT	m_uTextStyle;
+	RECT m_rcDropBorderSize;
+	DWORD m_dwDropBorderColor;
 
 	TDrawInfo m_diNormal;
     TDrawInfo m_diHot;
