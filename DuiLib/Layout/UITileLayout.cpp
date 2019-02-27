@@ -432,21 +432,28 @@ namespace DuiLib
 			int cxNeeded = 0;
 			int cyNeeded = 0;
 			int iChildPadding = m_iChildPadding;
-			if (m_nColumnsFixed == 0) { 
-				if (rc.right - rc.left >= m_szItem.cx) {
-					m_nColumns = (rc.right - rc.left)/m_szItem.cx;
+			if (m_nColumnsFixed == 0) 
+			{ 
+				if (rc.right - rc.left >= m_szItem.cx) 
+				{
+					m_nColumns = (rc.right - rc.left+iChildPadding)/(m_szItem.cx+iChildPadding);
 					cxNeeded = rc.right - rc.left;
-					if (m_nColumns > 1) {
-						if (iChildPadding <= 0) {
+					if (m_nColumns > 1) 
+					{
+						if (iChildPadding <= 0) 
+						{
 							iChildPadding = (cxNeeded-m_nColumns*m_szItem.cx)/(m_nColumns-1);
 						}
-						if (iChildPadding < 0) iChildPadding = 0;
+						if (iChildPadding < 0) 
+							iChildPadding = 0;
 					}
-					else {
+					else 
+					{
 						iChildPadding = 0;
 					}
 				}
-				else {
+				else 
+				{
 					m_nColumns = 1;
 					cxNeeded = m_szItem.cx;
 				}
@@ -454,7 +461,8 @@ namespace DuiLib
 				m_nRows = (nEstimateNum-1)/m_nColumns+1;
 				cyNeeded = m_nRows*m_szItem.cy + (m_nRows-1)*m_iChildVPadding;
 			}
-			else {
+			else 
+			{
 				m_nColumns = m_nColumnsFixed;
 				if (m_nColumns > 1) {
 					if (iChildPadding <= 0) {
