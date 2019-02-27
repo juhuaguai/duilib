@@ -34,6 +34,17 @@ namespace DuiLib
 		DWORD GetSpokeColor() const;
 		void SetSpokeColor(DWORD dwSpokeColor);
 
+		void SetTextColor(DWORD dwTextColor);
+		DWORD GetTextColor() const;
+		void SetFont(int index);
+		int GetFont() const;
+		RECT GetTextPadding() const;
+		void SetTextPadding(RECT rc);
+		void SetTextRenderingAlias(int nTextRenderingAlias);
+		TextRenderingHint GetTextRenderingAlias();
+		bool IsMultiLine();
+		void SetMultiLine(bool bMultiLine = true);
+
 	protected:
 		void InitChrysanthemumLoading();
 	
@@ -49,5 +60,11 @@ namespace DuiLib
 
 		Color*	m_pColors;					//辐条的颜色
 		double* m_pAngles;					//辐条的角度
+
+		UINT	m_uTextStyle;
+		DWORD	m_dwTextColor;
+		int		m_iFont;
+		RECT	m_rcTextPadding;
+		TextRenderingHint		m_TextRenderingAlias;	//文字抗锯齿级别
 	};
 }	// namespace DuiLib

@@ -16,8 +16,13 @@ namespace DuiLib
 		m_pColors(NULL),
 		m_pAngles(NULL),
 		m_CenterPoint(0,0),
-		m_dwSpokeColor(0xFF000000)
+		m_dwSpokeColor(0xFF000000),
+		m_iFont(-1),
+		m_TextRenderingAlias(TextRenderingHintAntiAlias),
+		m_uTextStyle(DT_SINGLELINE | DT_VCENTER | DT_CENTER),
+		m_dwTextColor(0xFF000000)
 	{
+		m_rcTextPadding.left = m_rcTextPadding.top = m_rcTextPadding.right = m_rcTextPadding.bottom = 0;
 	}
 
 	CChrysanthemumLoadingUI::~CChrysanthemumLoadingUI(void)
@@ -122,6 +127,46 @@ namespace DuiLib
 
 				intPosition++;
 			}
+			//绘制文字
+			if (m_sText.IsEmpty() == false)
+			{
+				//绘制文本
+#ifdef _UNICODE
+				LPWSTR pWideText = (LPWSTR)m_sText.GetData();
+#else 
+				int iLen = _tcslen(m_sText.GetData());
+				pWideText = new WCHAR[iLen + 1];
+				::ZeroMemory(pWideText, (iLen + 1) * sizeof(WCHAR));
+				::MultiByteToWideChar(CP_ACP, 0, m_sText.GetData(), -1, pWideText, iLen);
+#endif
+				Gdiplus::Font	nFont(hDC,m_pManager->GetFont(GetFont()));
+
+				RECT rcText = {m_rcTextPadding.left,m_rcTextPadding.top,nWidth-m_rcTextPadding.right,nHeight-m_rcTextPadding.bottom};
+				RectF nRc((float)rcText.left,(float)rcText.top,(float)rcText.right-rcText.left,(float)rcText.bottom-rcText.top);
+
+				StringFormat format;
+				StringAlignment sa = StringAlignmentNear;
+				if ((m_uTextStyle & DT_VCENTER) != 0) 
+					sa = StringAlignmentCenter;
+				else if( (m_uTextStyle & DT_BOTTOM) != 0) 
+					sa = StringAlignmentFar;
+				format.SetLineAlignment((StringAlignment)sa);
+				sa = StringAlignmentNear;
+				if ((m_uTextStyle & DT_CENTER) != 0) 
+					sa = StringAlignmentCenter;
+				else if( (m_uTextStyle & DT_RIGHT) != 0) 
+					sa = StringAlignmentFar;
+				format.SetAlignment((StringAlignment)sa);
+				if ((m_uTextStyle & DT_SINGLELINE) != 0) 
+					format.SetFormatFlags(StringFormatFlagsNoWrap);
+
+				SolidBrush nBrush( ARGB2Color(m_dwTextColor) );
+				g.DrawString(pWideText,wcslen(pWideText),&nFont,nRc,&format,&nBrush);
+#ifndef _UNICODE
+				delete[] pWideText;
+#endif
+			}
+
 			// 获得窗口的Graphics对象
 			Graphics gh(hDC);
 			// 将描画好的CacheImage画到窗口上
@@ -186,6 +231,54 @@ namespace DuiLib
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetSpokeColor(clrColor);
 		}
+		else if( _tcscmp(pstrName, _T("align")) == 0 ) 
+		{
+			if( _tcscmp(pstrValue, _T("left")) == 0 ) {
+				m_uTextStyle &= ~(DT_CENTER | DT_RIGHT);
+				m_uTextStyle |= DT_LEFT;
+			}
+			else if( _tcscmp(pstrValue, _T("center")) == 0 ) {
+				m_uTextStyle &= ~(DT_LEFT | DT_RIGHT);
+				m_uTextStyle |= DT_CENTER;
+			}
+			else if( _tcscmp(pstrValue, _T("right")) == 0 ) {
+				m_uTextStyle &= ~(DT_LEFT | DT_CENTER);
+				m_uTextStyle |= DT_RIGHT;
+			}
+		}
+		else if (_tcscmp(pstrName, _T("valign")) == 0)
+		{
+			if (_tcscmp(pstrValue, _T("top")) == 0) {
+				m_uTextStyle &= ~(DT_BOTTOM | DT_VCENTER);
+				m_uTextStyle |= DT_TOP;
+			}
+			else if (_tcscmp(pstrValue, _T("vcenter")) == 0) {
+				m_uTextStyle &= ~(DT_TOP | DT_BOTTOM);
+				m_uTextStyle |= DT_VCENTER;
+			}
+			else if (_tcscmp(pstrValue, _T("bottom")) == 0) {
+				m_uTextStyle &= ~(DT_TOP | DT_VCENTER);
+				m_uTextStyle |= DT_BOTTOM;
+			}
+		}
+		else if( _tcscmp(pstrName, _T("textcolor")) == 0 ) {
+			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+			LPTSTR pstr = NULL;
+			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			SetTextColor(clrColor);
+		}
+		else if(_tcscmp(pstrName, _T("rhaa")) == 0 ) SetTextRenderingAlias(_ttoi(pstrValue));
+		else if( _tcscmp(pstrName, _T("multiline")) == 0 ) SetMultiLine(_tcscmp(pstrValue, _T("true")) == 0);
+		else if( _tcscmp(pstrName, _T("font")) == 0 ) SetFont(_ttoi(pstrValue));
+		else if( _tcscmp(pstrName, _T("textpadding")) == 0 ) {
+			RECT rcTextPadding = { 0 };
+			LPTSTR pstr = NULL;
+			rcTextPadding.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
+			rcTextPadding.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
+			rcTextPadding.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
+			rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+			SetTextPadding(rcTextPadding);
+		}
 		else
 		{
 			__super::SetAttribute(pstrName, pstrValue);
@@ -198,8 +291,6 @@ namespace DuiLib
 	}
 	void CChrysanthemumLoadingUI::SetBkColor(DWORD dwBackColor)
 	{
-		if (m_dwBackColor == dwBackColor)
-			return;
 		m_dwBackColor = dwBackColor;
 	}
 	DWORD CChrysanthemumLoadingUI::GetSpokeColor() const
@@ -243,8 +334,6 @@ namespace DuiLib
 	}
 	void CChrysanthemumLoadingUI::SetSpokeThickness(const int& nValue)
 	{
-		if (m_nSpokeThickness == nValue)
-			return;
 		m_nSpokeThickness = nValue;
 	}
 	int CChrysanthemumLoadingUI::GetSpokeThickness()
@@ -266,5 +355,60 @@ namespace DuiLib
 	int CChrysanthemumLoadingUI::GetInnerCircleRadius()
 	{
 		return m_nInnerCircleRadius;
+	}
+
+	void CChrysanthemumLoadingUI::SetTextColor(DWORD dwTextColor)
+	{
+		m_dwTextColor = dwTextColor;
+	}
+
+	DWORD CChrysanthemumLoadingUI::GetTextColor() const
+	{
+		return m_dwTextColor;
+	}
+
+	bool CChrysanthemumLoadingUI::IsMultiLine()
+	{
+		return (m_uTextStyle & DT_SINGLELINE) == 0;
+	}
+
+	void CChrysanthemumLoadingUI::SetMultiLine(bool bMultiLine)
+	{
+		if (bMultiLine)	{
+			m_uTextStyle  &= ~DT_SINGLELINE;
+			m_uTextStyle |= DT_WORDBREAK;
+		}
+		else 
+			m_uTextStyle |= DT_SINGLELINE;
+	}
+
+	void CChrysanthemumLoadingUI::SetTextRenderingAlias(int nTextRenderingAlias)
+	{
+		m_TextRenderingAlias = (TextRenderingHint)nTextRenderingAlias;
+	}
+
+	TextRenderingHint CChrysanthemumLoadingUI::GetTextRenderingAlias()
+	{
+		return m_TextRenderingAlias;
+	}
+
+	void CChrysanthemumLoadingUI::SetFont(int index)
+	{
+		m_iFont = index;
+	}
+
+	int CChrysanthemumLoadingUI::GetFont() const
+	{
+		return m_iFont;
+	}
+
+	RECT CChrysanthemumLoadingUI::GetTextPadding() const
+	{
+		return m_rcTextPadding;
+	}
+
+	void CChrysanthemumLoadingUI::SetTextPadding(RECT rc)
+	{
+		m_rcTextPadding = rc;
 	}
 }

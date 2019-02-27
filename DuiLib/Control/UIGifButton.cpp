@@ -18,6 +18,7 @@ namespace DuiLib
 		m_dwTextColor = 0xFF000000;
 		m_dwDisabledTextColor = 0xFF000000;
 		m_dwHotTextColor = 0xFF000000;
+		m_iFont = -1;
 	}
 
 	CGifButtonUI::~CGifButtonUI(void)
@@ -190,17 +191,32 @@ namespace DuiLib
 			SetCursor(pstrValue);
 		else if( _tcscmp(pstrName, _T("align")) == 0 ) 
 		{
-			if( _tcsstr(pstrValue, _T("left")) != NULL ) {
+			if( _tcscmp(pstrValue, _T("left")) == 0 ) {
 				m_uTextStyle &= ~(DT_CENTER | DT_RIGHT);
 				m_uTextStyle |= DT_LEFT;
 			}
-			if( _tcsstr(pstrValue, _T("center")) != NULL ) {
+			else if( _tcscmp(pstrValue, _T("center")) == 0 ) {
 				m_uTextStyle &= ~(DT_LEFT | DT_RIGHT);
 				m_uTextStyle |= DT_CENTER;
 			}
-			if( _tcsstr(pstrValue, _T("right")) != NULL ) {
+			else if( _tcscmp(pstrValue, _T("right")) == 0 ) {
 				m_uTextStyle &= ~(DT_LEFT | DT_CENTER);
 				m_uTextStyle |= DT_RIGHT;
+			}
+		}
+		else if (_tcscmp(pstrName, _T("valign")) == 0)
+		{
+			if (_tcscmp(pstrValue, _T("top")) == 0) {
+				m_uTextStyle &= ~(DT_BOTTOM | DT_VCENTER);
+				m_uTextStyle |= DT_TOP;
+			}
+			else if (_tcscmp(pstrValue, _T("vcenter")) == 0) {
+				m_uTextStyle &= ~(DT_TOP | DT_BOTTOM);
+				m_uTextStyle |= DT_VCENTER;
+			}
+			else if (_tcscmp(pstrValue, _T("bottom")) == 0) {
+				m_uTextStyle &= ~(DT_TOP | DT_VCENTER);
+				m_uTextStyle |= DT_BOTTOM;
 			}
 		}
 		else if( _tcscmp(pstrName, _T("textcolor")) == 0 ) {
@@ -224,6 +240,16 @@ namespace DuiLib
 		}
 		else if(_tcscmp(pstrName, _T("rhaa")) == 0 ) SetTextRenderingAlias(_ttoi(pstrValue));
 		else if( _tcscmp(pstrName, _T("multiline")) == 0 ) SetMultiLine(_tcscmp(pstrValue, _T("true")) == 0);
+		else if( _tcscmp(pstrName, _T("font")) == 0 ) SetFont(_ttoi(pstrValue));
+		else if( _tcscmp(pstrName, _T("textpadding")) == 0 ) {
+			RECT rcTextPadding = { 0 };
+			LPTSTR pstr = NULL;
+			rcTextPadding.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
+			rcTextPadding.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
+			rcTextPadding.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
+			rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+			SetTextPadding(rcTextPadding);
+		}
 		else
 			CGifAnimUI::SetAttribute(pstrName, pstrValue);
 	}
@@ -356,10 +382,13 @@ namespace DuiLib
 		if (m_sText.IsEmpty() == false)
 		{
 			//»æÖÆÎÄ±¾
-	#ifdef UNICODE
-			wstring strText = m_sText.GetData();
-	#else
-			wstring strText = AnsiToUnicode( m_sText.GetData());
+	#ifdef _UNICODE
+			LPWSTR pWideText = (LPWSTR)m_sText.GetData();
+	#else 
+			int iLen = _tcslen(m_sText.GetData());
+			pWideText = new WCHAR[iLen + 1];
+			::ZeroMemory(pWideText, (iLen + 1) * sizeof(WCHAR));
+			::MultiByteToWideChar(CP_ACP, 0, m_sText.GetData(), -1, pWideText, iLen);
 	#endif
 			Gdiplus::Font	nFont(hDC,m_pManager->GetFont(GetFont()));
 
@@ -388,7 +417,10 @@ namespace DuiLib
 
 			SolidBrush nBrush( ARGB2Color(clrColor) );
 
-			graphics.DrawString(strText.c_str(),strText.length(),&nFont,nRc,&format,&nBrush);
+			graphics.DrawString(pWideText,wcslen(pWideText),&nFont,nRc,&format,&nBrush);
+#ifndef _UNICODE
+			delete[] pWideText;
+#endif
 		}
 
 		m_pGifImage->SelectActiveFrame( &pageGuid, m_nFramePosition );

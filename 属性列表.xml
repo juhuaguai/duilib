@@ -367,6 +367,7 @@
 		<Attribute name="enabledeffect" default="false" type="BOOL" comment="是否使用字体特效，使用下面文字特效属性必须该属性设置为true方有效"/>
 		<Attribute name="align" default="left" type="STRING" comment="文字横向对齐方式,取值left、center、right"/>
 		<Attribute name="valign" default="center" type="STRING" comment="文字纵向对齐方式,取值top、center、bottom"/>
+		<Attribute name="textpadding" default="0,0,0,0" type="RECT" comment="文字显示的边距,如(2,2,2,2)"/>
 		<Attribute name="enabledstroke" default="false" type="BOOL" comment="是否使用描边效果"/>
 		<Attribute name="strokecolor" default="0x00000000" type="STRING" comment="字体描边的颜色"/>
 		<Attribute name="transstroke" default="255" type="STRING" comment="字体描边的颜色透明度 0-255"/>
@@ -1110,8 +1111,12 @@
 		<Attribute name="textcolor" default="0x00000000" type="DWORD" comment="字体颜色，0表示使用默认字体颜色,如(0xFFFF0000)"/>
 		<Attribute name="disabledtextcolor" default="0x00000000" type="DWORD" comment="disabled字体颜色，0表示使用默认disabled字体颜色,如(0xFFFF0000)"/>
 		<Attribute name="hottextcolor" default="0x00000000" type="DWORD" comment="鼠标悬浮字体颜色，0表示不使用此颜色,如(0xFFFF0000)"/>
-		<Attribute name="rhaa" default="4" type="INT" comment="文本抗锯齿程度"/>
 		<Attribute name="multiline" default="true" type="BOOL" comment="是否使用多行,如(true)"/>
+		<Attribute name="font" default="-1" type="INT" comment="字体id,如(0)"/>
+		<Attribute name="align" default="left" type="STRING" comment="文字横向对齐方式,取值left、center、right"/>
+		<Attribute name="valign" default="center" type="STRING" comment="文字纵向对齐方式,取值top、center、bottom"/>
+		<Attribute name="rhaa" default="4" type="INT" comment="文本抗锯齿程度"/>
+		<Attribute name="textpadding" default="0,0,0,0" type="RECT" comment="文字显示的边距,如(2,2,2,2)"/>
 	</GifButton>
 	<ChrysanthemumLoading parent="Control" notifies="setfocus killfocus timer menu windowinit(root)">
 		<Attribute name="timeinterval" default="40" type="INT" comment="loading每一帧的间隔"/>
@@ -1120,6 +1125,13 @@
 		<Attribute name="thickness" default="4" type="INT" comment="辐条粗细"/>
 		<Attribute name="outradius" default="0" type="INT" comment="外圆半径"/>
 		<Attribute name="innerradius" default="0" type="INT" comment="內圆半径"/>
+		<Attribute name="multiline" default="true" type="BOOL" comment="是否使用多行,如(true)"/>
+		<Attribute name="font" default="-1" type="INT" comment="字体id,如(0)"/>
+		<Attribute name="align" default="left" type="STRING" comment="文字横向对齐方式,取值left、center、right"/>
+		<Attribute name="valign" default="center" type="STRING" comment="文字纵向对齐方式,取值top、center、bottom"/>
+		<Attribute name="rhaa" default="4" type="INT" comment="文本抗锯齿程度"/>
+		<Attribute name="textcolor" default="0x00000000" type="DWORD" comment="字体颜色，0表示使用默认字体颜色,如(0xFFFF0000)"/>
+		<Attribute name="textpadding" default="0,0,0,0" type="RECT" comment="文字显示的边距,如(2,2,2,2)"/>
 	</ChrysanthemumLoading>
 	<RotateImage parent="Control" notifies="setfocus killfocus timer menu windowinit(root)">
 		<Attribute name="timeinterval" default="40" type="INT" comment="loading每一帧的间隔"/>
