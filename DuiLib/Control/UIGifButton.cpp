@@ -386,7 +386,7 @@ namespace DuiLib
 			LPWSTR pWideText = (LPWSTR)m_sText.GetData();
 	#else 
 			int iLen = _tcslen(m_sText.GetData());
-			pWideText = new WCHAR[iLen + 1];
+			LPWSTR pWideText = new WCHAR[iLen + 1];
 			::ZeroMemory(pWideText, (iLen + 1) * sizeof(WCHAR));
 			::MultiByteToWideChar(CP_ACP, 0, m_sText.GetData(), -1, pWideText, iLen);
 	#endif

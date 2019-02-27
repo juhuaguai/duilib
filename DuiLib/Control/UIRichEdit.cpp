@@ -371,7 +371,7 @@ BOOL CTxtWinHost::Init(CRichEditUI *re, const CREATESTRUCT *pcs)
         LPWSTR lpText = new WCHAR[iLen + 1];
         ::ZeroMemory(lpText, (iLen + 1) * sizeof(WCHAR));
         ::MultiByteToWideChar(CP_ACP, 0, pcs->lpszName, -1, (LPWSTR)lpText, iLen) ;
-        if(FAILED(pserv->TxSetText((LPWSTR)lpText))) {
+        if(FAILED(m_pserv->TxSetText((LPWSTR)lpText))) {
             delete[] lpText;
             goto err;
         }
