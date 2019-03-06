@@ -1449,10 +1449,17 @@ CDuiString CRichEditUI::GetText() const
 
 void CRichEditUI::SetText(const CDuiString& strText)
 {
+	bool bTextChanged = false;
+	if (m_sText!=strText)
+		bTextChanged = true;
+
     m_sText = strText;
     if( !m_pTwh ) return;
     SetSel(0, -1);
     ReplaceSel(strText.GetData(), FALSE);
+
+	if (bTextChanged)
+		GetManager()->SendNotify(this, DUI_MSGTYPE_TEXTCHANGED);	
 }
 
 CDuiString CRichEditUI::GetFocusedImage()
@@ -2098,7 +2105,11 @@ void CRichEditUI::OnTxNotify(DWORD iNotify, void *pv)
 	{ 
 	case EN_CHANGE:
 		{
-			GetManager()->SendNotify(this, DUI_MSGTYPE_TEXTCHANGED);
+			if (m_sText!=GetText())
+			{
+				GetManager()->SendNotify(this, DUI_MSGTYPE_TEXTCHANGED);
+				m_sText = GetText();
+			}
 		}
 		break;
 	case EN_DROPFILES:   
