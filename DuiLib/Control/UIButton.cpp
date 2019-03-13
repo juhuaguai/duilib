@@ -640,11 +640,11 @@ namespace DuiLib
 					DrawImage(hDC, m_diNormal);
 			}
 
-			if (DrawImage(hDC, m_diHotFore)) return;
-			else if(m_dwHotBkColor != 0) {
+			if(m_dwHotBkColor != 0) 
 				CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwHotBkColor));
+			if (DrawImage(hDC, m_diHotFore))
 				return;
-			}
+			
 			else goto Label_ForeImage;
 		}
 		else if( (m_uButtonState & UISTATE_FOCUSED) != 0 ) {
