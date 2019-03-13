@@ -4119,12 +4119,40 @@ ZRESULT TUnzip1::Get(int index,ZIPENTRY *ze)
 
 ZRESULT TUnzip1::Find(const TCHAR *tname,bool ic,int *index,ZIPENTRY *ze)
 { 
-	char name[MAX_PATH];
+	char name[MAX_PATH] = {0};
 #ifdef UNICODE
 	WideCharToMultiByte(CP_ACP,0,tname,-1,name,MAX_PATH,0,0);
 #else
 	strcpy(name,tname);
 #endif
+
+	//将\转为/
+	char szNewName[MAX_PATH] = {0};
+	int nNameLen = strlen(name);
+	for (int i=0;i<nNameLen;i++)
+	{
+		char ch = name[i];
+		if (ch=='\\')
+			ch='/';
+		szNewName[i] = ch;
+	}
+	//将//转为/
+	memset(name,0,MAX_PATH);
+	nNameLen= strlen(szNewName);
+	int j=0;
+	for (int i=0;i<nNameLen;i++)
+	{
+		char ch = szNewName[i];
+		if (ch=='/')
+		{
+			if (j==0 || (name[j-1]=='/'))
+				continue;
+		}
+
+		name[j] = ch;
+		j++;
+	}
+
 	int res = unzLocateFile(uf,name,ic?CASE_INSENSITIVE:CASE_SENSITIVE);
 	if (res!=UNZ_OK)
 	{ 
@@ -4237,8 +4265,8 @@ ZRESULT TUnzip1::Unzip(int index,void *dst,unsigned int len,DWORD flags)
 		const TCHAR *name=ufn; const TCHAR *c=name; while (*c!=0) {if (*c=='/' || *c=='\\') name=c+1; c++;}
 		TCHAR dir[MAX_PATH]={0}; _tcsncpy(dir,ufn,MAX_PATH); if (name==ufn) *dir=0; else dir[name-ufn]=0;
 		bool isabsolute = (dir[0]=='/' || dir[0]=='\\' || (dir[0]!=0 && dir[1]==':'));
-		if (isabsolute) {_tsprintf(fn,_T("%s%s"),dir,name); EnsureDirectory1(0,dir);}
-		else {_tsprintf(fn,_T("%s%s%s"),rootdir,dir,name); EnsureDirectory1(rootdir,dir);}
+		if (isabsolute) {_sntprintf_s(fn,_countof(fn),_TRUNCATE,_T("%s%s"),dir,name); EnsureDirectory1(0,dir);}
+		else {_sntprintf_s(fn,_countof(fn),_TRUNCATE,_T("%s%s%s"),rootdir,dir,name); EnsureDirectory1(rootdir,dir);}
 		//
 #ifdef ZIP_STD
 		h = fopen(fn,"wb");
