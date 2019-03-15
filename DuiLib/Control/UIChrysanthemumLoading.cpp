@@ -20,7 +20,8 @@ namespace DuiLib
 		m_iFont(-1),
 		m_TextRenderingAlias(TextRenderingHintAntiAlias),
 		m_uTextStyle(DT_SINGLELINE | DT_VCENTER | DT_CENTER),
-		m_dwTextColor(0xFF000000)
+		m_dwTextColor(0xFF000000),
+		m_pgdipBmp(NULL)
 	{
 		m_rcTextPadding.left = m_rcTextPadding.top = m_rcTextPadding.right = m_rcTextPadding.bottom = 0;
 	}
@@ -35,6 +36,12 @@ namespace DuiLib
 
 		if (m_pAngles)
 			delete []m_pAngles;
+
+		if (m_pgdipBmp)
+		{
+			delete m_pgdipBmp;
+			m_pgdipBmp = NULL;
+		}
 	}
 
 	LPCTSTR CChrysanthemumLoadingUI::GetClass() const
@@ -82,12 +89,20 @@ namespace DuiLib
 				m_pColors[intCursor] = Color(PERCENTAGE_OF_DARKEN,GetBValue(m_dwSpokeColor),GetGValue(m_dwSpokeColor),GetRValue(m_dwSpokeColor));
 			}
 		}
+		
+		PaintBitMap();
+	}
+
+	void CChrysanthemumLoadingUI::SetPos(RECT rc, bool bNeedInvalidate/* = true*/)
+	{
+		__super::SetPos(rc,bNeedInvalidate);
+		InitChrysanthemumLoading();
 	}
 
 	void CChrysanthemumLoadingUI::DoInit()
 	{
 		InitChrysanthemumLoading();
-
+		
 		if (m_pManager)
 			m_pManager->SetTimer( this, EVENT_TIME_ID, m_nTimeInterval );
 	}
@@ -96,83 +111,94 @@ namespace DuiLib
 	{
 		if (IsVisible())
 		{
-			int nWidth = m_rcItem.right-m_rcItem.left;
-			int nHeight = m_rcItem.bottom-m_rcItem.top;
-			m_CenterPoint.X = nWidth / 2;
-			m_CenterPoint.Y = nHeight / 2;
-
-			Bitmap btm(nWidth, nHeight);
-			Graphics g(&btm);
-			g.SetSmoothingMode(SmoothingMode::SmoothingModeHighQuality);
-			SolidBrush backBrush(ARGB2Color(m_dwBackColor));
-			g.FillRectangle(&backBrush,0,0,nWidth,nHeight);
-
-			m_nProgressValue = ++m_nProgressValue % m_nNumberOfSpoke;
-			int intPosition = m_nProgressValue;
-			for (int intCounter = 0; intCounter < m_nNumberOfSpoke; intCounter++)
-			{
-				intPosition = intPosition % m_nNumberOfSpoke;
-
-				{
-					SolidBrush brush(m_pColors[intCounter]);
-					Pen objPen(&brush, m_nSpokeThickness);				
-					objPen.SetStartCap(LineCap::LineCapRound);
-					objPen.SetEndCap(LineCap::LineCapRound);
-
-					double dblAngle = 3.14 * m_pAngles[intPosition] / 180.0;
-					PointF pf1(m_CenterPoint.X + m_nInnerCircleRadius * (float)cos(dblAngle), m_CenterPoint.Y + m_nInnerCircleRadius * (float)sin(dblAngle));
-					PointF pf2(m_CenterPoint.X + m_nOuterCircleRadius * (float)cos(dblAngle), m_CenterPoint.Y + m_nOuterCircleRadius * (float)sin(dblAngle));
-					g.DrawLine(&objPen, pf1, pf2);
-				}
-
-				intPosition++;
-			}
-			//绘制文字
-			if (m_sText.IsEmpty() == false)
-			{
-				//绘制文本
-#ifdef _UNICODE
-				LPWSTR pWideText = (LPWSTR)m_sText.GetData();
-#else 
-				int iLen = _tcslen(m_sText.GetData());
-				LPWSTR pWideText = new WCHAR[iLen + 1];
-				::ZeroMemory(pWideText, (iLen + 1) * sizeof(WCHAR));
-				::MultiByteToWideChar(CP_ACP, 0, m_sText.GetData(), -1, pWideText, iLen);
-#endif
-				Gdiplus::Font	nFont(hDC,m_pManager->GetFont(GetFont()));
-
-				RECT rcText = {m_rcTextPadding.left,m_rcTextPadding.top,nWidth-m_rcTextPadding.right,nHeight-m_rcTextPadding.bottom};
-				RectF nRc((float)rcText.left,(float)rcText.top,(float)rcText.right-rcText.left,(float)rcText.bottom-rcText.top);
-
-				StringFormat format;
-				StringAlignment sa = StringAlignmentNear;
-				if ((m_uTextStyle & DT_VCENTER) != 0) 
-					sa = StringAlignmentCenter;
-				else if( (m_uTextStyle & DT_BOTTOM) != 0) 
-					sa = StringAlignmentFar;
-				format.SetLineAlignment((StringAlignment)sa);
-				sa = StringAlignmentNear;
-				if ((m_uTextStyle & DT_CENTER) != 0) 
-					sa = StringAlignmentCenter;
-				else if( (m_uTextStyle & DT_RIGHT) != 0) 
-					sa = StringAlignmentFar;
-				format.SetAlignment((StringAlignment)sa);
-				if ((m_uTextStyle & DT_SINGLELINE) != 0) 
-					format.SetFormatFlags(StringFormatFlagsNoWrap);
-
-				SolidBrush nBrush( ARGB2Color(m_dwTextColor) );
-				g.DrawString(pWideText,wcslen(pWideText),&nFont,nRc,&format,&nBrush);
-#ifndef _UNICODE
-				delete[] pWideText;
-#endif
-			}
+			if (m_pgdipBmp==NULL)
+				InitChrysanthemumLoading();
 
 			// 获得窗口的Graphics对象
 			Graphics gh(hDC);
 			// 将描画好的CacheImage画到窗口上
-			gh.DrawImage(&btm, m_rcItem.left, m_rcItem.top);		
+			gh.DrawImage(m_pgdipBmp, m_rcItem.left, m_rcItem.top);	
 		}
 		return true;
+	}
+
+	void CChrysanthemumLoadingUI::PaintBitMap()
+	{
+		int nWidth = m_rcItem.right-m_rcItem.left;
+		int nHeight = m_rcItem.bottom-m_rcItem.top;
+		m_CenterPoint.X = nWidth / 2;
+		m_CenterPoint.Y = nHeight / 2;
+
+		if (m_pgdipBmp)
+		{
+			delete m_pgdipBmp;
+			m_pgdipBmp = NULL;
+		}
+		m_pgdipBmp = new Bitmap(nWidth, nHeight);
+		Graphics g(m_pgdipBmp);
+		g.SetSmoothingMode(SmoothingMode::SmoothingModeHighQuality);
+		SolidBrush backBrush(ARGB2Color(m_dwBackColor));
+		g.FillRectangle(&backBrush,0,0,nWidth,nHeight);
+
+		m_nProgressValue = ++m_nProgressValue % m_nNumberOfSpoke;
+		int intPosition = m_nProgressValue;
+		for (int intCounter = 0; intCounter < m_nNumberOfSpoke; intCounter++)
+		{
+			intPosition = intPosition % m_nNumberOfSpoke;
+
+			{
+				SolidBrush brush(m_pColors[intCounter]);
+				Pen objPen(&brush, m_nSpokeThickness);				
+				objPen.SetStartCap(LineCap::LineCapRound);
+				objPen.SetEndCap(LineCap::LineCapRound);
+
+				double dblAngle = 3.14 * m_pAngles[intPosition] / 180.0;
+				PointF pf1(m_CenterPoint.X + m_nInnerCircleRadius * (float)cos(dblAngle), m_CenterPoint.Y + m_nInnerCircleRadius * (float)sin(dblAngle));
+				PointF pf2(m_CenterPoint.X + m_nOuterCircleRadius * (float)cos(dblAngle), m_CenterPoint.Y + m_nOuterCircleRadius * (float)sin(dblAngle));
+				g.DrawLine(&objPen, pf1, pf2);
+			}
+
+			intPosition++;
+		}
+		//绘制文字
+		if (m_sText.IsEmpty() == false)
+		{
+			//绘制文本
+#ifdef _UNICODE
+			LPWSTR pWideText = (LPWSTR)m_sText.GetData();
+#else 
+			int iLen = _tcslen(m_sText.GetData());
+			LPWSTR pWideText = new WCHAR[iLen + 1];
+			::ZeroMemory(pWideText, (iLen + 1) * sizeof(WCHAR));
+			::MultiByteToWideChar(CP_ACP, 0, m_sText.GetData(), -1, pWideText, iLen);
+#endif
+			Gdiplus::Font	nFont(m_pManager->GetPaintDC(),m_pManager->GetFont(GetFont()));
+
+			RECT rcText = {m_rcTextPadding.left,m_rcTextPadding.top,nWidth-m_rcTextPadding.right,nHeight-m_rcTextPadding.bottom};
+			RectF nRc((float)rcText.left,(float)rcText.top,(float)rcText.right-rcText.left,(float)rcText.bottom-rcText.top);
+
+			StringFormat format;
+			StringAlignment sa = StringAlignmentNear;
+			if ((m_uTextStyle & DT_VCENTER) != 0) 
+				sa = StringAlignmentCenter;
+			else if( (m_uTextStyle & DT_BOTTOM) != 0) 
+				sa = StringAlignmentFar;
+			format.SetLineAlignment((StringAlignment)sa);
+			sa = StringAlignmentNear;
+			if ((m_uTextStyle & DT_CENTER) != 0) 
+				sa = StringAlignmentCenter;
+			else if( (m_uTextStyle & DT_RIGHT) != 0) 
+				sa = StringAlignmentFar;
+			format.SetAlignment((StringAlignment)sa);
+			if ((m_uTextStyle & DT_SINGLELINE) != 0) 
+				format.SetFormatFlags(StringFormatFlagsNoWrap);
+
+			SolidBrush nBrush( ARGB2Color(m_dwTextColor) );
+			g.DrawString(pWideText,wcslen(pWideText),&nFont,nRc,&format,&nBrush);
+#ifndef _UNICODE
+			delete[] pWideText;
+#endif
+		}
 	}
 
 	void CChrysanthemumLoadingUI::DoEvent( TEventUI& event )
@@ -181,6 +207,7 @@ namespace DuiLib
 		{
 			if (event.wParam == EVENT_TIME_ID)
 			{
+				PaintBitMap();
 				Invalidate();
 			}
 			else

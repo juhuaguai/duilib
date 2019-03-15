@@ -18,6 +18,8 @@ namespace DuiLib
 		void	DoEvent(TEventUI& event);		
 		void	SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
+		virtual void SetPos(RECT rc, bool bNeedInvalidate = true);
+
 		void SetTimeInterval(const int& nValue);
 		int GetTimeInterval();
 		void SetNumberOfSpoke(const int& nValue);
@@ -47,6 +49,7 @@ namespace DuiLib
 
 	protected:
 		void InitChrysanthemumLoading();
+		void PaintBitMap();
 	
 	protected:
 		int		m_nTimeInterval;			//时间间隔 单位ms
@@ -66,5 +69,7 @@ namespace DuiLib
 		int		m_iFont;
 		RECT	m_rcTextPadding;
 		TextRenderingHint		m_TextRenderingAlias;	//文字抗锯齿级别
+
+		Bitmap* m_pgdipBmp;
 	};
 }	// namespace DuiLib
