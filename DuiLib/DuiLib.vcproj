@@ -549,6 +549,14 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
 						Name="UnicodeDebug|Win32"
 						>
 						<Tool
