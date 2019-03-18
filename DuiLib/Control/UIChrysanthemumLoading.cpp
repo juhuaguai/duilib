@@ -124,8 +124,8 @@ namespace DuiLib
 
 	void CChrysanthemumLoadingUI::SetVisible(bool bVisible/* = true*/ )
 	{
-		if( IsVisible() == bVisible ) 
-			return;
+		//if( IsVisible() == bVisible ) 
+		//	return;
 
 		if (bVisible)
 		{

@@ -366,8 +366,8 @@ namespace DuiLib
 
 	void CRotateImageUI::SetVisible(bool bVisible/* = true*/ )
 	{
-		if( IsVisible() == bVisible ) 
-			return;
+		//if( IsVisible() == bVisible ) 
+		//	return;
 
 		if (bVisible)
 		{
