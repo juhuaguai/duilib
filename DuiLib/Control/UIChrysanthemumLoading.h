@@ -17,6 +17,7 @@ namespace DuiLib
 		bool	DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
 		void	DoEvent(TEventUI& event);		
 		void	SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
+		void	SetVisible(bool bVisible = true );
 
 		virtual void SetPos(RECT rc, bool bNeedInvalidate = true);
 

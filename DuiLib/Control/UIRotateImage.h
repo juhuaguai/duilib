@@ -17,6 +17,7 @@ namespace DuiLib
 		void	DoInit();
 		void	DoEvent(TEventUI& event);		
 		void	SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
+		void	SetVisible(bool bVisible = true );
 
 		void	SetTimeInterval(const int& nValue);
 		int		GetTimeInterval();

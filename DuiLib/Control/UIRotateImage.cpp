@@ -363,4 +363,21 @@ namespace DuiLib
 		else
 			CControlUI::DoEvent(event);
 	}
+
+	void CRotateImageUI::SetVisible(bool bVisible/* = true*/ )
+	{
+		if( IsVisible() == bVisible ) 
+			return;
+
+		if (bVisible)
+		{
+			Start();
+		}
+		else
+		{
+			Pause();
+		}
+
+		__super::SetVisible(bVisible);
+	}
 }

@@ -122,6 +122,25 @@ namespace DuiLib
 		return true;
 	}
 
+	void CChrysanthemumLoadingUI::SetVisible(bool bVisible/* = true*/ )
+	{
+		if( IsVisible() == bVisible ) 
+			return;
+
+		if (bVisible)
+		{
+			if (m_pManager)
+				m_pManager->SetTimer( this, EVENT_TIME_ID, m_nTimeInterval );
+		}
+		else
+		{
+			if (m_pManager)
+				m_pManager->KillTimer( this,EVENT_TIME_ID);
+		}
+
+		__super::SetVisible(bVisible);
+	}
+
 	void CChrysanthemumLoadingUI::PaintBitMap()
 	{
 		int nWidth = m_rcItem.right-m_rcItem.left;
