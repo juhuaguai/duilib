@@ -53,7 +53,7 @@ namespace DuiLib
 		}
 		if( event.Type == UIEVENT_KEYDOWN )
 		{
-			if (IsKeyboardEnabled() && IsEnabled()) {
+			if (IsVisible() && IsKeyboardEnabled() && IsEnabled()) {
 				if( event.chKey == VK_SPACE || event.chKey == VK_RETURN ) {
 					Activate();
 					return;
