@@ -161,7 +161,6 @@ namespace DuiLib
 		}
 
 		delete[] pData;
-		GlobalFree(hMem);
 
 		return pImg;
 	}
