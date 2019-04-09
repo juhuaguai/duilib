@@ -44,6 +44,8 @@ namespace DuiLib
 
 		void SetHotBkColor(DWORD dwColor);
 		DWORD GetHotBkColor() const;
+		void SetHotBorderColor(DWORD dwColor);
+		DWORD GetHotBorderColor() const;
 		void SetHotTextColor(DWORD dwColor);
 		DWORD GetHotTextColor() const;
 		void SetPushedTextColor(DWORD dwColor);
@@ -58,6 +60,7 @@ namespace DuiLib
 		void PaintText(HDC hDC);
 		void PaintBkColor(HDC hDC);
 		void PaintStatusImage(HDC hDC);
+		void PaintBorder(HDC hDC);
 
 	protected:
 		enum
@@ -71,6 +74,7 @@ namespace DuiLib
 
 		DWORD m_dwHotBkColor;
 		DWORD m_dwHotTextColor;
+		DWORD m_dwHotBorderColor;
 		DWORD m_dwPushedTextColor;
 		DWORD m_dwFocusedTextColor;
 		DWORD m_dwFocusedBkColor;

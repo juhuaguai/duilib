@@ -182,6 +182,7 @@ namespace DuiLib
 		//绘制文字
 		if (m_sText.IsEmpty() == false)
 		{
+			g.SetTextRenderingHint(GetTextRenderingAlias());
 			//绘制文本
 #ifdef _UNICODE
 			LPWSTR pWideText = (LPWSTR)m_sText.GetData();

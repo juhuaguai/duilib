@@ -302,6 +302,9 @@ namespace DuiLib
 
 	void CRotateImageUI::PaintBkImage( HDC hDC )
 	{
+		if (m_pBkimage==NULL)
+			return;
+
 		RECT rcItem = m_rcItem;
 		int iWidth=0,iHeight=0;
 		if (m_bStretch)

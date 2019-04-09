@@ -12,6 +12,7 @@ namespace DuiLib
 		, m_dwFocusedTextColor(0)
 		, m_dwFocusedBkColor(0)
 		, m_dwHotBkColor(0)
+		, m_dwHotBorderColor(0)
 		, m_uFadeAlphaDelta(0)
 		, m_uFadeAlpha(255)
 		,m_sCursor(_T("hand"))
@@ -183,6 +184,16 @@ namespace DuiLib
 	DWORD CButtonUI::GetHotBkColor() const
 	{
 		return m_dwHotBkColor;
+	}
+
+	void CButtonUI::SetHotBorderColor( DWORD dwColor )
+	{
+		m_dwHotBorderColor = dwColor;
+	}
+
+	DWORD CButtonUI::GetHotBorderColor() const
+	{
+		return m_dwHotBorderColor;
 	}
 
 	void CButtonUI::SetHotTextColor(DWORD dwColor)
@@ -669,5 +680,90 @@ namespace DuiLib
 
 Label_ForeImage:
 		DrawImage(hDC, m_diFore);
+	}
+
+	void CButtonUI::PaintBorder(HDC hDC)
+	{
+		if( (m_rcBorderSize.left>0 || m_rcBorderSize.top>0 || m_rcBorderSize.right>0 || m_rcBorderSize.bottom>0) && (m_dwBorderColor != 0 || m_dwFocusBorderColor != 0)) 
+		{
+			if( m_cxyBorderRound.cx > 0 || m_cxyBorderRound.cy > 0 )//»­Ô²½Ç±ß¿ò
+			{
+				if (IsFocused() && m_dwFocusBorderColor != 0)
+					CRenderEngine::DrawRoundRect(hDC, m_rcItem, m_rcBorderSize.left, m_cxyBorderRound.cx, m_cxyBorderRound.cy, GetAdjustColor(m_dwFocusBorderColor), m_nBorderStyle);
+				else if( (m_uButtonState & UISTATE_HOT) != 0 && m_dwHotBorderColor != 0)
+					CRenderEngine::DrawRoundRect(hDC, m_rcItem, m_rcBorderSize.left, m_cxyBorderRound.cx, m_cxyBorderRound.cy, GetAdjustColor(m_dwHotBorderColor), m_nBorderStyle);
+				else
+					CRenderEngine::DrawRoundRect(hDC, m_rcItem, m_rcBorderSize.left, m_cxyBorderRound.cx, m_cxyBorderRound.cy, GetAdjustColor(m_dwBorderColor), m_nBorderStyle);
+			}
+			else 
+			{
+				if (m_rcBorderSize.right == m_rcBorderSize.left && m_rcBorderSize.top == m_rcBorderSize.left && m_rcBorderSize.bottom == m_rcBorderSize.left) {
+					if (IsFocused() && m_dwFocusBorderColor != 0)
+						CRenderEngine::DrawRect(hDC, m_rcItem, m_rcBorderSize.left, GetAdjustColor(m_dwFocusBorderColor), m_nBorderStyle);
+					else if( (m_uButtonState & UISTATE_HOT) != 0 && m_dwHotBorderColor != 0)
+						CRenderEngine::DrawRect(hDC, m_rcItem, m_rcBorderSize.left, GetAdjustColor(m_dwHotBorderColor), m_nBorderStyle);
+					else
+						CRenderEngine::DrawRect(hDC, m_rcItem, m_rcBorderSize.left, GetAdjustColor(m_dwBorderColor), m_nBorderStyle);
+				}
+				else 
+				{
+					RECT rcBorder;
+					if(m_rcBorderSize.left > 0){
+						rcBorder		= m_rcItem;
+						rcBorder.left  += m_rcBorderSize.left / 2;
+						rcBorder.right	= rcBorder.left;
+						if (IsFocused() && m_dwFocusBorderColor != 0)
+							CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.left,GetAdjustColor(m_dwFocusBorderColor),m_nBorderStyle);
+						else if( (m_uButtonState & UISTATE_HOT) != 0 && m_dwHotBorderColor != 0)
+							CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.left,GetAdjustColor(m_dwHotBorderColor),m_nBorderStyle);
+						else
+							CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.left,GetAdjustColor(m_dwBorderColor),m_nBorderStyle);
+					}
+					if(m_rcBorderSize.top > 0) {
+						rcBorder		= m_rcItem;
+						rcBorder.top   += m_rcBorderSize.top / 2;
+						rcBorder.bottom	= rcBorder.top;
+						rcBorder.left  += m_rcBorderSize.left;
+						rcBorder.right -= m_rcBorderSize.right;
+						if (IsFocused() && m_dwFocusBorderColor != 0)
+							CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.top,GetAdjustColor(m_dwFocusBorderColor),m_nBorderStyle);
+						else if( (m_uButtonState & UISTATE_HOT) != 0 && m_dwHotBorderColor != 0)
+							CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.top,GetAdjustColor(m_dwHotBorderColor),m_nBorderStyle);
+						else
+							CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.top,GetAdjustColor(m_dwBorderColor),m_nBorderStyle);
+					}
+					if(m_rcBorderSize.right > 0) {
+						rcBorder		= m_rcItem;
+						if (m_rcBorderSize.right % 2)
+							rcBorder.left	= m_rcItem.right - m_rcBorderSize.right / 2 - 1;
+						else
+							rcBorder.left	= m_rcItem.right - m_rcBorderSize.right / 2;
+						rcBorder.right  = rcBorder.left;
+						if (IsFocused() && m_dwFocusBorderColor != 0)
+							CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.right,GetAdjustColor(m_dwFocusBorderColor),m_nBorderStyle);
+						else if( (m_uButtonState & UISTATE_HOT) != 0 && m_dwHotBorderColor != 0)
+							CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.right,GetAdjustColor(m_dwHotBorderColor),m_nBorderStyle);
+						else
+							CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.right,GetAdjustColor(m_dwBorderColor),m_nBorderStyle);
+					}
+					if(m_rcBorderSize.bottom > 0) {
+						rcBorder		= m_rcItem;
+						if (m_rcBorderSize.bottom % 2)
+							rcBorder.top	= m_rcItem.bottom - m_rcBorderSize.bottom / 2 - 1;
+						else
+							rcBorder.top	= m_rcItem.bottom - m_rcBorderSize.bottom / 2;
+						rcBorder.bottom = rcBorder.top;
+						rcBorder.left  += m_rcBorderSize.left;
+						rcBorder.right -= m_rcBorderSize.right;
+						if (IsFocused() && m_dwFocusBorderColor != 0)
+							CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.bottom,GetAdjustColor(m_dwFocusBorderColor),m_nBorderStyle);
+						else if( (m_uButtonState & UISTATE_HOT) != 0 && m_dwHotBorderColor != 0)
+							CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.bottom,GetAdjustColor(m_dwHotBorderColor),m_nBorderStyle);
+						else
+							CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.bottom,GetAdjustColor(m_dwBorderColor),m_nBorderStyle);
+					}
+				}
+			}
+		}
 	}
 }
