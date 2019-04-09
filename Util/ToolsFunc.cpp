@@ -34,7 +34,9 @@ BOOL CreateDirW(const wstring& strDir)
 
 		if (CreateDirectoryW(strDir.c_str(), NULL) == FALSE)
 		{
-			return FALSE;
+			DWORD dwErr = GetLastError();
+			if (dwErr != 183)
+				return FALSE;
 		}		
 	}
 	else
@@ -295,7 +297,7 @@ xstring GetAppPath(HMODULE hModul)
 	_tsplitpath_s(szAppPath,szDrive,szDir,szFname,szExt);
 	xstring strAppName = szDrive;
 	strAppName += szDir;
-	return strAppName;	//"e:\斧牛加速器\funiujiasu\Bin\"
+	return strAppName;	//"e:\windows\jiasu\Bin\"
 }
 
 void SplitStringA(const string& strSource, std::deque<std::string>& deq, const string& strDelim)
@@ -1048,6 +1050,12 @@ xstring GetOSName()
 
 BOOL Is64BitOS()
 {
+	static int static_nRet = -1;
+	if (static_nRet==0)
+		return false;
+	else if (static_nRet==1)
+		return true;
+
 	BOOL bIsWow64 = FALSE;
 	typedef BOOL (WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
 	LPFN_ISWOW64PROCESS fnIsWow64Process = (LPFN_ISWOW64PROCESS) GetProcAddress(GetModuleHandle(_T("kernel32")),"IsWow64Process");
@@ -1056,6 +1064,12 @@ BOOL Is64BitOS()
 		if(!fnIsWow64Process(GetCurrentProcess(),&bIsWow64))
 		{}
 	}
+
+	if (bIsWow64)
+		static_nRet = 1;
+	else
+		static_nRet = 0;
+
 	return bIsWow64;  
 }
 void GetOSVersion(int& nMajorVersion,int& nMinorVersion)
@@ -1175,106 +1189,130 @@ int DeleteFolder(const xstring& strDest)
 	FileOp.wFunc = FO_DELETE;				//操作类型   
 	return SHFileOperation(&FileOp); 
 }
+bool CopyFolderRecursive(const wstring& strSource,const wstring& strDest)
+{
+	WIN32_FIND_DATA fd;
+	wchar_t szTempFileFind[512] = { 0 };
+	ZeroMemory(&fd, sizeof(WIN32_FIND_DATA));
+	swprintf(szTempFileFind, L"%s\\*.*", strSource.c_str());
+	HANDLE hFind = FindFirstFile(szTempFileFind, &fd);
+	if (hFind == INVALID_HANDLE_VALUE)
+		return false;
+
+	//先创建目标文件夹
+	CreateDirW(strDest);
+
+	while(true)
+	{
+		if ( FindNextFileW(hFind, &fd) )
+		{
+			if (_tcsicmp(fd.cFileName,L".")==0)
+			{
+				continue;						
+			}
+			else if (_tcsicmp(fd.cFileName,L"..")==0)
+			{
+				continue;
+			}
+			else
+			{
+				if ( (fd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) == 0)//不是目录
+				{
+					wstring strSrcFile = strSource + L"\\";
+					strSrcFile += fd.cFileName;
+					wstring strDestFile = strDest + L"\\";
+					strDestFile += fd.cFileName; 
+
+					if (CopyFileW(strSrcFile.c_str(),strDestFile.c_str(),FALSE) == FALSE)
+					{
+						FindClose(hFind);
+						return false;
+					}	
+				}
+				else
+				{
+					wstring strSrcFile = strSource + L"\\";
+					strSrcFile += fd.cFileName;
+					wstring strDestFile = strDest + L"\\";
+					strDestFile += fd.cFileName;
+
+					if (CopyFolderRecursive(strSrcFile,strDestFile) == false)
+					{
+						FindClose(hFind);
+						return false;
+					}
+				}
+			}
+	
+		}
+		else
+			break;
+	}//while
+	FindClose(hFind);
+	return true;	
+}
 
 int GetProcesssIdFromName(const xstring& strPorcessName,bool bCaseSensitive/* = false*/)
 {
 	HANDLE hProcess = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	if( hProcess == INVALID_HANDLE_VALUE )
-	{
 		return -1;
-	}
 
-	TCHAR szShortPath[MAX_PATH*2] = { 0 };
 	PROCESSENTRY32 pinfo; 
-	MODULEENTRY32 minfo;
 	pinfo.dwSize = sizeof(PROCESSENTRY32);
-	minfo.dwSize = sizeof( MODULEENTRY32);
 
 	BOOL report = Process32First(hProcess, &pinfo); 
 	while(report) 
 	{ 
-		HANDLE hModule = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, pinfo.th32ProcessID); 
-		if( hModule != INVALID_HANDLE_VALUE )
+		if (bCaseSensitive)
 		{
-			if( Module32First( hModule, &minfo ) )
+			if (strPorcessName == pinfo.szExeFile)
 			{
-				xstring strCurExeName = minfo.szExePath;
-				int nPos = strCurExeName.rfind(_T('\\'));
-				strCurExeName = strCurExeName.substr(nPos+1);
-				if (bCaseSensitive)
-				{
-					if (strPorcessName == strCurExeName)
-					{
-						CloseHandle( hModule );
-						CloseHandle( hProcess );
-						return pinfo.th32ProcessID;
-					}
-				}
-				else
-				{
-					if (_tcsicmp(strPorcessName.c_str(),strCurExeName.c_str()) == 0)
-					{
-						CloseHandle( hModule );
-						CloseHandle( hProcess );
-						return pinfo.th32ProcessID;
-					}
-				}
+				CloseHandle( hProcess );
+				return pinfo.th32ProcessID;
 			}
-
-			CloseHandle( hModule );
 		}
+		else
+		{
+			if (_tcsicmp(strPorcessName.c_str(),pinfo.szExeFile) == 0)
+			{
+				CloseHandle( hProcess );
+				return pinfo.th32ProcessID;
+			}
+		}
+
 		report = Process32Next(hProcess, &pinfo);
 	}
 
 	CloseHandle( hProcess );
-	return -1;
-	
+	return -1;	
 }
 void GetProcesssIdFromName(const xstring& strPorcessName,deque<int>& dequeOutID,bool bCaseSensitive/* = false*/)
 {
 	dequeOutID.clear();
 	HANDLE hProcess = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	if( hProcess == INVALID_HANDLE_VALUE )
-	{
 		return ;
-	}
 
-	TCHAR szShortPath[MAX_PATH*2] = { 0 };
 	PROCESSENTRY32 pinfo; 
-	MODULEENTRY32 minfo;
 	pinfo.dwSize = sizeof(PROCESSENTRY32);
-	minfo.dwSize = sizeof( MODULEENTRY32);
 
 	BOOL report = Process32First(hProcess, &pinfo); 
 	while(report) 
 	{ 
-		HANDLE hModule = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, pinfo.th32ProcessID); 
-		if( hModule != INVALID_HANDLE_VALUE )
+		if (bCaseSensitive)
 		{
-			if( Module32First( hModule, &minfo ) )
-			{
-				xstring strCurExeName = minfo.szExePath;
-				int nPos = strCurExeName.rfind(_T('\\'));
-				strCurExeName = strCurExeName.substr(nPos+1);
-				if (bCaseSensitive)
-				{
-					if (strPorcessName == strCurExeName)
-					{
-						dequeOutID.push_back(pinfo.th32ProcessID);
-					}
-				}
-				else
-				{
-					if (_tcsicmp(strPorcessName.c_str(),strCurExeName.c_str()) == 0)
-					{
-						dequeOutID.push_back(pinfo.th32ProcessID);
-					}
-				}
-
-			}
-
-			CloseHandle( hModule );
+			if (strPorcessName == pinfo.szExeFile)
+				dequeOutID.push_back(pinfo.th32ProcessID);
 		}
+		else
+		{
+			if (_tcsicmp(strPorcessName.c_str(),pinfo.szExeFile) == 0)
+				dequeOutID.push_back(pinfo.th32ProcessID);
+		}
+
+
+
 		report = Process32Next(hProcess, &pinfo);
 	}
 
@@ -1717,6 +1755,14 @@ wstring GetFileNameFromPath(const wstring& strPath)
 		strName.erase(0,nPos+1);
 	return strName;
 }
+string GetFileNameFromPathA(const string& strPath)
+{
+	string strName = strPath;
+	int nPos = strName.find_last_of("/\\");
+	if (nPos != string::npos)
+		strName.erase(0,nPos+1);
+	return strName;
+}
 
 bool CopyStringToClipboard(const wstring& strValue)
 {
@@ -1737,4 +1783,93 @@ bool CopyStringToClipboard(const wstring& strValue)
 	} 
 
 	return false;
+}
+
+string GetBIOSUUID()
+{
+	try
+	{
+		//创建匿名管道
+		SECURITY_ATTRIBUTES sa;  
+		HANDLE hRead=NULL,hWrite=NULL;  
+		sa.nLength = sizeof(SECURITY_ATTRIBUTES);  
+		sa.lpSecurityDescriptor = NULL;  
+		sa.bInheritHandle = TRUE;  
+		if (!CreatePipe(&hRead,&hWrite,&sa,0))   
+		{
+			OutputDebugStringW(L"查询执行失败0\n");
+			return "";  
+		}   
+
+		wchar_t szCmd[128] = {0};
+		_snwprintf_s(szCmd,_countof(szCmd),_TRUNCATE,L"cmd.exe /C wmic csproduct get UUID");
+		STARTUPINFOW si;  
+		PROCESS_INFORMATION pi;   
+		si.cb = sizeof(STARTUPINFOW);  
+		GetStartupInfoW(&si);   
+		si.hStdError = hWrite;            //把创建进程的标准错误输出重定向到管道输入  
+		si.hStdOutput = hWrite;           //把创建进程的标准输出重定向到管道输入  
+		si.wShowWindow = SW_HIDE;  
+		si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;  
+		if (!CreateProcess(NULL, szCmd,NULL,NULL,TRUE,NULL,NULL,NULL,&si,&pi))
+		{  
+			CloseHandle(hWrite);  
+			CloseHandle(hRead);  
+			OutputDebugStringW(L"查询执行失败1\n");
+			return "";
+		}  
+
+		WaitForSingleObject(pi.hProcess,INFINITE);
+		CloseHandle(pi.hThread);
+		CloseHandle(pi.hProcess);
+
+		if (hWrite)
+			CloseHandle(hWrite);  
+
+		string strResult;
+		if (hRead)
+		{
+			int nSize = GetFileSize(hRead, NULL)+4;		//加4避免申请的堆内存刚好被文件内容填满后,字符串末尾没有'\0'了
+			char* szBuf = (char*)malloc(nSize);
+			memset(szBuf,0,nSize);
+			DWORD dwReadSize=0;
+
+			char szLog[128] = {0};
+			sprintf(szLog,"数据大小:%d\n",nSize);
+			OutputDebugStringA(szLog);
+
+			ReadFile(hRead, szBuf, nSize, &dwReadSize, NULL);
+			strResult = szBuf;
+			free(szBuf);
+			CloseHandle(hRead);
+
+			vector<string> vecItem;
+			SplitString(strResult.c_str(),vecItem,"\r\n");
+			for (vector<string>::iterator itr=vecItem.begin();itr!=vecItem.end();itr++)
+			{
+				string strItem = *itr;
+				TrimStringA(strItem," ");
+				if (strItem.length()>31 && strItem.find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789- ")==string::npos)
+				{
+					strResult = strItem;
+					break;
+				}
+			}
+			if (strResult.empty() == false)
+			{
+				return strResult;
+			}		
+		}
+	}
+	catch (...)
+	{}	
+
+	return "";   
+}
+
+xstring GetMachineGUID()
+{
+	xstring strValue;
+	ReadRegString(HKEY_LOCAL_MACHINE,L"SOFTWARE\\Microsoft\\Cryptography",L"MachineGuid",REG_SZ,strValue);
+	return strValue;
 }

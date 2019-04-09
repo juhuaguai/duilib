@@ -88,6 +88,8 @@ xstring GetAppNameFromPath(const xstring& strAppPath);
 
 //由路径获取文件名
 wstring GetFileNameFromPath(const wstring& strPath);
+//由路径获取文件名
+string GetFileNameFromPathA(const string& strPath);
 
 //是否是有效的身份证号 (返回1表明有效,错误码为负数)
 int IsValidIdCardNumber(const xstring& strIdCardNumber);
@@ -114,9 +116,10 @@ BOOL Is64BitOS();
 void GetOSVersion(int& nMajorVersion,int& nMinorVersion);
 
 
-//查找进程ID (32位进程只能查找32位进程) //此函数获取到当前进程的PID可能是0
+//查找进程ID //此函数获取到当前进程的PID可能是0
 int GetProcesssIdFromName(const xstring& strPorcessName,bool bCaseSensitive = false);
 void GetProcesssIdFromName(const xstring& strPorcessName,deque<int>& dequeOutID,bool bCaseSensitive = false);
+//查找进程PID,并获取绝对路径(32位进程只能查找32位进程)
 void GetProcesssInfoFromName(const xstring& strPorcessName,map<int,wstring>& mapOutID,bool bCaseSensitive = false);
 
 //获取文件大小(字节) //最大2G
@@ -161,6 +164,12 @@ void SetIEWebbrowserVersion(DWORD dwIEVersion = 8000);
 
 //获取CPU序列号
 string GetCpuIndex();
+
+//获取机器GUID,从注册表中读取出来的,重装系统可能改变
+xstring GetMachineGUID();
+
+//获取主板的UUID,可能获取失败,当失败时,字符串中仅包含全部都是F或者全部都是0
+string GetBIOSUUID();
 
 //复制字符串到剪切板
 bool CopyStringToClipboard(const wstring& strValue);

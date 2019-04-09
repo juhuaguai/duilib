@@ -202,12 +202,11 @@ void CSysShellHelp::DisableSafetyWarn()
 //    bIsAll        - 是否所有的，若为FALSE，找到一个即退出
 BOOL CSysShellHelp::KillProcess(const xstring &strAppExeName, BOOL bIsAll/* = TRUE*/)
 {
-	try{
+	try
+	{
 		HANDLE hProcess = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 		if( hProcess == INVALID_HANDLE_VALUE )
-		{
-			return( FALSE );
-		}
+			return FALSE;
 
 		TCHAR szShortPath[MAX_PATH] = { 0 };
 		PROCESSENTRY32 pinfo; 
@@ -219,33 +218,18 @@ BOOL CSysShellHelp::KillProcess(const xstring &strAppExeName, BOOL bIsAll/* = TR
 		BOOL report = Process32First(hProcess, &pinfo); 
 		while(report) 
 		{ 
-			HANDLE hModule = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, pinfo.th32ProcessID); 
-			if( hModule != INVALID_HANDLE_VALUE )
+			
+			if (strAppExeName == pinfo.szExeFile)
 			{
-				if( Module32First( hModule, &minfo ) )
+				HANDLE hExitProcess = OpenProcess( PROCESS_TERMINATE, FALSE, pinfo.th32ProcessID );
+				if( hExitProcess)
 				{
+					::TerminateProcess(hExitProcess, 0);
+					::CloseHandle(hExitProcess);
 
-					TCHAR *pFind = _tcsrchr(minfo.szExePath, _T('\\'));
-					xstring strCurExeName = (++pFind);
-
-					if (strAppExeName.compare(strCurExeName) == 0)
-					{
-						HANDLE hExitProcess = OpenProcess( PROCESS_TERMINATE, FALSE, pinfo.th32ProcessID );
-						if( hExitProcess)
-						{
-							::TerminateProcess(hExitProcess, 0);
-							::CloseHandle(hExitProcess);
-						}
-
-						if (!bIsAll)
-						{
-							CloseHandle( hModule );
-							break;
-						}
-					}
+					if (!bIsAll)
+						break;
 				}
-
-				CloseHandle( hModule );
 			}
 
 			report = Process32Next(hProcess, &pinfo);
@@ -258,18 +242,26 @@ BOOL CSysShellHelp::KillProcess(const xstring &strAppExeName, BOOL bIsAll/* = TR
 
 	return TRUE;
 }
-int CSysShellHelp::KillProcessDos(const string& strExeName)
+
+long CSysShellHelp::KillProcessDos(const xstring& strExeName)
 {
 	//taskkill /f /im steamwebhelper.exe /t
-	string strParam = "taskkill /f /im ";
+	xstring strParam = _T("taskkill /f /im ");
 	strParam += strExeName;
-	strParam += " /t";
+	strParam += _T(" /t");
 
-	string strCmd("cmd.exe /c \"");
+	xstring strCmd = _T("/c \"");
 	strCmd += strParam;
-	strCmd += "\"";
+	strCmd += _T("\"");
 
-	return ::WinExec(strCmd.c_str(), SW_HIDE);
+	TCHAR szSystem[512] = {0};
+	GetSystemDirectory(szSystem, sizeof(szSystem));
+	xstring strCmdExe = szSystem;
+	strCmdExe += _T("\\cmd.exe");
+
+	OutputDebugStringW(strCmd.c_str());
+	DWORD dwRet = (long)ShellExecute(NULL,_T("open"),strCmdExe.c_str(),strCmd.c_str(),_T(""),SW_HIDE);
+	return dwRet;
 }
 
 BOOL SystemShutDown()

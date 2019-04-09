@@ -37,7 +37,8 @@ public:
 	void DisableSafetyWarn();
 
 	BOOL KillProcess(const xstring &strAppExeName, BOOL bIsAll = TRUE);
-	int KillProcessDos(const string& strExeName);
+	//ansi编码在win10下可能有问题,慎用
+	long KillProcessDos(const xstring& strExeName);
 	void StartExeByCmd(const char* szCmd);
 };
 

@@ -16,10 +16,13 @@ public:
 	
 	//pszLogFileName日志文件名字,nLogFileMaxSize-日志文件最大大小(KB),默认1024KB,超过大小时下次调用构造函数时会删除日志文件
 	void SetLogFilePathName(const wstring& strLogFileName,int nLogFileMaxSize = 1024);
-	wstring GetLogFilePathName();
-	void WriteLogW(bool bPrintToConsole,LPCWSTR format, ...);
+	wstring GetLogFilePathName();	
+	//设置是否写到日志文件中
 	void SetWriteLog(bool bIsWrite);	
-	void WriteLogW(LPCWSTR lpszLog);
+	//lpszCodeFile使用宏__FILE__, nCodeLine使用宏__LINE__
+	void WriteLogPrintW(LPCSTR lpszCodeFile,const int& nCodeLine,LPCWSTR format, ...);
+	//lpszCodeFile使用宏__FILE__, nCodeLine使用宏__LINE__
+	void WriteLogW(LPCSTR lpszCodeFile,const int& nCodeLine,LPCWSTR lpszLog);
 
 protected:
 	//获取日志文件当前大小
