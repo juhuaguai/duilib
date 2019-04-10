@@ -305,35 +305,28 @@ namespace DuiLib
 		if (m_pBkimage==NULL)
 			return;
 
-		RECT rcItem = m_rcItem;
-		int iWidth=0,iHeight=0;
 		if (m_bStretch)
 		{
-			iWidth = rcItem.right - rcItem.left;
-			iHeight = rcItem.bottom - rcItem.top;
-			PointF centerPos(rcItem.left + iWidth/2, rcItem.top + iHeight/2);
-
 			Graphics graphics(hDC);
 			graphics.SetSmoothingMode(SmoothingMode::SmoothingModeHighQuality);
-			graphics.TranslateTransform(centerPos.X,centerPos.Y);
+			graphics.TranslateTransform(m_centerPos.X,m_centerPos.Y);
 			graphics.RotateTransform(m_nCurAngle);
-			graphics.TranslateTransform(-centerPos.X, -centerPos.Y);//还原源点
-			graphics.DrawImage(m_pBkimage,rcItem.left,rcItem.top,iWidth,iHeight);
+			graphics.TranslateTransform(-m_centerPos.X, -m_centerPos.Y);//还原源点
+
+			graphics.DrawImage(m_pBkimage,m_rcItem.left,m_rcItem.top,m_rcItem.right - m_rcItem.left,m_rcItem.bottom - m_rcItem.top);
 		}
 		else
 		{
-			iWidth = rcItem.right - rcItem.left;
-			iHeight = rcItem.bottom - rcItem.top;
-			int imgWidth = m_pBkimage->GetWidth();
-			int imgHeight = m_pBkimage->GetHeight();
-			PointF centerPos(rcItem.left + iWidth/2, rcItem.top + iHeight/2);
-
 			Graphics graphics(hDC);
 			graphics.SetSmoothingMode(SmoothingMode::SmoothingModeHighQuality);
-			graphics.TranslateTransform(centerPos.X,centerPos.Y);
+			graphics.TranslateTransform(m_centerPos.X,m_centerPos.Y);
 			graphics.RotateTransform(m_nCurAngle);
-			graphics.TranslateTransform(-centerPos.X, -centerPos.Y);//还原源点			
-			graphics.DrawImage(m_pBkimage,(int)centerPos.X-imgWidth/2,(int)centerPos.Y-imgHeight/2,imgWidth,imgHeight);
+			graphics.TranslateTransform(-m_centerPos.X, -m_centerPos.Y);//还原源点		
+
+			int imgWidth = m_pBkimage->GetWidth();
+			int imgHeight = m_pBkimage->GetHeight();
+
+			graphics.DrawImage(m_pBkimage,(int)m_centerPos.X-imgWidth/2,(int)m_centerPos.Y-imgHeight/2,imgWidth,imgHeight);
 		}		
 	}
 
@@ -381,5 +374,18 @@ namespace DuiLib
 		}
 
 		__super::SetVisible(bVisible);
+	}
+
+	void CRotateImageUI::SetPos(RECT rc, bool bNeedInvalidate/* = true*/)
+	{
+		__super::SetPos(rc,bNeedInvalidate);
+
+		int nW = m_rcItem.right-m_rcItem.left;
+		int nH = m_rcItem.bottom-m_rcItem.top;
+		if (nW>0 && nH>0)
+		{
+			m_centerPos.X = m_rcItem.left + nW/2;
+			m_centerPos.Y = m_rcItem.top + nH/2;
+		}
 	}
 }

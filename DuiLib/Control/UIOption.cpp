@@ -201,17 +201,19 @@ namespace DuiLib
 
 	void COptionUI::PaintStatusImage(HDC hDC)
 	{
-		if(IsEnabled() && (m_uButtonState & UISTATE_SELECTED) != 0 ) {
+		if(IsEnabled() && (m_uButtonState & UISTATE_SELECTED) != 0 ) 
+		{
+			if(m_dwSelectedBkColor != 0) 
+				CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwSelectedBkColor));
+
 			if ((m_uButtonState & UISTATE_HOT) != 0)
 			{
-				if (DrawImage(hDC, m_diSelectedHot)) goto Label_ForeImage;
+				if (DrawImage(hDC, m_diSelectedHot)) 
+					goto Label_ForeImage;
 			}
 
-			if( DrawImage(hDC, m_diSelected) ) goto Label_ForeImage;
-			else if(m_dwSelectedBkColor != 0) {
-				CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwSelectedBkColor));
-				goto Label_ForeImage;
-			}	
+			if( DrawImage(hDC, m_diSelected) ) 
+				goto Label_ForeImage;				
 		}
 
 		UINT uSavedState = m_uButtonState;

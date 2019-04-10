@@ -82,6 +82,8 @@
 76.支持设置combo的下拉框的边框大小和颜色<br />
 77.调整Button按钮的hotbkcolor和hotforeimage的绘制，让他们能够正常叠加<br />
 78.给button按钮增加hotbordercolor属性，能够设置鼠标悬停时按钮的边框颜色<br />
+79.调整button按钮的hot背景色与背景图的叠加，当处于鼠标悬停状态并且设置的有Hotbkcolor时，先绘制Hotbkcolor，再在上层绘制背景图<br />
+80.调整option控件的选中背景色与背景图的叠加，当处于选中状态时，先绘制SelectedBkColor，再在上层绘制背景图<br />
 
 <br />
 其他改动：<br />

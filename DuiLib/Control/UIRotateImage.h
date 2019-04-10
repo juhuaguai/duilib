@@ -19,6 +19,8 @@ namespace DuiLib
 		void	SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 		void	SetVisible(bool bVisible = true );
 
+		void SetPos(RECT rc, bool bNeedInvalidate = true);
+
 		void	SetTimeInterval(const int& nValue);
 		int		GetTimeInterval();
 		void	SetEachTimeAngle(const int& nValue);
@@ -52,5 +54,7 @@ namespace DuiLib
 		IStream* m_pStream;
 		CDuiString m_sBkImage;
 		bool m_bIsPlaying;				//是否正在旋转
+
+		PointF m_centerPos;
 	};
 }

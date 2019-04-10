@@ -633,8 +633,13 @@ namespace DuiLib
 			if (DrawImage(hDC, m_diPushedFore)) return;
 			else goto Label_ForeImage;
 		}
-		else if( (m_uButtonState & UISTATE_HOT) != 0 ) {
-			if( GetFadeAlphaDelta() > 0 ) {
+		else if( (m_uButtonState & UISTATE_HOT) != 0 ) 
+		{
+			if(m_dwHotBkColor != 0) 
+				CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwHotBkColor));
+
+			if( GetFadeAlphaDelta() > 0 ) 
+			{
 				if( m_uFadeAlpha == 0 ) {
 					m_diHot.uFade = 255;
 					DrawImage(hDC, m_diHot);
@@ -646,13 +651,12 @@ namespace DuiLib
 					DrawImage(hDC, m_diHot);
 				}
 			}
-			else {
+			else
+			{
 				if (!DrawImage(hDC, m_diHot))
 					DrawImage(hDC, m_diNormal);
 			}
-
-			if(m_dwHotBkColor != 0) 
-				CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwHotBkColor));
+			
 			if (DrawImage(hDC, m_diHotFore))
 				return;
 			
