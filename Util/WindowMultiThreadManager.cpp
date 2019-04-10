@@ -16,7 +16,7 @@ CWindowMultiThreadManager::~CWindowMultiThreadManager(void)
 DWORD CWindowMultiThreadManager::BeginThread(PThreadFuncCallback pFun,ULONG_PTR pParam)
 {
 	unsigned int dwThrdId = 0;
-	HANDLE hThread = (HANDLE)_beginthreadex(NULL,0,(unsigned int (__stdcall *)(void *))WindowMultiThreadManagerThreadFunc,this,0,&dwThrdId);
+	HANDLE hThread = (HANDLE)_beginthreadex(NULL,0,(unsigned int (__stdcall *)(void *))WindowMultiThreadManagerThreadFunc,this,CREATE_SUSPENDED,&dwThrdId);
 	
 	{
 		CKAutoLock theLock(&m_lockThreadHandleMap);
@@ -29,12 +29,13 @@ DWORD CWindowMultiThreadManager::BeginThread(PThreadFuncCallback pFun,ULONG_PTR 
 		m_mapThreadParam[dwThrdId] = pParam;
 	}	
 
+	ResumeThread(hThread);
+
 	return dwThrdId;
 }
 
 PThreadFuncCallback CWindowMultiThreadManager::GetThreadFunc(const DWORD& dwThreadId)
 {
-	Sleep(0);
 	CKAutoLock theLock(&m_lockThreadFuncMap);
 	map<DWORD,PThreadFuncCallback>::iterator itrFind1 = m_mapThreadFunc.find(dwThreadId);
 	if (itrFind1!=m_mapThreadFunc.end())
@@ -44,7 +45,6 @@ PThreadFuncCallback CWindowMultiThreadManager::GetThreadFunc(const DWORD& dwThre
 }
 ULONG_PTR CWindowMultiThreadManager::GetThreadParam(const DWORD& dwThreadId)
 {
-	Sleep(0);
 	CKAutoLock theLock(&m_lockThreadParamMap);
 	map<DWORD,ULONG_PTR>::iterator itrFind2 = m_mapThreadParam.find(dwThreadId);
 	if (itrFind2!=m_mapThreadParam.end())
