@@ -2126,7 +2126,7 @@ void CRichEditUI::OnTxNotify(DWORD iNotify, void *pv)
 				//抛出一个notify消息更加方便处理link
 				ENLINK* pEnLink = (ENLINK *)pv;
 				if (pEnLink->msg == WM_LBUTTONDOWN)
-					GetManager()->SendNotify(this, DUI_MSGTYPE_LINK);
+					GetManager()->SendNotify(this, DUI_MSGTYPE_LINK,0,(LPARAM) pv);
 
 				LONG nId =  GetWindowLong(this->GetManager()->GetPaintWindow(), GWL_ID);   
 				NMHDR  *phdr = (NMHDR *)pv;   
