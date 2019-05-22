@@ -96,4 +96,13 @@
 7.收集了一些来自网络的duilib相关的代码，分享出来供大家参考使用<br />
 8.提交个扩展容器，支出鼠标移入移出。移入移出时容器背景图和背景色可以自动切换，同时可以指定子控件是否跟随移入移出来显示隐藏。<br />
 9.备注下，滚动条可以指定每次滚动的幅度，例如：hscrollbarstyle="height=&quot;0&quot; scrollunit=&quot;726&quot;" 指定了滚动条宽度为0，每次滚轮滚动幅度为726像素<br />
-10.给两个demo引入系统自带的CS_DROPSHADOW的边框阴影测试<br />
+10.给两个demo引入系统自带的CS_DROPSHADOW的边框阴影测试，需要系统开启默认阴影效果，代码：SystemParametersInfo(SPI_SETDROPSHADOW,0, (PVOID)TRUE, 0);<br />
+11.增加了窗口阴影属性，不使用额外窗口，而是在当前窗口边框直接绘制。bin/Res目录下有shadowdemo.xml可以看。详细说明：<br />
+   1).需要layeredimage属性支持，即需要启用分层窗口(异形窗口)。<br />
+   2).通过shadowsize来控制阴影的宽度，暂时没有做四边阴影分开设置的处理，四边的阴影宽度都是相同的。<br />
+   3).阴影部分在caption区域也不会响应拖动，如有需要可自行修改源码。<br />
+   4).窗口的尺寸是包含了阴影区域的。<br />
+   5).通过shadowcolor来设置阴影渐变终止色。即阴影是从0x00000000渐变到shadowcolor的值，具体代码可以查看paintshadow函数。<br />
+   6).通过shadowfocusscales来设置窗口阴影渐变效果缩放。0-1之间,值越大,阴影颜色越深。当为默认值-1时,将自动计算合适的值(计算方法:(100-shadowsize)/100,结果小于0时取0,大于1时取1)。<br />
+   7).因为有些窗口原先不是分层窗口，上面的文字,border等都是gdi绘制，其像素没有alpha通道，启用分层窗口后会变透明，鼠标也会穿透。为了便于使用阴影窗口，引入了nolayeredpadding属性。<br />
+      通过nolayeredpadding来设置非分层区域的外边距。意思是，窗口大小减去外边距之后的矩形区域，其像素将被强制修复alpha为255。这样就避免透明和鼠标穿透了。<br />

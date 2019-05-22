@@ -239,6 +239,13 @@ public:
 	BYTE GetOpacity() const;
 	void SetOpacity(BYTE nOpacity);
 
+	int GetShadowSize() const;
+	void SetShadowSize(int nSize);
+	DWORD GetShadowColor() const;
+	void SetShadowColor(DWORD dwColor);
+	float GetShadowFocusScales() const;
+	void SetShadowFocusScales(float fValue);
+
 	bool IsLayered();
 	void SetLayered(bool bLayered);
 	RECT& GetLayeredInset();
@@ -247,6 +254,9 @@ public:
 	void SetLayeredOpacity(BYTE nOpacity);
 	CDuiString GetLayeredImage();
 	void SetLayeredImage(const CDuiString& strImage);
+
+	RECT& GetNoLayeredPaddingRect();
+	void SetNoLayeredPaddingRect(RECT& rcValue);
 
     static HINSTANCE GetInstance();
     static CDuiString GetInstancePath();
@@ -421,6 +431,8 @@ private:
 	void AdjustImagesHSL();
 	void PostAsyncNotify();
 
+	void PaintShadow();
+
 private:
 	CDuiString m_sName;
     HWND m_hWndPaint;
@@ -459,12 +471,18 @@ private:
     bool m_bFocusNeeded;
     //bool m_bOffscreenPaint;
 
+	int m_nShadowSize;
+	DWORD m_dwShadowColor;
+	float m_fShadowFocusScales;
+	bool m_bShadowChanged;
+
 	BYTE m_nOpacity;
 	bool m_bLayered;
-	RECT m_rcLayeredInset;
+	//RECT m_rcLayeredInset;
 	bool m_bLayeredChanged;
 	RECT m_rcLayeredUpdate;
 	TDrawInfo m_diLayered;
+	RECT m_rcNoLayeredPadding;
 
     bool m_bMouseTracking;
     bool m_bMouseCapture;

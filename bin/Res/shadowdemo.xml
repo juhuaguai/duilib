@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<Window size="540,540" caption="0,0,0,100" showdirty="false" layeredimage="" shadowsize="10">
+	<Font shared="true" id="0" name="微软雅黑" size="14" bold="false" default="true"/>
+    <HorizontalLayout bkcolor="fffffff0">
+    </HorizontalLayout>
+</Window>

@@ -427,7 +427,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="3"
+				Optimization="0"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;UILIB_STATIC;_USE_GDIPLUS;_CRT_SECURE_NO_WARNINGS"
@@ -437,7 +437,7 @@
 				PrecompiledHeaderFile=".\Build\Release_u/DuiLib.pch"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

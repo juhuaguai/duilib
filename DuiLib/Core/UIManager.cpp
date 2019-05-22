@@ -118,6 +118,10 @@ m_bIsPainting(false),
 m_bUsedVirtualWnd(false),
 m_bAsyncNotifyPosted(false),
 m_bForceUseSharedRes(false),
+m_nShadowSize(0),
+m_dwShadowColor(0xFF000000),
+m_fShadowFocusScales(-1),
+m_bShadowChanged(false),
 m_nOpacity(0xFF),
 m_bLayered(false),
 m_bLayeredChanged(false)
@@ -166,7 +170,8 @@ m_bLayeredChanged(false)
     m_szRoundCorner.cx = m_szRoundCorner.cy = 0;
     ::ZeroMemory(&m_rcSizeBox, sizeof(m_rcSizeBox));
     ::ZeroMemory(&m_rcCaption, sizeof(m_rcCaption));
-	::ZeroMemory(&m_rcLayeredInset, sizeof(m_rcLayeredInset));
+	::ZeroMemory(&m_rcNoLayeredPadding, sizeof(m_rcNoLayeredPadding));	
+	//::ZeroMemory(&m_rcLayeredInset, sizeof(m_rcLayeredInset));
 	::ZeroMemory(&m_rcLayeredUpdate, sizeof(m_rcLayeredUpdate));
     m_ptLastMousePos.x = m_ptLastMousePos.y = -1;
 
@@ -504,6 +509,49 @@ void CPaintManagerUI::SetInitSize(int cx, int cy)
     }
 }
 
+int CPaintManagerUI::GetShadowSize() const
+{
+	return m_nShadowSize;
+}
+void CPaintManagerUI::SetShadowSize(int nSize)
+{
+	if (m_nShadowSize!=nSize)
+	{
+		m_nShadowSize = nSize;
+		m_bShadowChanged = true;
+
+		Invalidate();
+	}	
+}
+DWORD CPaintManagerUI::GetShadowColor() const
+{
+	return m_dwShadowColor;
+}
+void CPaintManagerUI::SetShadowColor(DWORD dwColor)
+{
+	if (m_dwShadowColor != dwColor)
+	{
+		m_dwShadowColor = dwColor;
+		m_bShadowChanged = true;
+
+		Invalidate();
+	}	
+}
+float CPaintManagerUI::GetShadowFocusScales() const
+{
+	return m_fShadowFocusScales;
+}
+void CPaintManagerUI::SetShadowFocusScales(float fValue)
+{
+	if (m_fShadowFocusScales != fValue)
+	{
+		m_fShadowFocusScales = fValue;
+		m_bShadowChanged = true;
+
+		Invalidate();
+	}
+}
+
 RECT& CPaintManagerUI::GetSizeBox()
 {
     return m_rcSizeBox;
@@ -648,16 +696,25 @@ void CPaintManagerUI::SetLayered(bool bLayered)
 	}
 }
 
-RECT& CPaintManagerUI::GetLayeredInset()
-{
-	return m_rcLayeredInset;
-}
+// RECT& CPaintManagerUI::GetLayeredInset()
+// {
+// 	return m_rcLayeredInset;
+// }
 
-void CPaintManagerUI::SetLayeredInset(RECT& rcLayeredInset)
+// void CPaintManagerUI::SetLayeredInset(RECT& rcLayeredInset)
+// {
+// 	m_rcLayeredInset = rcLayeredInset;
+// 	m_bLayeredChanged = true;
+// 	Invalidate();
+// }
+
+RECT& CPaintManagerUI::GetNoLayeredPaddingRect()
 {
-	m_rcLayeredInset = rcLayeredInset;
-	m_bLayeredChanged = true;
-	Invalidate();
+	return m_rcNoLayeredPadding;
+}
+void CPaintManagerUI::SetNoLayeredPaddingRect(RECT& rcValue)
+{
+	m_rcNoLayeredPadding = rcValue;
 }
 
 BYTE CPaintManagerUI::GetLayeredOpacity()
@@ -883,8 +940,8 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 					::EndPaint(m_hWndPaint, &ps);
 					return true;
 				}
-				if( rcPaint.right > rcClient.right ) rcPaint.right = rcClient.right;
-				if( rcPaint.bottom > rcClient.bottom ) rcPaint.bottom = rcClient.bottom;
+				if( rcPaint.right > rcClient.right ) rcPaint.right = rcClient.right-GetShadowSize();
+				if( rcPaint.bottom > rcClient.bottom ) rcPaint.bottom = rcClient.bottom-GetShadowSize();
 				::ZeroMemory(&m_rcLayeredUpdate, sizeof(m_rcLayeredUpdate));
 			}
 			else {
@@ -911,10 +968,11 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                         m_hbmpOffscreen = NULL;
                         m_hbmpBackground = NULL;
 						if( m_bLayered ) {
-							rcRoot.left += m_rcLayeredInset.left;
-							rcRoot.top += m_rcLayeredInset.top;
-							rcRoot.right -= m_rcLayeredInset.right;
-							rcRoot.bottom -= m_rcLayeredInset.bottom;
+							rcRoot.left += GetShadowSize();
+							rcRoot.top += GetShadowSize();
+							rcRoot.right -= GetShadowSize();
+							rcRoot.bottom -= GetShadowSize();
+							m_bShadowChanged = true;
 						}
 						m_pRoot->SetPos(rcRoot, true);
                     }
@@ -946,11 +1004,16 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 				RECT rcRoot = rcClient;
 				if( m_pOffscreenBits )
 					::ZeroMemory(m_pOffscreenBits, (rcRoot.right - rcRoot.left) * (rcRoot.bottom - rcRoot.top) * 4);
-				rcRoot.left += m_rcLayeredInset.left;
-				rcRoot.top += m_rcLayeredInset.top;
-				rcRoot.right -= m_rcLayeredInset.right;
-				rcRoot.bottom -= m_rcLayeredInset.bottom;
+				//rcRoot.left += m_rcLayeredInset.left;
+				//rcRoot.top += m_rcLayeredInset.top;
+				//rcRoot.right -= m_rcLayeredInset.right;
+				//rcRoot.bottom -= m_rcLayeredInset.bottom;
+				rcRoot.left += GetShadowSize();
+				rcRoot.top += GetShadowSize();
+				rcRoot.right -= GetShadowSize();
+				rcRoot.bottom -= GetShadowSize();
 				m_pRoot->SetPos(rcRoot, true);
+				m_bShadowChanged = true;
 			}
             //
             // Render screen
@@ -1063,9 +1126,16 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 				BYTE R = 0;
 				BYTE G = 0;
 				BYTE B = 0;
+				RECT rcNoLayered = { 0 };
+				::GetWindowRect(m_hWndPaint, &rcNoLayered);
+				rcNoLayered.left = GetNoLayeredPaddingRect().left;
+				rcNoLayered.top = GetNoLayeredPaddingRect().top;
+				rcNoLayered.right = rcNoLayered.right - GetNoLayeredPaddingRect().right;
+				rcNoLayered.bottom = rcNoLayered.bottom - GetNoLayeredPaddingRect().bottom;
 				for( LONG y = rcClient.bottom - rcPaint.bottom; y < rcClient.bottom - rcPaint.top; ++y ) {
 					for( LONG x = rcPaint.left; x < rcPaint.right; ++x ) {
 						pOffscreenBits = m_pOffscreenBits + y * dwWidth + x;
+#if 0
 						if (*pOffscreenBits!=0)
 						{
 							A=(BYTE)((*pOffscreenBits) >> 24);
@@ -1076,17 +1146,51 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 							B = (BYTE)(*pOffscreenBits);
 							*pOffscreenBits = RGB(B, G, R) + ((DWORD)A << 24);
 						}
+#else
+						POINT ptXY = {x,y};
+						if (PtInRect(&rcNoLayered,ptXY))
+						{
+							if (*pOffscreenBits!=0)
+							{
+								A=255;
+								R = (BYTE)((*pOffscreenBits) >> 16);
+								G = (BYTE)((*pOffscreenBits) >> 8);
+								B = (BYTE)(*pOffscreenBits);
+								*pOffscreenBits = RGB(B, G, R) + ((DWORD)A << 24);
+							}							
+						}
+						else
+						{
+							if (*pOffscreenBits!=0)
+							{
+								A=(BYTE)((*pOffscreenBits) >> 24);
+								if (A==0)
+									A=255;
+								R = (BYTE)((*pOffscreenBits) >> 16);
+								G = (BYTE)((*pOffscreenBits) >> 8);
+								B = (BYTE)(*pOffscreenBits);
+								*pOffscreenBits = RGB(B, G, R) + ((DWORD)A << 24);
+							}
+						}						
+#endif
 					}
 				}
 
-                RECT rcWnd = { 0 };
-                ::GetWindowRect(m_hWndPaint, &rcWnd);
+				if (GetShadowSize()>0)
+				{
+					PaintShadow();
+				}
+				else
+				{
+					RECT rcWnd = { 0 };
+					::GetWindowRect(m_hWndPaint, &rcWnd);
 
-                BLENDFUNCTION bf = { AC_SRC_OVER, 0, m_nOpacity, AC_SRC_ALPHA };
-                POINT ptPos   = { rcWnd.left, rcWnd.top };
-                SIZE sizeWnd  = { dwWidth, dwHeight };
-                POINT ptSrc   = { 0, 0 };
-                g_fUpdateLayeredWindow(m_hWndPaint, m_hDcPaint, &ptPos, &sizeWnd, m_hDcOffscreen, &ptSrc, 0, &bf, ULW_ALPHA);
+					BLENDFUNCTION bf = { AC_SRC_OVER, 0, m_nOpacity, AC_SRC_ALPHA };
+					POINT ptPos   = { rcWnd.left, rcWnd.top };
+					SIZE sizeWnd  = { dwWidth, dwHeight };
+					POINT ptSrc   = { 0, 0 };
+					g_fUpdateLayeredWindow(m_hWndPaint, m_hDcPaint, &ptPos, &sizeWnd, m_hDcOffscreen, &ptSrc, 0, &bf, ULW_ALPHA);
+				}
             }
             else 
                 ::BitBlt(m_hDcPaint, rcPaint.left, rcPaint.top, rcPaint.right - rcPaint.left,
@@ -3140,6 +3244,22 @@ void CPaintManagerUI::SetWindowAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         int cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr); 
         SetInitSize(cx, cy);
     } 
+	else if( _tcsicmp(pstrName, _T("shadowsize")) == 0 ) {
+		SetShadowSize(_ttoi(pstrValue));
+	}
+	else if( _tcsicmp(pstrName, _T("shadowcolor")) == 0 ) {
+		if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+		LPTSTR pstr = NULL;
+		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		SetShadowColor(clrColor);
+	}
+	else if( _tcsicmp(pstrName, _T("shadowfocusscales")) == 0 ) {
+#ifdef UNICODE
+		SetShadowFocusScales(_wtof(pstrValue));
+#else
+		SetShadowFocusScales(atof(pstrValue));
+#endif
+	}
     else if( _tcsicmp(pstrName, _T("sizebox")) == 0 ) {
         RECT rcSizeBox = { 0 };
         LPTSTR pstr = NULL;
@@ -3191,6 +3311,15 @@ void CPaintManagerUI::SetWindowAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcscmp(pstrName, _T("layeredimage")) == 0 ) {
         SetLayeredImage(pstrValue);
     } 
+	else if( _tcsicmp(pstrName, _T("nolayeredpadding")) == 0 ) {
+		RECT rcValue = { 0 };
+		LPTSTR pstr = NULL;
+		rcValue.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
+		rcValue.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
+		rcValue.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
+		rcValue.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+		SetNoLayeredPaddingRect(rcValue);
+	}
     else if( _tcsicmp(pstrName, _T("disabledfontcolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
         LPTSTR pstr = NULL;
@@ -3625,6 +3754,69 @@ bool CPaintManagerUI::RemoveTranslateAccelerator(ITranslateAccelerator *pTransla
 void CPaintManagerUI::UsedVirtualWnd(bool bUsed)
 {
 	m_bUsedVirtualWnd = bUsed;
+}
+
+void CPaintManagerUI::PaintShadow()
+{
+	RECT rcWnd = { 0 };
+	::GetWindowRect(m_hWndPaint, &rcWnd);
+	SIZE sizeWnd  = { rcWnd.right-rcWnd.left, rcWnd.bottom-rcWnd.top };
+
+	if (m_bShadowChanged)
+	{
+		Graphics nGraphics(m_hDcOffscreen);
+		nGraphics.SetPageUnit(UnitPixel); 
+
+		int nShadowSize = GetShadowSize();
+		int nDiameter = nShadowSize*2;
+		Color ShadowColor(m_dwShadowColor);
+
+		GraphicsPath ShadowPath;
+		ShadowPath.AddArc(0,0,nDiameter,nDiameter,180,90); // 左上角圆弧
+		ShadowPath.AddLine(nShadowSize,0,sizeWnd.cx-nShadowSize,0); // 上边
+
+		ShadowPath.AddArc(sizeWnd.cx-nDiameter,0, nDiameter,nDiameter,270,90); // 右上角圆弧
+		ShadowPath.AddLine(sizeWnd.cx,nShadowSize,sizeWnd.cx,sizeWnd.cy-nShadowSize);// 右边
+
+		ShadowPath.AddArc(sizeWnd.cx-nDiameter,sizeWnd.cy-nDiameter, nDiameter,nDiameter,0,90); // 右下角圆弧
+		ShadowPath.AddLine(sizeWnd.cx-nShadowSize,sizeWnd.cy, nShadowSize,sizeWnd.cy); // 下边
+
+		ShadowPath.AddArc(0,sizeWnd.cy-nDiameter, nDiameter,nDiameter,90,90);  // 左下角圆弧
+		ShadowPath.AddLine(0,nShadowSize, 0, sizeWnd.cy-nShadowSize);	//左边
+
+		// 获得阴影区域
+		Region contentRegion(RectF(nShadowSize,nShadowSize,sizeWnd.cx-nDiameter,sizeWnd.cy-nDiameter));  //利用内容的路径建立区域
+		Region ShadowRegion(&ShadowPath);  //利用阴影路径建立阴影的区域
+
+		ShadowRegion.Exclude(&contentRegion); // 区域求差，这样就得出了纯粹的阴影区域，排除了阴影区域和按钮区域重合的部分。
+
+		// 初始化渐变画刷
+		PathGradientBrush brush(&ShadowPath);
+		brush.SetCenterColor(ShadowColor); // 这里利用的是路径渐变画刷
+		Color colors(0, 0, 0, 0);
+		int nCount = 1;
+		brush.SetSurroundColors(&colors,&nCount);
+
+		float fScales = GetShadowFocusScales();
+		if (fScales == -1)
+		{
+			fScales = ((float)(100.0-nShadowSize))/100.0;
+			if (fScales<0)
+				fScales=0;
+			else if (fScales>1)
+				fScales=1;
+		}
+		brush.SetFocusScales(fScales, fScales);  //对渐变效果进行调整，使其更加自然。这句的实际作用是对渐变效果进行缩放。参数是横纵两个坐标轴的缩放比例。
+
+		nGraphics.FillRegion(&brush, &ShadowRegion);
+
+		m_bShadowChanged = false;
+	}	
+
+	BLENDFUNCTION bf = { AC_SRC_OVER, 0, m_nOpacity, AC_SRC_ALPHA };
+	POINT ptPos   = { rcWnd.left, rcWnd.top };
+	POINT ptSrc   = { 0, 0 };
+	g_fUpdateLayeredWindow(m_hWndPaint, m_hDcPaint, &ptPos, &sizeWnd, m_hDcOffscreen, &ptSrc, 0, &bf, ULW_ALPHA);
 }
 
 } // namespace DuiLib

@@ -17,6 +17,10 @@
 		<Attribute name="showdirty" default="false" type="BOOL" comment="绘制脏矩形(屏幕上更新的区域被称为脏矩形)"/>
 		<Attribute name="layeredimage" default="" type="STRING" comment="启用分层窗口绘制,只要有该属性,即便值为空,也会启用"/>
 		<Attribute name="noactivate" default="FALSE" type="BOOL" comment="为true时,点击客户区不会激活窗口"/>
+		<Attribute name="shadowsize" default="0" type="INT" comment="窗口阴影宽度，此属性需要配合layeredimage来使用.注意:阴影部分在caption区域也不响应拖动,如有需要可自行修改源码.窗口大小包含了阴影区域"/>
+		<Attribute name="shadowcolor" default="0xFF000000" type="DWORD" comment="窗口阴影颜色，此颜色为渐变的终止色,如果需要调整渐变效果可以设置shadowfocusscales属性"/>
+		<Attribute name="shadowfocusscales" default="-1" type="FLOAT" comment="窗口阴影渐变效果缩放.0-1之间,值越大,颜色越深.当为默认值-1时,将自动计算合适的值(计算方法:(100-shadowsize)/100,结果小于0时取0,大于1时取1)."/>
+		<Attribute name="nolayeredpadding" default="0,0,0,0" type="RECT" comment="非分层区域的外边距.窗口大小减去外边距,就是非分层区域,非分层区域的alpha值将被强制为255,用来避免gdi绘制的部分缺失alpha导致的穿透(比如文字,border等)"/>
 	</Window>
 	<ChildLayout parent="Container" >
 		<Attribute name="xmlfile" default="" type="STRING" comment="子窗体XML布局文件"/>
