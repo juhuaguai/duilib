@@ -943,6 +943,10 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 				if( rcPaint.right > rcClient.right ) rcPaint.right = rcClient.right-GetShadowSize();
 				if( rcPaint.bottom > rcClient.bottom ) rcPaint.bottom = rcClient.bottom-GetShadowSize();
 				::ZeroMemory(&m_rcLayeredUpdate, sizeof(m_rcLayeredUpdate));
+				if (rcPaint.left==rcClient.left && rcPaint.top==rcClient.top && rcPaint.right==rcClient.right && rcPaint.bottom==rcClient.bottom)
+				{
+					m_bShadowChanged = true;
+				}
 			}
 			else {
 				if( !::GetUpdateRect(m_hWndPaint, &rcPaint, FALSE) ) return true;
@@ -1126,12 +1130,14 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 				BYTE R = 0;
 				BYTE G = 0;
 				BYTE B = 0;
-				RECT rcNoLayered = { 0 };
+				RECT rcNoLayered = { 0,0,0,0 };
 				::GetWindowRect(m_hWndPaint, &rcNoLayered);
+				int wid = rcNoLayered.right-rcNoLayered.left;
+				int hei = rcNoLayered.bottom-rcNoLayered.top;
 				rcNoLayered.left = GetNoLayeredPaddingRect().left;
 				rcNoLayered.top = GetNoLayeredPaddingRect().top;
-				rcNoLayered.right = rcNoLayered.right - GetNoLayeredPaddingRect().right;
-				rcNoLayered.bottom = rcNoLayered.bottom - GetNoLayeredPaddingRect().bottom;
+				rcNoLayered.right = wid - GetNoLayeredPaddingRect().right;
+				rcNoLayered.bottom = hei - GetNoLayeredPaddingRect().bottom;
 				for( LONG y = rcClient.bottom - rcPaint.bottom; y < rcClient.bottom - rcPaint.top; ++y ) {
 					for( LONG x = rcPaint.left; x < rcPaint.right; ++x ) {
 						pOffscreenBits = m_pOffscreenBits + y * dwWidth + x;
@@ -1148,7 +1154,10 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 						}
 #else
 						POINT ptXY = {x,y};
-						if (PtInRect(&rcNoLayered,ptXY))
+						bool bNoLayeredPadding = true;
+						if (GetNoLayeredPaddingRect().left==0 && GetNoLayeredPaddingRect().right==0 && GetNoLayeredPaddingRect().top==0 && GetNoLayeredPaddingRect().bottom==0)
+							bNoLayeredPadding = false;
+						if (bNoLayeredPadding && PtInRect(&rcNoLayered,ptXY))
 						{
 							if (*pOffscreenBits!=0)
 							{
