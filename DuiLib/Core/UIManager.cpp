@@ -716,6 +716,13 @@ void CPaintManagerUI::SetNoLayeredPaddingRect(RECT& rcValue)
 {
 	m_rcNoLayeredPadding = rcValue;
 }
+bool CPaintManagerUI::IsHaveNoLayeredPaddingRect()
+{
+	if (GetNoLayeredPaddingRect().left==0 && GetNoLayeredPaddingRect().right==0 && GetNoLayeredPaddingRect().top==0 && GetNoLayeredPaddingRect().bottom==0)
+		return false;
+
+	return true;
+}
 
 BYTE CPaintManagerUI::GetLayeredOpacity()
 {
@@ -1124,6 +1131,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             if( m_bLayered ) {
 				DWORD dwWidth = rcClient.right - rcClient.left;
 				DWORD dwHeight = rcClient.bottom - rcClient.top;
+				bool bNoLayeredPadding = IsHaveNoLayeredPaddingRect();
 
 				COLORREF* pOffscreenBits = NULL;
 				BYTE A = 0;
@@ -1154,9 +1162,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 						}
 #else
 						POINT ptXY = {x,y};
-						bool bNoLayeredPadding = true;
-						if (GetNoLayeredPaddingRect().left==0 && GetNoLayeredPaddingRect().right==0 && GetNoLayeredPaddingRect().top==0 && GetNoLayeredPaddingRect().bottom==0)
-							bNoLayeredPadding = false;
+						
 						if (bNoLayeredPadding && PtInRect(&rcNoLayered,ptXY))
 						{
 							if (*pOffscreenBits!=0)

@@ -257,6 +257,7 @@ public:
 
 	RECT& GetNoLayeredPaddingRect();
 	void SetNoLayeredPaddingRect(RECT& rcValue);
+	bool IsHaveNoLayeredPaddingRect();
 
     static HINSTANCE GetInstance();
     static CDuiString GetInstancePath();
