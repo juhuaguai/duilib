@@ -125,6 +125,7 @@
 		<Attribute name="childpadding" default="0" type="INT" comment="子控件之间的额外距离,如(4)"/>
 		<Attribute name="sepheight" default="0" type="INT" comment="分隔符高度,正负表示分隔符在顶部还是底部,如(4)"/>
 		<Attribute name="sepimm" default="false" type="BOOL" comment="拖动分隔符是否立即改变大小,如(false)"/>
+		<Attribute name="childalign" default="left" type="STRING" comment="垂直布局中子控件在水平方向上的默认位置，left表示默认靠左然后再按照垂直布局排版，center表示水平方向默认居中，right表示水平方向默认靠右"/>
 	</VerticalLayout>
 	<HorizontalLayout parent="Container" notifies="setfocus killfocus timer menu windowinit(root)">
 		<Attribute name="name" default="" type="STRING" comment="控件名字，同一窗口内必须唯一，如(testbtn)"/>
@@ -161,6 +162,7 @@
 		<Attribute name="childpadding" default="0" type="INT" comment="子控件之间的额外距离,如(4)"/>
 		<Attribute name="sepwidth" default="0" type="INT" comment="分隔符宽,正负表示分隔符在左边还是右边,如(-4)"/>
 		<Attribute name="sepimm" default="false" type="BOOL" comment="拖动分隔符是否立即改变大小,如(false)"/>
+		<Attribute name="childvalign" default="top" type="STRING" comment="水平布局中子控件在垂直方向上的默认位置，top表示默认靠上然后再按照水平布局排版，vcenter表示垂直方向默认居中，bottom表示垂直方向默认靠底部"/>
 	</HorizontalLayout>
 	<TileLayout parent="Container" notifies="setfocus killfocus timer menu windowinit(root)">
 		<Attribute name="name" default="" type="STRING" comment="控件名字，同一窗口内必须唯一，如(testbtn)"/>
