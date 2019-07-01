@@ -1223,9 +1223,24 @@ void CTxtWinHost::SetParaFormat(PARAFORMAT2 &p)
 //
 //
 
-CRichEditUI::CRichEditUI() : m_pTwh(NULL), m_bVScrollBarFixing(false), m_bWantTab(true), m_bWantReturn(true), 
-    m_bWantCtrlReturn(true), m_bTransparent(true), m_bRich(true), m_bReadOnly(false), m_bWordWrap(false), m_dwTextColor(0), m_iFont(-1), 
-	m_iLimitText(cInitTextMax), m_lTwhStyle(ES_MULTILINE), m_bCaret(true),m_bDrawCaret(true), m_bInited(false)
+CRichEditUI::CRichEditUI() 
+		: m_pTwh(NULL),
+		m_bVScrollBarFixing(false),
+		m_bWantTab(true),
+		m_bWantReturn(true), 
+		m_bWantCtrlReturn(true),
+		m_bTransparent(true), 
+		m_bRich(true), 
+		m_bReadOnly(false), 
+		m_bWordWrap(false), 
+		m_dwTextColor(0), 
+		m_iFont(-1), 
+		m_iLimitText(cInitTextMax),
+		m_lTwhStyle(ES_MULTILINE),
+		m_bCaret(true),
+		m_bDrawCaret(true),
+		m_bInited(false),
+		m_dwTipValueColor(0xFF8E8E8E)
 {
 	::ZeroMemory(&m_rcTextPadding, sizeof(m_rcTextPadding));
 }
@@ -1383,6 +1398,9 @@ DWORD CRichEditUI::GetTextColor()
 
 void CRichEditUI::SetTextColor(DWORD dwTextColor)
 {
+	if (m_dwTextColor == dwTextColor)
+		return;
+
 	if (dwTextColor)
 	{
 		BYTE A = dwTextColor>>24;
@@ -1461,6 +1479,38 @@ void CRichEditUI::SetText(const CDuiString& strText)
 	if (bTextChanged)
 		GetManager()->SendNotify(this, DUI_MSGTYPE_TEXTCHANGED);	
 }
+
+DWORD CRichEditUI::GetTipValueTextColor()
+{
+	return m_dwTipValueColor;
+}
+void CRichEditUI::SetTipValueTextColor(DWORD dwTextColor)
+{
+	if (m_dwTipValueColor == dwTextColor)
+		return;
+
+	if (dwTextColor)
+	{
+		BYTE A = dwTextColor>>24;
+		if (A==0)
+			dwTextColor += 0xFF000000;
+	}
+	m_dwTipValueColor = dwTextColor;
+	Invalidate();
+}
+CDuiString CRichEditUI::GetTipValueText() const
+{
+	return m_strTipValue;
+}
+void CRichEditUI::SetTipValueText(const CDuiString& strText)
+{
+	if (m_strTipValue==strText)
+		return;
+
+	m_strTipValue = strText;
+	Invalidate();
+}
+
 
 CDuiString CRichEditUI::GetFocusedImage()
 {
@@ -2546,6 +2596,13 @@ bool CRichEditUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl
         }
     }
 
+	if (GetTextLength() == 0 && GetTipValueText().IsEmpty()==false)
+	{
+		RECT rc;
+		m_pTwh->GetControlRect(&rc);
+		CRenderEngine::DrawText(hDC, m_pManager, rc, GetTipValueText().GetData(), GetTipValueTextColor(), m_iFont, DT_LEFT|DT_VCENTER);
+	}
+
     if( m_items.GetSize() > 0 ) {
         RECT rc = m_rcItem;
         rc.left += m_rcInset.left;
@@ -2727,6 +2784,14 @@ void CRichEditUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 			SetCaret(true);
 		else
 			SetCaret(false);
+	}
+	else if( _tcscmp(pstrName, _T("tipvalue")) == 0 ) SetTipValueText(pstrValue);
+	else if( _tcscmp(pstrName, _T("tipcolor")) == 0 ) {
+		while( *pstrValue > _T('\0') && *pstrValue <= _T(' ') ) pstrValue = ::CharNext(pstrValue);
+		if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+		LPTSTR pstr = NULL;
+		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		SetTipValueTextColor(clrColor);
 	}
     else CContainerUI::SetAttribute(pstrName, pstrValue);
 }

@@ -96,6 +96,10 @@ public:
 
 	RECT GetTextPadding() const;
 	void SetTextPadding(RECT rc);
+	DWORD GetTipValueTextColor();
+	void SetTipValueTextColor(DWORD dwTextColor);
+	CDuiString GetTipValueText() const;
+	void SetTipValueText(const CDuiString& strText);
 
 	void SetMultLine(bool bMultLine = true);
 	bool GetMultLine();
@@ -175,6 +179,8 @@ protected:
 	bool m_bDrawCaret;
 	bool m_bInited;
 	RECT	m_rcTextPadding;
+	CDuiString m_strTipValue;
+	DWORD m_dwTipValueColor;
 
 	TDrawInfo m_diFocused;
 	TDrawInfo m_diDisabled;
