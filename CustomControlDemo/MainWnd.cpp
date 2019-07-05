@@ -40,8 +40,8 @@ LRESULT CMainWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 void JSCallTest(CWebBrowserUI* pBrowser, DISPPARAMS *pDispParams,/* [out] */ VARIANT *pVarResult,/* [out] */ EXCEPINFO *pExcepInfo,/* [out] */ UINT *puArgErr)
 {
 	CDuiString strMsg;
-	strMsg.Format(L"%d,%d,%s",pDispParams->rgvarg[0].boolVal,pDispParams->rgvarg[1].intVal,pDispParams->rgvarg[2].bstrVal);
-	MessageBox(NULL,strMsg.GetData(),L"测试",MB_OK);
+	strMsg.Format(_T("%d,%d,%s"),pDispParams->rgvarg[0].boolVal,pDispParams->rgvarg[1].intVal,pDispParams->rgvarg[2].bstrVal);
+	MessageBox(NULL,strMsg.GetData(),_T("测试"),MB_OK);
 	if (pVarResult)
 	{
 		BSTR bstrRet = SysAllocString(L"c++传递的返回值");
@@ -54,9 +54,9 @@ void JSCallTest(CWebBrowserUI* pBrowser, DISPPARAMS *pDispParams,/* [out] */ VAR
 void CMainWnd::InitDlg()
 {
 	CWebBrowserUI* pWeb = static_cast<CWebBrowserUI*>(m_PM.FindControl(_T("web")));
-	pWeb->BindJSWindowExternalFunc(L"testjscallcplusplus",JSCallTest);
-	pWeb->Navigate2(L"about:blank");
-	pWeb->Navigate2(L"file:///E:\\0rwh\\duilib\\bin\\testjs.html");
+	pWeb->BindJSWindowExternalFunc(_T("testjscallcplusplus"),JSCallTest);
+	pWeb->Navigate2(_T("about:blank"));
+	pWeb->Navigate2(_T("file:///E:\\0rwh\\duilib\\bin\\testjs.html"));
 }
 
 LRESULT CMainWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)

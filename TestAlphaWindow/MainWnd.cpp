@@ -40,6 +40,7 @@ LRESULT CMainWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 
 void CMainWnd::InitDlg()
 {
+
 }
 
 LRESULT CMainWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)

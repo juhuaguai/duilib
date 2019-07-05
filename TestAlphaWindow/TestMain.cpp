@@ -10,10 +10,23 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*l
 	HRESULT Hr = ::CoInitialize(NULL);
 	if( FAILED(Hr) ) return 0;
 
+	HWND  hwndParent = ::FindWindow(_T("Progman"), _T("Program Manager"));
+	if(NULL != hwndParent)
+	{
+		hwndParent = ::FindWindowEx(hwndParent, NULL, _T("SHELLDLL_DefView"), NULL);
+		if(NULL != hwndParent)
+		{
+			hwndParent = ::FindWindowEx(hwndParent, NULL, _T("SysListView32"), NULL);	
+			//SetParent(m_hWnd,hwndParent);
+		}	
+	}
+
 	CMainWnd theMainWnd;
-	theMainWnd.Create(NULL,_T(""),UI_WNDSTYLE_DIALOG, 0L, 0, 0, 0,0,NULL);		//UI_WNDSTYLE_FRAME居然有窗口最小大小限制？
+	theMainWnd.Create(hwndParent,_T(""),UI_WNDSTYLE_DIALOG, 0L, 0, 0, 0,0,NULL);		//UI_WNDSTYLE_FRAME居然有窗口最小大小限制？
 	theMainWnd.CenterWindow();
-	theMainWnd.ShowModal();
+	theMainWnd.ShowWindow();
+
+	CPaintManagerUI::MessageLoop();
 
 	::CoUninitialize();
 

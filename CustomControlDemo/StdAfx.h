@@ -11,6 +11,10 @@
 
 using namespace DuiLib;
 
+#ifdef UILIB_STATIC
+#	pragma comment(lib, "..\\Lib\\Duilib_uStatic.lib")
+#else	//UILIB_STATIC
+
 #ifdef _DEBUG
 #   ifdef _UNICODE
 #       pragma comment(lib, "..\\Lib\\DuiLib_ud.lib")
@@ -25,6 +29,7 @@ using namespace DuiLib;
 #   endif
 #endif
 
+#endif//UILIB_STATIC
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

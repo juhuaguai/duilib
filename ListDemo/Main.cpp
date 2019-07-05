@@ -10,8 +10,10 @@
 #include <sstream>
 
 #include "..\DuiLib\UIlib.h"
-
 using namespace DuiLib;
+#ifdef UILIB_STATIC
+#	pragma comment(lib, "..\\Lib\\Duilib_uStatic.lib")
+#else	//UILIB_STATIC
 #ifdef _DEBUG
 #   ifdef _UNICODE
 #       pragma comment(lib, "..\\Lib\\DuiLib_ud.lib")
@@ -25,6 +27,9 @@ using namespace DuiLib;
 #       pragma comment(lib, "..\\Lib\\DuiLib.lib")
 #   endif
 #endif
+#endif//UILIB_STATIC
+
+#include "MenuWnd.h"
 
 
 #define WM_ADDLISTITEM WM_USER + 50
@@ -47,12 +52,11 @@ struct Prama
     CDuiString tDomain;
 };
 
-#include "MenuWnd.h"
-
 class ListMainForm : public CWindowWnd, public INotifyUI, public IListCallbackUI
 {
 public:
-    ListMainForm() {
+    ListMainForm() 
+	{
     };
 
     LPCTSTR GetWindowClassName() const 
@@ -77,12 +81,13 @@ public:
         m_pRestoreBtn = static_cast<CButtonUI*>(m_pm.FindControl(_T("restorebtn")));
         m_pMinBtn = static_cast<CButtonUI*>(m_pm.FindControl(_T("minbtn")));
         m_pSearch = static_cast<CButtonUI*>(m_pm.FindControl(_T("btn")));
-    }
+    };
 
     void OnPrepare(TNotifyUI& msg) 
     {
 
-    }
+    };
+
     static DWORD WINAPI Search(LPVOID lpParameter)
     {
         try
@@ -124,7 +129,7 @@ public:
         {
             return 0;
         }
-    }
+    };
     void OnSearch()
     {
         struct Prama *prama = new Prama;
@@ -148,7 +153,7 @@ public:
         prama->tDomain = input;
 
         HANDLE hThread = CreateThread(NULL,0,&ListMainForm::Search, (LPVOID)prama,  0,&dwThreadID);
-    }
+    };
     /*
     * 关键的回调函数，IListCallbackUI 中的一个虚函数，渲染时候会调用,在[1]中设置了回调对象
     */
@@ -191,7 +196,7 @@ public:
         }
         pControl->SetUserData(szBuf);
         return pControl->GetUserData().GetData();
-    }
+    };
 
     void Notify(TNotifyUI& msg)
     {
@@ -262,7 +267,7 @@ public:
             domain.erase(domain.begin() + nSel);
             desc.erase(desc.begin() + nSel);   
         }
-    }
+    };
 
     LRESULT OnAddListItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     {
@@ -270,7 +275,7 @@ public:
         CListUI* pList = static_cast<CListUI*>(m_pm.FindControl(_T("domainlist")));
         if( pList ) pList->Add(pListElement);
         return 0;
-    }
+    };
 
     LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     {
@@ -286,36 +291,36 @@ public:
         m_pm.AddNotifier(this);
         Init();
         return 0;
-    }
+    };
 
     LRESULT OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     {
         bHandled = FALSE;
         return 0;
-    }
+    };
 
     LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     {
         ::PostQuitMessage(0L);
         bHandled = FALSE;
         return 0;
-    }
+    };
 
     LRESULT OnNcActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     {
         if( ::IsIconic(*this) ) bHandled = FALSE;
         return (wParam == 0) ? TRUE : FALSE;
-    }
+    };
 
     LRESULT OnNcCalcSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     {
         return 0;
-    }
+    };
 
     LRESULT OnNcPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     {
         return 0;
-    }
+    };
 
     LRESULT OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     {
@@ -352,7 +357,7 @@ public:
         }
 
         return HTCLIENT;
-    }
+    };
 
     LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     {
@@ -373,7 +378,7 @@ public:
 
         bHandled = FALSE;
         return 0;
-    }
+    };
 
     LRESULT OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     {
@@ -391,7 +396,7 @@ public:
 
         bHandled = FALSE;
         return 0;
-    }
+    };
 
     LRESULT OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     {
@@ -418,7 +423,7 @@ public:
             }
         }
         return lRes;
-    }
+    };
 
     LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
@@ -442,7 +447,7 @@ public:
         if( bHandled ) return lRes;
         if( m_pm.MessageHandler(uMsg, wParam, lParam, lRes) ) return lRes;
         return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
-    }
+    };
 public:
     CPaintManagerUI m_pm;
 

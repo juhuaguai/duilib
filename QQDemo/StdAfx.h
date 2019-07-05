@@ -43,6 +43,10 @@
 	using namespace DuiLib;
 	using namespace std;
 #endif
+
+#ifdef UILIB_STATIC
+#	pragma comment(lib, "..\\Lib\\Duilib_uStatic.lib")
+#else	//UILIB_STATIC
 #ifdef _DEBUG
 #   ifdef _UNICODE
 #       pragma comment(lib, "..\\Lib\\DuiLib_ud.lib")
@@ -56,7 +60,7 @@
 #       pragma comment(lib, "..\\Lib\\DuiLib.lib")
 #   endif
 #endif
-
+#endif//UILIB_STATIC
 #include "debug.hpp"
 
 #define MESSAGE_RICHEDIT_MAX  1024
