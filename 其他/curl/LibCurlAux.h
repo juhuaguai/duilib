@@ -3,8 +3,8 @@
 #include <string>
 #include <map>
 using namespace std;
-#include "../curl/include/curl.h"
-#pragma comment(lib, "../curl/lib/libcurl.lib")
+#include "include/curl.h"
+#pragma comment(lib, "../common/curl/lib/libcurl.lib")
 #pragma comment ( lib, "ws2_32.lib" )
 #pragma comment ( lib, "wldap32.lib" )
 
@@ -37,13 +37,17 @@ public:
 	//nTransTimeOut-接收数据超时(单位:秒) nConnTimeOut-连接超时(单位:秒)
 	bool SetTimeOut(int nTransTimeOut, int nConnTimeOut);
 	void UninitLibCurl();
-	long OpenUrl(const char *szWebUrl, bool bHttpGet, string& strRepData, const char *pszAppendHeads=NULL,const wstring& strFile=L"");
-	void SetSimplePostData(const char *pszPostData);
+	//nHttpType: 0-post 1-get 2-put 3-patch 4-delete
+	long OpenUrl(const string& strWebUrl, int nHttpType, string& strRepData, const char *pszAppendHeads=NULL,const wstring& strFile=L"");
+	void SetSimplePostData(const char* pszPostData);
+	//patch等可能用到
+	void SetSimpleData(const char* pszData);
 	void AddMultiPartPostData(const char *pszKey, const char *pszVal);
 
 	void ReceiveData(void* buffer, size_t size, size_t nmemb);
 	void ReceiveHdr(void* buffer, size_t size, size_t nmemb);
-	bool SendHttpQuest(const char *pszUrl, bool bHttpGet=true, const char *pszAppendHeaders = NULL);
+	//nHttpType: 0-post 1-get 2-put 3-patch 4-delete
+	bool SendHttpQuest(const char *pszUrl, int nHttpType=1, const char *pszAppendHeaders = NULL);
 	long  GetResponseInfo();
 	string& GetResponseHdr();
 	string& GetResponseData();

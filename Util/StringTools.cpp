@@ -619,62 +619,44 @@ string StringConvertUpperOrLowerA(bool bUpper, const string& strValue)
 	return strText;
 }
 
-void SplitString(const char *pszSrc, std::vector<std::string>& vec, const char *pszDelim)
-{
-	vec.clear();
-	int nStrLen = strlen(pszSrc);
-	if (pszSrc == NULL || nStrLen >= 2048)
-	{
-		return;
-	}
-
-	char szPszDelim[3];
-	if (pszDelim == NULL || strlen(pszDelim) == 0)
-	{
-		strcpy_s(szPszDelim, ",");
-		pszDelim = szPszDelim;
-	}
-
-	const char *pszStart = pszSrc;
-	const char *pszEnd = pszSrc + nStrLen;
-	int nPos = strcspn(pszStart, pszDelim);
-	if (nPos < 0 || nPos >= 2048 || pszStart >= pszEnd)
-	{
-		return;
-	}
-	while (pszStart + nPos <= pszEnd)
-	{
-		char szSrc[2048];
-		strncpy(szSrc, pszStart, nPos);
-		szSrc[nPos] = '\0';
-		vec.push_back(szSrc);
-
-		pszStart = pszStart + nPos + 1;
-		if (pszStart >= pszEnd)
-		{
-			break;
-		}
-		nPos = strcspn(pszStart, pszDelim);		
-	}
-}
-
 void SplitStringW(const wstring& src,vector<wstring> &dst,const wstring& strDelim)
 {
-	size_t last = 0; 
-	wstring strTmp = src;
-	wstring delim = strDelim;
-	size_t index = strTmp.find_first_of(delim, last);  
+	dst.clear();
 
-	while (index != std::wstring::npos)  
-	{  
-		dst.push_back(strTmp.substr(last, index - last));  
-		last = strTmp.find_first_not_of(delim, index + 1);
-		index = strTmp.find_first_of(delim, last);  
+	int nDelimLen = strDelim.length();
+
+	int nLast = 0;
+	int nPos = src.find(strDelim,nLast);
+	while (nPos != std::string::npos)  
+	{
+		dst.push_back(src.substr(nLast, nPos-nLast));  
+		nLast = nPos + nDelimLen;
+		nPos = src.find(strDelim,nLast);
 	}  
 
-	if (index-last > 0)  
+	if (nLast < src.length())  
 	{  
-		dst.push_back(strTmp.substr(last, index - last));  
+		dst.push_back(src.substr(nLast, src.length()-nLast));  
+	}
+}
+void SplitStringA(const string& src,vector<string> &dst,const string& strDelim)
+{
+	dst.clear();
+
+	int nDelimLen = strDelim.length();
+
+	int nLast = 0;
+	int nPos = src.find(strDelim,nLast);
+	while (nPos != std::string::npos)  
+	{
+		dst.push_back(src.substr(nLast, nPos-nLast));  
+		nLast = nPos + nDelimLen;
+		nPos = src.find(strDelim,nLast);
+	}  
+
+	if (nLast < src.length())  
+	{  
+		dst.push_back(src.substr(nLast, src.length()-nLast));  
 	}
 }
 
@@ -749,7 +731,8 @@ xstring GetSubString(const xstring &strSrc, LPCTSTR lpszStart, LPCTSTR lpszEnd)
 	return _T("");
 }
 
-char dec2hexChar(short int n) {
+char dec2hexChar(short int n) 
+{
 	if ( 0 <= n && n <= 9 ) {
 		return char( short('0') + n );
 	} else if ( 10 <= n && n <= 15 ) {
@@ -758,7 +741,8 @@ char dec2hexChar(short int n) {
 		return char(0);
 	}
 }
-short int hexChar2dec(char c) {
+short int hexChar2dec(char c) 
+{
 	if ( '0'<=c && c<='9' ) {
 		return short(c-'0');
 	} else if ( 'a'<=c && c<='f' ) {

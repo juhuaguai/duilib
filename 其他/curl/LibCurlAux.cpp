@@ -153,7 +153,7 @@ void CLibCurlAux::UninitLibCurl()
 	}	
 }
 
-bool CLibCurlAux::SendHttpQuest(const char *pszUrl, bool bHttpGet, const char *pszAppendHeaders/*=NULL*/)
+bool CLibCurlAux::SendHttpQuest(const char *pszUrl, int nHttpType/* =1 */, const char *pszAppendHeaders /* = NULL */)
 {
 	m_strhttpHdrRecved.clear();
 	m_httpDataRecved.clear();
@@ -164,12 +164,6 @@ bool CLibCurlAux::SendHttpQuest(const char *pszUrl, bool bHttpGet, const char *p
 	//去掉首尾空格
 	strUrl.erase(0, strUrl.find_first_not_of(" "));
 	strUrl.erase(strUrl.find_last_not_of(" ") + 1);	
-
-	//必须是HTTP开头
-	//if((stricmp(strUrl.substr(0, 7).c_str(), "http://") != 0) && (stricmp(strUrl.substr(0, 8).c_str(), "https://") != 0))
-	//{
-	//	return false;
-	//}
 
 	//查找主机地址
 	size_t stStartPos = strUrl.find("://");	
@@ -187,6 +181,8 @@ bool CLibCurlAux::SendHttpQuest(const char *pszUrl, bool bHttpGet, const char *p
 	http_headers = curl_slist_append(http_headers, "Accept-Encoding: gzip, deflate");
 	http_headers = curl_slist_append(http_headers, strHost.c_str());
 	http_headers = curl_slist_append(http_headers, "Connection: Keep-Alive");	
+	if (nHttpType == 3)
+		http_headers = curl_slist_append(http_headers, "X-HTTP-Method-Override: PATCH");	
 	if (pszAppendHeaders != NULL)
 	{
 		char szAppendHeader[1024]={0};
@@ -206,16 +202,24 @@ bool CLibCurlAux::SendHttpQuest(const char *pszUrl, bool bHttpGet, const char *p
 
 	curl_easy_setopt(m_easy_handle, CURLOPT_ACCEPT_ENCODING, "gzip");
 
-	if(bHttpGet)
+
+	if(nHttpType == 0)
+	{
+		if(m_pPostStart != NULL)
+			curl_easy_setopt(m_easy_handle, CURLOPT_HTTPPOST, m_pPostStart);		
+	}
+	else if (nHttpType == 1)
 	{
 		curl_easy_setopt(m_easy_handle, CURLOPT_HTTPGET, 1);
+	}
+	else if (nHttpType == 3)
+	{
+		curl_easy_setopt(m_easy_handle, CURLOPT_CUSTOMREQUEST, "PATCH");
 	}
 	else
 	{
 		if(m_pPostStart != NULL)
-		{
-			curl_easy_setopt(m_easy_handle, CURLOPT_HTTPPOST, m_pPostStart);
-		}
+			curl_easy_setopt(m_easy_handle, CURLOPT_HTTPPOST, m_pPostStart);	
 	}
 
 	//设置访问IP
@@ -223,6 +227,9 @@ bool CLibCurlAux::SendHttpQuest(const char *pszUrl, bool bHttpGet, const char *p
 
 	//执行数据请求
 	CURLcode res = curl_easy_perform(m_easy_handle);
+
+	double dlength = 0.0;
+	curl_easy_getinfo(m_easy_handle, CURLINFO_CONTENT_LENGTH_DOWNLOAD,  &dlength);
 
 	if(m_pPostStart != NULL)
 	{
@@ -257,12 +264,24 @@ void CLibCurlAux::SetSimplePostData(const char *pszPostData)
 		curl_easy_setopt(m_easy_handle, CURLOPT_POSTFIELDSIZE, nPostLen);
 	}
 }
+void CLibCurlAux::SetSimpleData(const char* pszData)
+{
+	int nDataLen = 0;
+	if (pszData != NULL)
+	{
+		nDataLen = strlen(pszData);
+	}
+	if (nDataLen>0)
+	{
+		curl_easy_setopt(m_easy_handle, CURLOPT_POSTFIELDS, pszData);
+		curl_easy_setopt(m_easy_handle, CURLOPT_POSTFIELDSIZE, nDataLen);
+	}
+}
 
 void CLibCurlAux::AddMultiPartPostData(const char *pszKey, const char *pszVal)
 {
-	curl_formadd(&m_pPostStart, &m_pPostEnd,   CURLFORM_COPYNAME, pszKey,   CURLFORM_COPYCONTENTS, pszVal, CURLFORM_END);
+	curl_formadd(&m_pPostStart, &m_pPostEnd,CURLFORM_COPYNAME, pszKey,   CURLFORM_COPYCONTENTS, pszVal, CURLFORM_END);
 }
-
 
 long CLibCurlAux::GetResponseInfo()
 {
@@ -288,11 +307,7 @@ string& CLibCurlAux::GetResponseData()
 	return m_httpDataRecved;
 }
 
-
-//描述：打开某个Url，并获取接收到的数据内容
-//参数：
-//     nTimeOut - 超时(秒)
-long CLibCurlAux::OpenUrl(const char *szWebUrl, bool bHttpGet, string& strRepData, const char *pszAppendHeads/* =NULL */,const wstring& strFile/* ="" */)
+long CLibCurlAux::OpenUrl(const string& strWebUrl, int nHttpType, string& strRepData, const char *pszAppendHeads/* =NULL */,const wstring& strFile/* =L"" */)
 {
 	long lRetCode = 0;
 	m_strDestFile = strFile;
@@ -310,17 +325,17 @@ long CLibCurlAux::OpenUrl(const char *szWebUrl, bool bHttpGet, string& strRepDat
 	std::string szheader_buffer;  
 	string strUrl;
 
-	if (!strstr(szWebUrl, "http://") && !strstr(szWebUrl, "https://"))
+	if (!strstr(strWebUrl.c_str(), "http://") && !strstr(strWebUrl.c_str(), "https://"))
 	{
 		strUrl = "http://";
-		strUrl += szWebUrl; 
+		strUrl += strWebUrl; 
 	}
 	else
 	{
-		strUrl = szWebUrl;
+		strUrl = strWebUrl;
 	}
 
-	bool bRet = SendHttpQuest(strUrl.c_str(), bHttpGet, pszAppendHeads);
+	bool bRet = SendHttpQuest(strUrl.c_str(), nHttpType, pszAppendHeads);
 	lRetCode = GetResponseInfo();
 	if (!bRet)
 	{
@@ -442,10 +457,9 @@ bool CLibCurlAux::ConnectOnly(const string& strUrl,int nTimeOut)
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER,0L); 
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
-		CURLcode ret;
 		//curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1L);
 		curl_easy_setopt(curl, CURLOPT_URL, strUrl.c_str());		
-		ret = curl_easy_perform(curl);
+		CURLcode ret = curl_easy_perform(curl);
 		if(ret == CURLE_OK) 
 		{
 			/* only connected! */
@@ -544,8 +558,6 @@ bool CLibCurlAux::SyncDownLoadFile(LPVOID pUserData, const char *szWebUrl, const
 		return false;
 
 	CURL *curl;
-	CURLcode res = CURLE_OK;
-
 	curl = curl_easy_init();
 	if(curl == NULL) 
 		return false;
@@ -584,11 +596,18 @@ bool CLibCurlAux::SyncDownLoadFile(LPVOID pUserData, const char *szWebUrl, const
 	//curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30);			//设置超时
 	//curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30);	//设置超时
 
-	int ret = curl_easy_perform(curl);
+	CURLcode ret = curl_easy_perform(curl);
+	long lInfo = 0;
+	CURLcode retCode = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &lInfo); 
 	curl_easy_cleanup(curl);
 	fclose(fp);
-	if (res != CURLE_OK)
+	if (ret != CURLE_OK)
 		return false;
+
+	if (lInfo<200 || lInfo>=400)
+	{
+		return false;
+	}
 
 	return true;
 }

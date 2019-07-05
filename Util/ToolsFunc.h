@@ -12,6 +12,10 @@
 #define MY_ENCODING_TYPE (PKCS_7_ASN_ENCODING | X509_ASN_ENCODING)
 #pragma comment(lib,"crypt32.lib") 
 
+#include <comdef.h>
+#include <Wbemidl.h>
+#pragma comment(lib, "wbemuuid.lib")
+
 #ifndef xstring
 #ifdef _UNICODE
 #define xstring		std::wstring
@@ -52,8 +56,10 @@ int DeleteFolder(const xstring& strDest);
 bool ReadRegString(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,const DWORD& dwType ,xstring& strValue);
 //写注册表
 bool WriteRegValue(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,const DWORD& dwType ,const BYTE* lpData,DWORD cbData);
+bool WriteRegValueA(HKEY hKey,const string& strSubKey,const string& strKeyName,const DWORD& dwType ,const BYTE* lpData,DWORD cbData);
 //删除注册表键值
 bool DeleteRegKeyValue(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName);
+bool DeleteRegKeyValueA(HKEY hKey,const string& strSubKey,const string& strKeyName);
 //删除注册表的项以及下面的所有子项
 bool DeleteRegSubKey(HKEY hKey,const xstring& strSubKey);
 
@@ -162,14 +168,22 @@ long GetStartProcessPID(DWORD dwId);
 */
 void SetIEWebbrowserVersion(DWORD dwIEVersion = 8000);
 
-//获取CPU序列号
+//CPU序列号
 string GetCpuIndex();
+//CPU描述
+wstring GetCpuDescr();
+//CPU核心数
+int GetCpuCoreNum();
+
+//获取内存大小 //sprintf(szMemorySize,"%I64d",dwMemorySize);
+DWORDLONG GetMemorySize();
 
 //获取机器GUID,从注册表中读取出来的,重装系统可能改变
 xstring GetMachineGUID();
 
 //获取主板的UUID,可能获取失败,当失败时,字符串中仅包含全部都是F或者全部都是0
 string GetBIOSUUID();
+
 
 //复制字符串到剪切板
 bool CopyStringToClipboard(const wstring& strValue);

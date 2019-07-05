@@ -208,6 +208,10 @@ bool ReadRegString(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,
 			_sntprintf_s(szData,_countof(szData),_TRUNCATE,_T("%ld"),(long)*(long *)szData);
 			strValue = szData;
 		}
+		else if (dwType == REG_MULTI_SZ)
+		{
+			strValue.append(szData,dwSize);
+		}
 
 		RegCloseKey(hKeyHander);
 		return true;
@@ -225,6 +229,10 @@ bool ReadRegString(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,
 			{
 				_sntprintf_s(szData,_countof(szData),_TRUNCATE,_T("%ld"),(long)*(long *)szData);
 				strValue = szData;
+			}
+			else if (dwType == REG_MULTI_SZ)
+			{
+				strValue.append(szData,dwSize);
 			}
 
 			RegCloseKey(hKeyHander);
@@ -258,6 +266,28 @@ bool WriteRegValue(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,
 
 	return false;  
 }
+bool WriteRegValueA(HKEY hKey,const string& strSubKey,const string& strKeyName,const DWORD& dwType ,const BYTE* lpData,DWORD cbData)
+{
+	HKEY   hKeyHander = NULL;   
+	//找到  
+	long lRet = ::RegOpenKeyExA(hKey,strSubKey.c_str(),0,KEY_READ|KEY_WRITE,&hKeyHander);
+	if(lRet != ERROR_SUCCESS)  
+	{
+		DWORD dwDisposition;
+		lRet = RegCreateKeyExA(hKey,strSubKey.c_str(),0,NULL,REG_OPTION_NON_VOLATILE,KEY_ALL_ACCESS,NULL, &hKeyHander, &dwDisposition);
+	}
+	if (lRet == ERROR_SUCCESS)
+	{
+		lRet = RegSetValueExA(hKeyHander,strKeyName.c_str(),0,dwType,lpData,cbData);
+	}
+	if (hKeyHander != NULL)
+		RegCloseKey(hKeyHander);
+
+	if (lRet == ERROR_SUCCESS)
+		return true;
+
+	return false;  
+}
 
 bool DeleteRegKeyValue(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName)
 {
@@ -266,6 +296,22 @@ bool DeleteRegKeyValue(HKEY hKey,const xstring& strSubKey,const xstring& strKeyN
 	if( lRet == ERROR_SUCCESS )    
 	{
 		lRet = RegDeleteValue(hKeyHandle, strKeyName.c_str());
+		RegCloseKey(hKeyHandle);
+		if (lRet == ERROR_SUCCESS)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+bool DeleteRegKeyValueA(HKEY hKey,const string& strSubKey,const string& strKeyName)
+{
+	HKEY hKeyHandle = NULL;                             
+	LONG lRet = RegOpenKeyExA(hKey, strSubKey.c_str(), 0, KEY_QUERY_VALUE|KEY_WRITE, &hKeyHandle );                                
+	if( lRet == ERROR_SUCCESS )    
+	{
+		lRet = RegDeleteValueA(hKeyHandle, strKeyName.c_str());
 		RegCloseKey(hKeyHandle);
 		if (lRet == ERROR_SUCCESS)
 		{
@@ -297,7 +343,7 @@ xstring GetAppPath(HMODULE hModul)
 	_tsplitpath_s(szAppPath,szDrive,szDir,szFname,szExt);
 	xstring strAppName = szDrive;
 	strAppName += szDir;
-	return strAppName;	//"e:\windows\jiasu\Bin\"
+	return strAppName;	//"e:\jiasu\Bin\"
 }
 
 void SplitStringA(const string& strSource, std::deque<std::string>& deq, const string& strDelim)
@@ -393,15 +439,15 @@ int CheckPortUsed(int nPort)
 			memset(szBuf,0,nSize);
 			DWORD dwReadSize=0;
 			
-			char szLog[128] = {0};
-			sprintf(szLog,"数据大小:%d\n",nSize);
-			OutputDebugStringA(szLog);
+			//char szLog[128] = {0};
+			//sprintf(szLog,"数据大小:%d\n",nSize);
+			//OutputDebugStringA(szLog);
 
 			ReadFile(hRead, szBuf, nSize, &dwReadSize, NULL);
 			strResult = szBuf;
 			free(szBuf);
 			CloseHandle(hRead);
-			OutputDebugStringA(strResult.c_str());
+			//OutputDebugStringA(strResult.c_str());
 		}
 		else
 			return -1;
@@ -500,6 +546,7 @@ string GetLocalIp()
 string GetMAC()
 {
 	string strMac;
+	ULONG lIFindex = 0xFFFFFFFF;
 	ULONG outBufLen = 0;
 	PIP_ADAPTER_ADDRESSES pAddresses = NULL;
 	if(GetAdaptersAddresses(AF_UNSPEC, 0, NULL, pAddresses, &outBufLen) == ERROR_BUFFER_OVERFLOW)
@@ -517,6 +564,7 @@ string GetMAC()
 			// 确保MAC地址的长度为 00-00-00-00-00-00
 			if(pCurrAddresses->PhysicalAddressLength != 6)
 				continue;
+
 			char acMAC[20] = {0};
 			sprintf(acMAC, "%02X-%02X-%02X-%02X-%02X-%02X",
 				int (pCurrAddresses->PhysicalAddress[0]),
@@ -525,8 +573,11 @@ string GetMAC()
 				int (pCurrAddresses->PhysicalAddress[3]),
 				int (pCurrAddresses->PhysicalAddress[4]),
 				int (pCurrAddresses->PhysicalAddress[5]));
-			strMac = acMAC;
-			break;
+			if (pCurrAddresses->IfIndex < lIFindex)
+			{
+				strMac = acMAC;
+				lIFindex = pCurrAddresses->IfIndex;
+			}
 		}
 	} 
 	if (pAddresses)
@@ -1194,7 +1245,7 @@ bool CopyFolderRecursive(const wstring& strSource,const wstring& strDest)
 	WIN32_FIND_DATA fd;
 	wchar_t szTempFileFind[512] = { 0 };
 	ZeroMemory(&fd, sizeof(WIN32_FIND_DATA));
-	swprintf(szTempFileFind, L"%s\\*.*", strSource.c_str());
+	swprintf_s(szTempFileFind, L"%s\\*.*", strSource.c_str());
 	HANDLE hFind = FindFirstFile(szTempFileFind, &fd);
 	if (hFind == INVALID_HANDLE_VALUE)
 		return false;
@@ -1531,8 +1582,8 @@ bool SetTimeZone(const xstring& subKey)
 				ZeroMemory(&tziNew, sizeof(tziNew));
 				tziNew.Bias = regTZI.Bias;
 				tziNew.StandardDate = regTZI.StandardDate;
-				wcscpy(tziNew.StandardName, strStd.c_str());
-				wcscpy(tziNew.DaylightName, strDlt.c_str());
+				wcscpy_s(tziNew.StandardName, strStd.c_str());
+				wcscpy_s(tziNew.DaylightName, strDlt.c_str());
 				tziNew.DaylightDate = regTZI.DaylightDate;
 				tziNew.DaylightBias = regTZI.DaylightBias;
 
@@ -1745,6 +1796,27 @@ string GetCpuIndex()
 	_snprintf_s(szCpuIndex,sizeof(szCpuIndex),"%08X%08X",s1,s2);
 	return szCpuIndex;
 }
+wstring GetCpuDescr()
+{
+	wstring strValue;
+	ReadRegString(HKEY_LOCAL_MACHINE,L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",L"ProcessorNameString",REG_SZ,strValue);
+	return strValue;
+}
+int GetCpuCoreNum()
+{
+	SYSTEM_INFO theSysInfo;
+	GetSystemInfo(&theSysInfo);
+	return (int)theSysInfo.dwNumberOfProcessors;
+}
+
+DWORDLONG GetMemorySize()
+{
+	MEMORYSTATUSEX statex;
+	statex.dwLength = sizeof (statex);
+	GlobalMemoryStatusEx (&statex);
+	DWORDLONG dwMemorySize = statex.ullTotalPhys;
+	return dwMemorySize;
+}
 
 //由路径获取文件名
 wstring GetFileNameFromPath(const wstring& strPath)
@@ -1785,6 +1857,7 @@ bool CopyStringToClipboard(const wstring& strValue)
 	return false;
 }
 
+#if 0
 string GetBIOSUUID()
 {
 	try
@@ -1819,7 +1892,16 @@ string GetBIOSUUID()
 			return "";
 		}  
 
-		WaitForSingleObject(pi.hProcess,INFINITE);
+		if (WaitForSingleObject(pi.hProcess,5000) == WAIT_TIMEOUT)
+		{
+			CloseHandle(pi.hThread);
+			CloseHandle(pi.hProcess);
+
+			if (hWrite)
+				CloseHandle(hWrite);  
+			return "";
+		}
+
 		CloseHandle(pi.hThread);
 		CloseHandle(pi.hProcess);
 
@@ -1834,31 +1916,36 @@ string GetBIOSUUID()
 			memset(szBuf,0,nSize);
 			DWORD dwReadSize=0;
 
-			char szLog[128] = {0};
-			sprintf(szLog,"数据大小:%d\n",nSize);
-			OutputDebugStringA(szLog);
+			//char szLog[128] = {0};
+			//sprintf(szLog,"数据大小:%d\n",nSize);
+			//OutputDebugStringA(szLog);
 
 			ReadFile(hRead, szBuf, nSize, &dwReadSize, NULL);
 			strResult = szBuf;
 			free(szBuf);
 			CloseHandle(hRead);
 
-			vector<string> vecItem;
-			SplitString(strResult.c_str(),vecItem,"\r\n");
+			/*vector<string> vecItem;
+			SplitStringA(strResult.c_str(),vecItem,"\r\n");
 			for (vector<string>::iterator itr=vecItem.begin();itr!=vecItem.end();itr++)
 			{
-				string strItem = *itr;
+				string strItem = *itr;	
+				TrimStringA(strItem,"\n");
+				TrimStringA(strItem,"\r");				
 				TrimStringA(strItem," ");
 				if (strItem.length()>31 && strItem.find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789- ")==string::npos)
 				{
 					strResult = strItem;
 					break;
 				}
-			}
+			}*/
+			int nStart = strResult.find_first_not_of(" \n\r\t",4);
+			int nEnd = strResult.find_last_not_of(" \n\r\t");
+			strResult = strResult.substr(nStart,nEnd-nStart+1);
 			if (strResult.empty() == false)
 			{
 				return strResult;
-			}		
+			}
 		}
 	}
 	catch (...)
@@ -1866,6 +1953,77 @@ string GetBIOSUUID()
 
 	return "";   
 }
+#else
+string GetBIOSUUID()
+{
+	CoInitializeEx(0, COINIT_MULTITHREADED);//NULL, COINIT_APARTMENTTHREADED
+	try
+	{
+		IWbemLocator *pLoc = NULL;
+		HRESULT hres = CoCreateInstance(CLSID_WbemLocator,0,CLSCTX_INPROC_SERVER,IID_IWbemLocator, (LPVOID *) &pLoc);
+		if (FAILED(hres))
+		{
+			CoUninitialize();
+			return "";    
+		}
+
+		IWbemServices *pSvc = NULL;
+		hres = pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"),NULL,NULL,0,NULL,0,0,&pSvc);
+		if (FAILED(hres))
+		{
+			pLoc->Release();     
+			CoUninitialize();
+			return "";                
+		}
+		hres = CoSetProxyBlanket(pSvc,RPC_C_AUTHN_WINNT,RPC_C_AUTHZ_NONE,NULL,RPC_C_AUTHN_LEVEL_CALL,RPC_C_IMP_LEVEL_IMPERSONATE,NULL,EOAC_NONE);
+		if (FAILED(hres))
+		{
+			pSvc->Release();
+			pLoc->Release();     
+			CoUninitialize();
+			return "";              
+		}
+
+		IEnumWbemClassObject* pEnumerator = NULL;
+		hres = pSvc->ExecQuery(_bstr_t("WQL"),_bstr_t("SELECT * FROM Win32_ComputerSystemProduct"),WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,NULL,&pEnumerator);
+		if (FAILED(hres))
+		{
+			pSvc->Release();
+			pLoc->Release();
+			CoUninitialize();
+			
+			return "";              
+		}
+
+		IWbemClassObject *pclsObj = NULL;
+		char szValue[128] = {0};
+		while (pEnumerator)
+		{
+			ULONG uReturn = 0;
+			hres = pEnumerator->Next(WBEM_INFINITE, 1, &pclsObj, &uReturn);
+			if(0 == uReturn)
+				break;
+
+			VARIANT vtProp;
+			hres = pclsObj->Get(L"UUID", 0, &vtProp, 0, 0); 
+			wcstombs(szValue,vtProp.bstrVal,127);
+			VariantClear(&vtProp);
+			pclsObj->Release();    
+		} 
+		pEnumerator->Release();
+		pEnumerator = NULL;
+
+		CoUninitialize();
+		return szValue;
+
+	}
+	catch (...)
+	{}	
+
+	CoUninitialize();
+	return "";   
+}
+#endif
 
 xstring GetMachineGUID()
 {

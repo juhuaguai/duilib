@@ -34,6 +34,7 @@ std::string EscapeToAnsi(const std::string& strSource);
 
 //尽量用这个编码来代替 URLEncodeGB2312 URLEncodeGB2312Forspace如果发现编码结果不对,可以尝试传入utf8编码参数
 //如果仍然不对则需要视情况而定来对函数进行修正了
+char dec2hexChar(short int n);
 string escape(const string &URL);
 string escapeURL(const string &URL);
 string deescapeURL(const std::string &URL);
@@ -56,8 +57,8 @@ wstring Ascii2Native(const string& strAnsi,bool bPercentPre = false);
 xstring StringReplace(const xstring& strText, const xstring& strOld, const xstring& strNew);
 string StringReplaceA(const string& strText, const string& strOld, const string& strNew);
 
-void SplitString(const char *pszSrc, std::vector<std::string>& vec, const char *pszDelim=",");
 void SplitStringW(const wstring& src,vector<wstring> &dst,const wstring& strDelim);
+void SplitStringA(const string& src,vector<string> &dst,const string& strDelim);
 
 void TrimLeftStringA(string &strVal, LPCSTR lpszOneOfFinds=" ");
 void TrimStringA(string &strVal, LPCSTR lpszOneOfFinds=" ");
@@ -203,7 +204,7 @@ inline DWORD IPSTR2DWORD(const char *pszIP)
 		return 0;
 
 	vector<string> vecStr;
-	::SplitString(pszIP, vecStr, ".");
+	SplitStringA(pszIP, vecStr, ".");
 
 	DWORD dwRet = 0;
 	for (unsigned int i = 0; i < vecStr.size(); i++)
