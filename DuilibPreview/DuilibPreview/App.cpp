@@ -24,6 +24,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR lpC
      if( pPreviewForm == NULL ) return 0; 
 	 pPreviewForm->SetSkinFile(filepath->Right(filepath->GetLength() - n).GetData());
 	 pPreviewForm->SetSkinFolder(filepath->Left(n).GetData());
+	 SetCurrentDirectory(pPreviewForm->GetSkinFolder().GetData());
      pPreviewForm->Create(NULL, _T("Ô¤ÀÀ´°¿Ú"), UI_WNDSTYLE_FRAME, WS_EX_WINDOWEDGE); 
 	 pPreviewForm->CenterWindow();
      pPreviewForm->ShowWindow(true); 
