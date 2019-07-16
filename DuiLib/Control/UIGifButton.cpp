@@ -13,12 +13,8 @@ namespace DuiLib
 		m_rcBkImageDest.top = 0;
 		m_rcBkImageDest.right = 0;
 		m_rcBkImageDest.bottom = 0;
-		m_uTextStyle = DT_SINGLELINE | DT_VCENTER | DT_CENTER;
-		m_TextRenderingAlias = TextRenderingHintAntiAlias;
-		m_dwTextColor = 0xFF000000;
-		m_dwDisabledTextColor = 0xFF000000;
+
 		m_dwHotTextColor = 0xFF000000;
-		m_iFont = -1;
 	}
 
 	CGifButtonUI::~CGifButtonUI(void)
@@ -189,48 +185,6 @@ namespace DuiLib
 	{
 		if( _tcscmp(pstrName, _T("cursor")) == 0 ) 
 			SetCursor(pstrValue);
-		else if( _tcscmp(pstrName, _T("align")) == 0 ) 
-		{
-			if( _tcscmp(pstrValue, _T("left")) == 0 ) {
-				m_uTextStyle &= ~(DT_CENTER | DT_RIGHT);
-				m_uTextStyle |= DT_LEFT;
-			}
-			else if( _tcscmp(pstrValue, _T("center")) == 0 ) {
-				m_uTextStyle &= ~(DT_LEFT | DT_RIGHT);
-				m_uTextStyle |= DT_CENTER;
-			}
-			else if( _tcscmp(pstrValue, _T("right")) == 0 ) {
-				m_uTextStyle &= ~(DT_LEFT | DT_CENTER);
-				m_uTextStyle |= DT_RIGHT;
-			}
-		}
-		else if (_tcscmp(pstrName, _T("valign")) == 0)
-		{
-			if (_tcscmp(pstrValue, _T("top")) == 0) {
-				m_uTextStyle &= ~(DT_BOTTOM | DT_VCENTER);
-				m_uTextStyle |= DT_TOP;
-			}
-			else if (_tcscmp(pstrValue, _T("vcenter")) == 0) {
-				m_uTextStyle &= ~(DT_TOP | DT_BOTTOM);
-				m_uTextStyle |= DT_VCENTER;
-			}
-			else if (_tcscmp(pstrValue, _T("bottom")) == 0) {
-				m_uTextStyle &= ~(DT_TOP | DT_VCENTER);
-				m_uTextStyle |= DT_BOTTOM;
-			}
-		}
-		else if( _tcscmp(pstrName, _T("textcolor")) == 0 ) {
-			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
-			SetTextColor(clrColor);
-		}
-		else if( _tcscmp(pstrName, _T("disabledtextcolor")) == 0 ) {
-			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
-			SetDisabledTextColor(clrColor);
-		}
 		else if( _tcscmp(pstrName, _T("hottextcolor")) == 0 )
 		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
@@ -238,97 +192,17 @@ namespace DuiLib
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetHotTextColor(clrColor);
 		}
-		else if(_tcscmp(pstrName, _T("rhaa")) == 0 ) SetTextRenderingAlias(_ttoi(pstrValue));
-		else if( _tcscmp(pstrName, _T("multiline")) == 0 ) SetMultiLine(_tcscmp(pstrValue, _T("true")) == 0);
-		else if( _tcscmp(pstrName, _T("font")) == 0 ) SetFont(_ttoi(pstrValue));
-		else if( _tcscmp(pstrName, _T("textpadding")) == 0 ) {
-			RECT rcTextPadding = { 0 };
-			LPTSTR pstr = NULL;
-			rcTextPadding.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-			rcTextPadding.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-			rcTextPadding.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-			rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
-			SetTextPadding(rcTextPadding);
-		}
 		else
 			CGifAnimUI::SetAttribute(pstrName, pstrValue);
-	}
-
-	void CGifButtonUI::SetTextColor(DWORD dwTextColor)
-	{
-		m_dwTextColor = dwTextColor;
-	}
-
-	DWORD CGifButtonUI::GetTextColor() const
-	{
-		return m_dwTextColor;
-	}
-
-	bool CGifButtonUI::IsMultiLine()
-	{
-		return (m_uTextStyle & DT_SINGLELINE) == 0;
-	}
-
-	void CGifButtonUI::SetMultiLine(bool bMultiLine)
-	{
-		if (bMultiLine)	{
-			m_uTextStyle  &= ~DT_SINGLELINE;
-			m_uTextStyle |= DT_WORDBREAK;
-		}
-		else 
-			m_uTextStyle |= DT_SINGLELINE;
-	}
-
-	void CGifButtonUI::SetDisabledTextColor(DWORD dwTextColor)
-	{
-		m_dwDisabledTextColor = dwTextColor;
-		Invalidate();
-	}
-
-	DWORD CGifButtonUI::GetDisabledTextColor() const
-	{
-		return m_dwDisabledTextColor;
 	}
 
 	void CGifButtonUI::SetHotTextColor(DWORD dwColor)
 	{
 		m_dwHotTextColor = dwColor;
 	}
-
 	DWORD CGifButtonUI::GetHotTextColor() const
 	{
 		return m_dwHotTextColor;
-	}
-
-	void CGifButtonUI::SetTextRenderingAlias(int nTextRenderingAlias)
-	{
-		m_TextRenderingAlias = (TextRenderingHint)nTextRenderingAlias;
-		Invalidate();
-	}
-
-	TextRenderingHint CGifButtonUI::GetTextRenderingAlias()
-	{
-		return m_TextRenderingAlias;
-	}
-
-	void CGifButtonUI::SetFont(int index)
-	{
-		m_iFont = index;
-	}
-
-	int CGifButtonUI::GetFont() const
-	{
-		return m_iFont;
-	}
-
-	RECT CGifButtonUI::GetTextPadding() const
-	{
-		return m_rcTextPadding;
-	}
-
-	void CGifButtonUI::SetTextPadding(RECT rc)
-	{
-		m_rcTextPadding = rc;
 	}
 
 	void CGifButtonUI::SetBkImageDest(const RECT& rcDest)

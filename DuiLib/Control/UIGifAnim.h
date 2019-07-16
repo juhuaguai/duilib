@@ -31,6 +31,19 @@ namespace DuiLib
 		void	PauseGif();
 		void	StopGif();
 
+		void SetTextColor(DWORD dwTextColor);
+		DWORD GetTextColor() const;
+		void SetDisabledTextColor(DWORD dwTextColor);
+		DWORD GetDisabledTextColor() const;
+		void SetFont(int index);
+		int GetFont() const;
+		RECT GetTextPadding() const;
+		void SetTextPadding(RECT rc);
+		void SetTextRenderingAlias(int nTextRenderingAlias);
+		TextRenderingHint GetTextRenderingAlias();
+		bool IsMultiLine();
+		void SetMultiLine(bool bMultiLine = true);
+
 	protected:
 		void	InitGifImage();
 		void	DeleteGif();
@@ -49,6 +62,13 @@ namespace DuiLib
 		bool			m_bIsAutoSize;				// 是否自动根据图片设置大小
 		bool			m_bIsPlaying;
 		IStream*	m_pStream;
+
+		UINT	m_uTextStyle;
+		DWORD	m_dwTextColor;
+		DWORD	m_dwDisabledTextColor;
+		int		m_iFont;
+		RECT	m_rcTextPadding;
+		TextRenderingHint		m_TextRenderingAlias;	//文字抗锯齿级别
 	};
 }
 
