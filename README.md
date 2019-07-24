@@ -85,6 +85,7 @@
 79.调整button按钮的hot背景色与背景图的叠加，当处于鼠标悬停状态并且设置的有Hotbkcolor时，先绘制Hotbkcolor，再在上层绘制背景图<br />
 80.调整option控件的选中背景色与背景图的叠加，当处于选中状态时，先绘制SelectedBkColor，再在上层绘制背景图<br />
 81.给richedit增加tipvalue，通过tipvalue和tipcolor可分别设置提示文本的内容和颜色。主要参考redrain的duilib库中的实现<br />
+81.给richedit增加开启关闭密码属性的接口<br />
 
 
 <br />

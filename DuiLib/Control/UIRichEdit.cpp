@@ -51,6 +51,7 @@ public:
 
 	LONG GetWinStyle();
 	void SetWinStyle(LONG lStyle);
+	void SetPassword(bool bPassword);
 
 	void SetMultLine(bool bMultLine = true);
 	bool GetMultLine();
@@ -844,6 +845,10 @@ void CTxtWinHost::SetWinStyle(LONG lStyle)
 {
 	m_dwStyle = lStyle;
 }
+void CTxtWinHost::SetPassword(bool bPassword)
+{
+	m_pserv->OnTxPropertyBitsChange(TXTBIT_USEPASSWORD, bPassword ? TXTBIT_USEPASSWORD : 0);
+}
 
 void CTxtWinHost::SetVscrollbar(bool bVscrollbar)
 {
@@ -1388,6 +1393,30 @@ void CRichEditUI::SetWinStyle(LONG lStyle)
 	if (m_pTwh)
 	{
 		m_pTwh->SetWinStyle(m_lTwhStyle);
+	}
+}
+bool CRichEditUI::GetPassword()
+{
+	if (m_lTwhStyle & ES_PASSWORD)
+		return true;
+	else
+		return false;
+}
+
+void CRichEditUI::SetPassword(bool bPassword /* = true */)
+{
+	if (bPassword)
+	{
+		m_lTwhStyle = m_lTwhStyle|ES_PASSWORD;
+	}
+	else
+	{
+		m_lTwhStyle &= ~ES_PASSWORD;
+	}
+	if (m_pTwh)
+	{
+		m_pTwh->SetWinStyle(m_lTwhStyle);
+		m_pTwh->SetPassword(bPassword);
 	}
 }
 
@@ -2743,7 +2772,10 @@ void CRichEditUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         if( _tcscmp(pstrValue, _T("true")) == 0 ) { m_lTwhStyle |= ES_READONLY; m_bReadOnly = true; }
     }
     else if( _tcscmp(pstrName, _T("password")) == 0 ) {
-        if( _tcscmp(pstrValue, _T("true")) == 0 ) m_lTwhStyle |= ES_PASSWORD;
+        if( _tcscmp(pstrValue, _T("true")) == 0 ) 
+			SetPassword(true);
+		else
+			SetPassword(false);
     }
     else if( _tcscmp(pstrName, _T("align")) == 0 ) {
         if( _tcsstr(pstrValue, _T("left")) != NULL ) {

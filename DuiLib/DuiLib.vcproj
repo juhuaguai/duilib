@@ -343,7 +343,7 @@
 				PrecompiledHeaderFile=".\Build\Release_u/DuiLib.pch"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -364,7 +364,9 @@
 				AdditionalLibraryDirectories=""
 				GenerateManifest="false"
 				DelayLoadDLLs=""
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
 				BaseAddress="0x11000000"
 				ImportLibrary="../Lib/DuiLib_u.lib"
 				TargetMachine="1"

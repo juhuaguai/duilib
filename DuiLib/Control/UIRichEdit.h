@@ -149,6 +149,8 @@ public:
 	bool GetCaret();
 
 	void SetPasswordChar(TCHAR chPasswordChar);
+	void SetPassword(bool bPassword = true);
+	bool GetPassword();
 
 	CDuiString GetFocusedImage();
 	void SetFocusedImage(const CDuiString& strImage);
