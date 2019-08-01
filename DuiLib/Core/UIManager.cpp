@@ -564,6 +564,8 @@ void CPaintManagerUI::SetSizeBox(RECT& rcSizeBox)
 
 RECT& CPaintManagerUI::GetCaptionRect()
 {
+	if (m_rcCaption.bottom == -1)
+		m_rcCaption.bottom = m_szInitWindowSize.cy;
     return m_rcCaption;
 }
 

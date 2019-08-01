@@ -40,7 +40,12 @@ LRESULT CMainWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 
 void CMainWnd::InitDlg()
 {
-
+	RECT rcWnd = {0,0,0,0};
+	GetWindowRect(m_hWnd,&rcWnd);
+	CRichEditUI* pEdit = static_cast<CRichEditUI*>(m_PM.FindControl(L"log_edit"));
+	wchar_t szValue[512] = {0};
+	swprintf_s(szValue,L"rcWnd=%d,%d,%d,%d",rcWnd.left,rcWnd.top,rcWnd.right,rcWnd.bottom);
+	pEdit->AppendText(szValue);
 }
 
 LRESULT CMainWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -102,7 +107,7 @@ LRESULT CMainWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			if (wParam == VK_ESCAPE)
 			{
-				Close();
+				Close(0);
 			}
 			else
 				bHandled = FALSE;

@@ -24,9 +24,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*l
 	CMainWnd theMainWnd;
 	theMainWnd.Create(hwndParent,_T(""),UI_WNDSTYLE_DIALOG, 0L, 0, 0, 0,0,NULL);		//UI_WNDSTYLE_FRAME居然有窗口最小大小限制？
 	theMainWnd.CenterWindow();
-	theMainWnd.ShowWindow();
+	theMainWnd.ShowModal();
 
-	CPaintManagerUI::MessageLoop();
+	//CPaintManagerUI::MessageLoop();
 
 	::CoUninitialize();
 
