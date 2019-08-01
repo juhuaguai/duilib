@@ -673,7 +673,10 @@ void CControlUI::SetMouseEnabled(bool bEnabled)
 
 bool CControlUI::IsKeyboardEnabled() const
 {
-	return m_bKeyboardEnabled ;
+	if (IsEnabled())
+		return m_bKeyboardEnabled;
+
+	return false;
 }
 void CControlUI::SetKeyboardEnabled(bool bEnabled)
 {

@@ -14,7 +14,6 @@ public:
 	virtual LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	virtual void OnFinalMessage( HWND );
 	virtual LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-	virtual LRESULT OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	virtual void SetSkinFile(CDuiString);
 	virtual void SetSkinFolder(CDuiString);
 
