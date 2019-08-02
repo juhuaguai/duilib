@@ -521,4 +521,29 @@ void CWindowWnd::OnFinalMessage(HWND /*hWnd*/)
 {
 }
 
+bool CWindowWnd::IsHTCaptionFlag(CControlUI* pControl)
+{
+	if (pControl==NULL)
+		return false;
+
+	if (pControl->GetControlFlags())
+		return false;
+
+
+	CControlUI* pParent = pControl->GetParent();
+	while (pParent)
+	{
+		if (pParent->GetControlFlags())
+		{
+			return false;
+		}
+		else
+		{
+			pParent = pParent->GetParent();
+		}
+	}
+
+	return (pControl->GetControlFlags()==0);
+}
+
 } // namespace DuiLib

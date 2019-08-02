@@ -89,7 +89,8 @@
 81.给richedit增加tipvalue，通过tipvalue和tipcolor可分别设置提示文本的内容和颜色。主要参考redrain的duilib库中的实现<br />
 82.给richedit增加开启关闭密码属性的接口<br />
 83.caption属性的bottom增加值为-1的支持，为-1时表示caption区域一直到窗口底部<br />
-
+84.给窗口类引入IsHTCaptionFlag函数，用于判断指定控件是否不被Caption区域过滤，如果为true，则说明指定控件的区域可以作为caption区域<br />
+85.修复textui控件中非showhtml时a标签数量计数错误的问题。<br />
 
 <br />
 其他改动：<br />

@@ -92,6 +92,7 @@ protected:
 
     virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
     virtual void OnFinalMessage(HWND hWnd);
+	virtual bool IsHTCaptionFlag(CControlUI* pControl);
 
     static LRESULT CALLBACK __WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
     static LRESULT CALLBACK __ControlProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

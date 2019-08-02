@@ -345,6 +345,7 @@
 				ProgramDataBaseFileName=".\Release_u/"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -362,6 +363,7 @@
 				OutputFile="../bin/ListDemo_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Release_u/ListDemo.pdb"
 				SubSystem="2"
 				TargetMachine="1"
