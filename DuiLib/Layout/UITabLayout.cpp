@@ -110,7 +110,9 @@ namespace DuiLib
 			}
 			else GetItemAt(it)->SetVisible(false);
 		}
+
 		NeedParentUpdate();
+		Invalidate();
 
 		if( m_pManager != NULL ) {
 			m_pManager->SetNextTabControl();
