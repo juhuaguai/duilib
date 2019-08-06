@@ -142,7 +142,8 @@ CDuiString CControlUI::GetText() const
 
 void CControlUI::SetText(const CDuiString& strText)
 {
-    if( m_sText == strText ) return;
+    if( m_sText == strText ) 
+		return;
 
     m_sText = strText;
     Invalidate();

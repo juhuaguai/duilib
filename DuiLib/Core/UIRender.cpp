@@ -1305,7 +1305,8 @@ void CRenderEngine::DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTS
 
     ::SetBkMode(hDC, TRANSPARENT);
     ::SetTextColor(hDC, RGB(GetBValue(dwTextColor), GetGValue(dwTextColor), GetRValue(dwTextColor)));
-    HFONT hOldFont = (HFONT)::SelectObject(hDC, pManager->GetFont(iFont));
+	HFONT hFont = pManager->GetFont(iFont);
+    HFONT hOldFont = (HFONT)::SelectObject(hDC, hFont);
     ::DrawText(hDC, pstrText, -1, &rc, uStyle | DT_NOPREFIX);
     ::SelectObject(hDC, hOldFont);
 }
@@ -1407,7 +1408,8 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
 		dwTextColor = 0xFF000001;
 
     TEXTMETRIC* pTm = &pManager->GetFontInfo(iDefaultFont)->tm;
-    HFONT hOldFont = (HFONT) ::SelectObject(hDC, pManager->GetFontInfo(iDefaultFont)->hFont);
+	HFONT hFont = pManager->GetFontInfo(iDefaultFont)->hFont;
+    HFONT hOldFont = (HFONT) ::SelectObject(hDC, hFont);
     ::SetBkMode(hDC, TRANSPARENT);
     ::SetTextColor(hDC, RGB(GetBValue(dwTextColor), GetGValue(dwTextColor), GetRValue(dwTextColor)));
     DWORD dwBkColor = pManager->GetDefaultSelectedBkColor();
@@ -2273,7 +2275,8 @@ SIZE CRenderEngine::GetTextSize( HDC hDC, CPaintManagerUI* pManager , LPCTSTR ps
 	ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
 	if( pstrText == NULL || pManager == NULL ) return size;
 	::SetBkMode(hDC, TRANSPARENT);
-	HFONT hOldFont = (HFONT)::SelectObject(hDC, pManager->GetFont(iFont));
+	HFONT hFont = pManager->GetFont(iFont);
+	HFONT hOldFont = (HFONT)::SelectObject(hDC, hFont);
 	GetTextExtentPoint32(hDC, pstrText, _tcslen(pstrText) , &size);
 	::SelectObject(hDC, hOldFont);
 	return size;
