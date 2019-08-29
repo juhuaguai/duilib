@@ -988,6 +988,8 @@
 		<Attribute name="font" default="-1" type="INT" comment="字体id,如(0)"/>
 		<Attribute name="textcolor" default="0xFF000000" type="DWORD" comment="字体颜色，如(0xFFFF0000)"/>
 		<Attribute name="maxchar" default="255" type="INT" comment="输入字符最大长度，如(100)"/>
+		<Attribute name="tipvalue" default="" type="STRING" comment="输入内容为空时的提示文本，如（请输入密码）"/>
+		<Attribute name="tipcolor" default="0xFF000000" type="DWORD" comment="输入内容为空时的提示文本的字体颜色，如(0xFFFF0000)"/>
 	</RichEdit>
 	<TreeView parent="List" notifies="selectchanged setfocus killfocus timer menu itemselect windowinit(root)">
 		<Attribute name="name" default="" type="STRING" comment="控件名字，同一窗口内必须唯一，如(testbtn)"/>
