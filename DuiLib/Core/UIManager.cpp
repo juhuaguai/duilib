@@ -953,13 +953,19 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 					::EndPaint(m_hWndPaint, &ps);
 					return true;
 				}
-				if( rcPaint.right > rcClient.right ) rcPaint.right = rcClient.right-GetShadowSize();
-				if( rcPaint.bottom > rcClient.bottom ) rcPaint.bottom = rcClient.bottom-GetShadowSize();
+				if( rcPaint.left <= rcClient.left ) 
+					rcPaint.left = rcClient.left+GetShadowSize();
+				if( rcPaint.top <= rcClient.top ) 
+					rcPaint.top = rcClient.top+GetShadowSize();
+				if( rcPaint.right >= rcClient.right ) 
+					rcPaint.right = rcClient.right-GetShadowSize();
+				if( rcPaint.bottom >= rcClient.bottom ) 
+					rcPaint.bottom = rcClient.bottom-GetShadowSize();
 				::ZeroMemory(&m_rcLayeredUpdate, sizeof(m_rcLayeredUpdate));
-				if (rcPaint.left==rcClient.left && rcPaint.top==rcClient.top && rcPaint.right==rcClient.right && rcPaint.bottom==rcClient.bottom)
-				{
-					m_bShadowChanged = true;
-				}
+				//if (rcPaint.left==rcClient.left && rcPaint.top==rcClient.top && rcPaint.right==rcClient.right && rcPaint.bottom==rcClient.bottom)
+				//{
+				//	m_bShadowChanged = true;
+				//}
 			}
 			else {
 				if( !::GetUpdateRect(m_hWndPaint, &rcPaint, FALSE) ) return true;

@@ -523,7 +523,8 @@ void CTxtWinHost::TxInvalidateRect(LPCRECT prc, BOOL fMode)
 {
     if( prc == NULL ) 
 	{
-        m_re->GetManager()->Invalidate(m_rcClient);
+		RECT rc = m_rcClient;
+        m_re->GetManager()->Invalidate(rc);
         return;
     }
 	else

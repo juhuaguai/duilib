@@ -91,6 +91,7 @@
 83.caption属性的bottom增加值为-1的支持，为-1时表示caption区域一直到窗口底部<br />
 84.给窗口类引入IsHTCaptionFlag函数，用于判断指定控件是否不被Caption区域过滤，如果为true，则说明指定控件的区域可以作为caption区域<br />
 85.修复textui控件中非showhtml时a标签数量计数错误的问题。<br />
+86.修复richedit在win7系统上内容可能被缩小的bug。（richedit作为子控件放到容器中，如果容器中包含有滚动条，滚动容器的滚动条，richedit的内容可能会随之缩放）<br />
 
 <br />
 其他改动：<br />
