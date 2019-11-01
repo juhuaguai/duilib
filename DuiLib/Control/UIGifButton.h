@@ -27,6 +27,8 @@ namespace DuiLib
 		DWORD GetHotTextColor() const;
 
 		void DrawFrame( HDC hDC );		// 绘制GIF每帧
+
+		UINT GetButtonState() {return m_uButtonState;};
 	protected:
 		UINT m_uButtonState;
 		CDuiString m_sCursor;			//光标形状 arrow/hand 其他根据需要添加

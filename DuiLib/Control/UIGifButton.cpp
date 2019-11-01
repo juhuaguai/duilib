@@ -107,6 +107,8 @@ namespace DuiLib
 						m_uButtonState |= UISTATE_HOT;
 					}
 				}
+				if (m_pManager) 
+					m_pManager->SendNotify(this,DUI_MSGTYPE_MOUSEENTER);
 			}
 		}
 		if( event.Type == UIEVENT_MOUSELEAVE )
@@ -121,11 +123,14 @@ namespace DuiLib
 					}
 				}
 				if (m_pManager) 
+				{
+					m_pManager->SendNotify(this,DUI_MSGTYPE_MOUSELEAVE);
 					m_pManager->RemoveMouseLeaveNeeded(this);
+				}
 			}
 			else 
 			{
-				if (m_pManager) 
+				if (m_pManager)
 					m_pManager->AddMouseLeaveNeeded(this);
 				return;
 			}
