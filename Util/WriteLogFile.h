@@ -19,10 +19,10 @@ public:
 	wstring GetLogFilePathName();	
 	//设置是否写到日志文件中
 	void SetWriteLog(bool bIsWrite);	
-	//lpszCodeFile使用宏__FILE__, nCodeLine使用宏__LINE__
-	void WriteLogPrintW(LPCSTR lpszCodeFile,const int& nCodeLine,LPCWSTR format, ...);
-	//lpszCodeFile使用宏__FILE__, nCodeLine使用宏__LINE__
-	void WriteLogW(LPCSTR lpszCodeFile,const int& nCodeLine,LPCWSTR lpszLog);
+	//lpszCodeFile使用宏__FILEW__, nCodeLine使用宏__LINE__
+	void WriteLogPrintW(LPCWSTR lpszCodeFile,const int& nCodeLine,LPCWSTR format, ...);
+	//lpszCodeFile使用宏__FILEW__, nCodeLine使用宏__LINE__
+	void WriteLogW(LPCWSTR lpszCodeFile,const int& nCodeLine,LPCWSTR lpszLog);
 
 protected:
 	//获取日志文件当前大小

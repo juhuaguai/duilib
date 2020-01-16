@@ -31,7 +31,10 @@ void CenterWindowToScreen(HWND hWnd);
 void CenterWindowEx(HWND hParent,HWND hWnd);
 
 //功能:从提取一串字符串中的所有数字
-std::string GetNumFromStrBuf(const char* pszStrBuf);
+string GetNumFromStrBuf(const char* pszStrBuf);
+
+//GUID=>string,转换后是大写
+string Guid2StringA(const GUID& theGuid);
 
 void PrintfLog(const TCHAR * format, ...);
 
@@ -50,13 +53,16 @@ int CopyFolder(const xstring& strSource,const xstring& strDest);
 int CopyFolderA(const string& strSource,const string& strDest);
 //删除文件夹及其里面的文件。成功返回0
 int DeleteFolder(const xstring& strDest);
-
+// 递归查询文件
+// 返回值true表示成功，false表示失败
+bool RecursionSearchFile(const wchar_t* pszSource,const wchar_t* pszDestFileName,wchar_t* pszOutMsg,int nOutMaxLen);
 
 //读取注册表
 bool ReadRegString(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,const DWORD& dwType ,xstring& strValue);
 //写注册表
 bool WriteRegValue(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,const DWORD& dwType ,const BYTE* lpData,DWORD cbData);
 bool WriteRegValueA(HKEY hKey,const string& strSubKey,const string& strKeyName,const DWORD& dwType ,const BYTE* lpData,DWORD cbData);
+bool WriteRegValueNo6432(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,const DWORD& dwType ,const BYTE* lpData,DWORD cbData);
 //删除注册表键值
 bool DeleteRegKeyValue(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName);
 bool DeleteRegKeyValueA(HKEY hKey,const string& strSubKey,const string& strKeyName);
@@ -85,6 +91,10 @@ xstring GetDefaultBrowser();
 
 //创建桌面图标
 void CreateDesktopIcon(const xstring& strIconName,const xstring& strExeFile,const xstring& strCmdLine,const xstring& strIconFile);
+// 由快捷方式找到源文件路径
+bool GetShellPath(const char *Src,wchar_t *ShellPath);
+// 判断是不是快捷方式
+bool IsLineFile(const wstring wstr);
 
 //提取exe中的Icon并保存为文件 (strDestFile一般以ico结尾) (里面包含了1个大小的图像,如果需要多个,参考实现代码进行修改即可)
 bool SaveIconFileFromExeFile(const xstring& strExe,const xstring& strDestFile);
@@ -120,7 +130,9 @@ xstring GetOSName();
 BOOL Is64BitOS();
 //获取操作系统版本
 void GetOSVersion(int& nMajorVersion,int& nMinorVersion);
-
+bool IsXp();
+bool IsXpUp();
+bool IsWin7Up();
 
 //查找进程ID //此函数获取到当前进程的PID可能是0
 int GetProcesssIdFromName(const xstring& strPorcessName,bool bCaseSensitive = false);

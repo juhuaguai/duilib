@@ -93,7 +93,7 @@ DWORD CWriteLogFile::GetLogFileCurSize(const wstring& strLogFileName)
 	}
 }
 
-void CWriteLogFile::WriteLogPrintW(LPCSTR lpszCodeFile,const int& nCodeLine,LPCWSTR format, ...)
+void CWriteLogFile::WriteLogPrintW(LPCWSTR lpszCodeFile,const int& nCodeLine,LPCWSTR format, ...)
 {
 	if (m_bWrite == false)
 		return ;
@@ -132,7 +132,7 @@ void CWriteLogFile::WriteLogPrintW(LPCSTR lpszCodeFile,const int& nCodeLine,LPCW
 
 			SYSTEMTIME time;  
 			::GetLocalTime( &time );  
-			fwprintf(fp, L"[%04d-%02d-%02d %02d:%02d:%02d][%S %d]%s\r\n",time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, lpszCodeFile, nCodeLine, sLogOutput );  
+			fwprintf(fp, L"[%04d-%02d-%02d %02d:%02d:%02d][%s %d]%s\r\n",time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, lpszCodeFile, nCodeLine, sLogOutput );  
 			fclose( fp );  
 		}
 	}
@@ -146,7 +146,7 @@ void CWriteLogFile::SetWriteLog(bool bIsWrite)
 	m_bWrite = bIsWrite;
 }
 
-void CWriteLogFile::WriteLogW(LPCSTR lpszCodeFile,const int& nCodeLine,LPCWSTR lpszLog)
+void CWriteLogFile::WriteLogW(LPCWSTR lpszCodeFile,const int& nCodeLine,LPCWSTR lpszLog)
 {
 	if (m_bWrite == false)
 		return ;
@@ -179,7 +179,7 @@ void CWriteLogFile::WriteLogW(LPCSTR lpszCodeFile,const int& nCodeLine,LPCWSTR l
 			//ÄÚÈÝ
 			SYSTEMTIME time;  
 			::GetLocalTime( &time );  
-			fwprintf(fp, L"[%04d-%02d-%02d %02d:%02d:%02d][%S %d]",time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond,lpszCodeFile, nCodeLine);  
+			fwprintf(fp, L"[%04d-%02d-%02d %02d:%02d:%02d][%s %d]",time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond,lpszCodeFile, nCodeLine);  
 			fwrite(lpszLog,wcslen(lpszLog)*2,1,fp);
 			fwrite(L"\r\n",wcslen(L"\r\n")*2,1,fp);			
 			fclose( fp );  
