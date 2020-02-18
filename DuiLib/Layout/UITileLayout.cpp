@@ -483,7 +483,9 @@ namespace DuiLib
 				cyNeeded = m_nRows*m_szItem.cy + (m_nRows-1)*m_iChildVPadding;
 			}
 
-			for( int it1 = 0; it1 < m_items.GetSize(); it1++ ) {
+			int nVisibleIndex = 0;
+			for( int it1 = 0; it1 < m_items.GetSize(); it1++ ) 
+			{
 				CControlUI* pControl = static_cast<CControlUI*>(m_items[it1]);
 				if( !pControl->IsVisible() ) continue;
 				if( pControl->IsFloat() ) {
@@ -502,8 +504,8 @@ namespace DuiLib
 
 				UINT iChildAlign = GetChildAlign(); 
 				UINT iChildVAlign = GetChildVAlign();
-				int iColumnIndex = it1/m_nColumns;
-				int iRowIndex = it1%m_nColumns;
+				int iColumnIndex = nVisibleIndex/m_nColumns;
+				int iRowIndex = nVisibleIndex%m_nColumns;
 				int iPosX = rc.left + iRowIndex*(m_szItem.cx+iChildPadding);
 				if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
 					iPosX -= m_pHorizontalScrollBar->GetScrollPos();
@@ -554,6 +556,7 @@ namespace DuiLib
 						pControl->SetPos(rcCtrl, false);
 					}
 				}
+				nVisibleIndex++;
 			}
 
 			// Process the scrollbar

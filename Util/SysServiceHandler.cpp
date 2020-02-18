@@ -305,18 +305,31 @@ bool CSysServiceHandler::UninstallService(const string& strServiceName)
 	return bSucess;
 }
 
-void CSysServiceHandler::StartService(const string& strServiceName)
+BOOL CSysServiceHandler::StartService(const string& strServiceName)
 {
 	char command[MAX_PATH*2] = {0};
 	_snprintf(command, sizeof command, "start \"%s\"", strServiceName.c_str());
-	RunExec("net", command);
+	return RunExec("net", command);
 }
 
-void CSysServiceHandler::StopService(const string& strServiceName)
+BOOL CSysServiceHandler::StopService(const string& strServiceName)
 {
 	char command[MAX_PATH*2] = {0};
 	_snprintf(command, sizeof command, "stop \"%s\"", strServiceName.c_str());
-	RunExec("net", command);
+	return RunExec("net", command);
+}
+
+BOOL CSysServiceHandler::EnableService(const string& strServiceName,bool bAuto)
+{
+	char command[MAX_PATH*2] = {0};
+	_snprintf(command, sizeof command, " config \"%s\" start= %s", strServiceName.c_str(),bAuto ? "auto" : "demand");
+	return RunExec("sc.exe", command);
+}
+BOOL CSysServiceHandler::DisableService(const string& strServiceName)
+{
+	char command[MAX_PATH*2] = {0};
+	_snprintf(command, sizeof command, " config \"%s\" start= Disabled", strServiceName.c_str());
+	return RunExec("sc.exe", command);
 }
 
 BOOL CSysServiceHandler::RunExec(const string& strCmd, const string& strPara, DWORD dwMilliseconds /* = INFINITE */)
@@ -333,6 +346,27 @@ BOOL CSysServiceHandler::RunExec(const string& strCmd, const string& strPara, DW
 	ShExecInfo.hInstApp = NULL;
 	BOOL suc = ShellExecuteExA(&ShExecInfo);
 	WaitForSingleObject(ShExecInfo.hProcess, dwMilliseconds);
+	TerminateProcess(ShExecInfo.hProcess,99);
+	CloseHandle(ShExecInfo.hProcess);
+
+	return suc;
+}
+BOOL CSysServiceHandler::RunExec(const wstring& strCmd, const wstring& strPara, DWORD dwMilliseconds /* = INFINITE */)
+{
+	SHELLEXECUTEINFOW ShExecInfo = {0};
+	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
+	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+	ShExecInfo.hwnd = NULL;
+	ShExecInfo.lpVerb = NULL;
+	ShExecInfo.lpFile = strCmd.c_str();
+	ShExecInfo.lpParameters = strPara.c_str();
+	ShExecInfo.lpDirectory = NULL;
+	ShExecInfo.nShow = SW_HIDE;
+	ShExecInfo.hInstApp = NULL;
+	BOOL suc = ShellExecuteExW(&ShExecInfo);
+	WaitForSingleObject(ShExecInfo.hProcess, dwMilliseconds);
+	TerminateProcess(ShExecInfo.hProcess,99);
+	CloseHandle(ShExecInfo.hProcess);
 
 	return suc;
 }

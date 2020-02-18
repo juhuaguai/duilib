@@ -129,6 +129,22 @@ std::string GetNumFromStrBuf(const char* pszStrBuf)
 	return strNum;
 }
 
+string Guid2StringA(const GUID& theGuid)
+{
+	char szValue[64] = {0};
+	sprintf_s(szValue
+		, "{%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}"
+		, theGuid.Data1
+		, theGuid.Data2
+		, theGuid.Data3
+		, theGuid.Data4[0], theGuid.Data4[1]
+	, theGuid.Data4[2], theGuid.Data4[3], theGuid.Data4[4], theGuid.Data4[5]
+	, theGuid.Data4[6], theGuid.Data4[7]
+	);
+	string strGuid = szValue;
+	return strGuid;
+}
+
 void PrintfLog(const TCHAR * format, ...)
 {
 	try
@@ -249,6 +265,28 @@ bool WriteRegValue(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,
 	HKEY   hKeyHander = NULL;   
 	//找到  
 	long lRet = ::RegOpenKeyEx(hKey,strSubKey.c_str(),0,KEY_READ|KEY_WRITE,&hKeyHander);
+	if(lRet != ERROR_SUCCESS)  
+	{
+		DWORD dwDisposition;
+		lRet = RegCreateKeyEx(hKey,strSubKey.c_str(),0,NULL,REG_OPTION_NON_VOLATILE,KEY_ALL_ACCESS,NULL, &hKeyHander, &dwDisposition);
+	}
+	if (lRet == ERROR_SUCCESS)
+	{
+		lRet = RegSetValueEx(hKeyHander,strKeyName.c_str(),0,dwType,lpData,cbData);
+	}
+	if (hKeyHander != NULL)
+		RegCloseKey(hKeyHander);
+
+	if (lRet == ERROR_SUCCESS)
+		return true;
+
+	return false;  
+}
+bool WriteRegValueNo6432(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,const DWORD& dwType ,const BYTE* lpData,DWORD cbData)
+{
+	HKEY   hKeyHander = NULL;   
+	//找到  
+	long lRet = ::RegOpenKeyEx(hKey,strSubKey.c_str(),0,KEY_READ|KEY_WRITE|KEY_WOW64_64KEY,&hKeyHander);
 	if(lRet != ERROR_SUCCESS)  
 	{
 		DWORD dwDisposition;
@@ -413,6 +451,7 @@ int CheckPortUsed(int nPort)
 			CloseHandle(hWrite);  
 			CloseHandle(hRead);  
 			OutputDebugStringW(L"查询端口cmd执行失败,CreateProcess失败\n");
+			TerminateProcess(pi.hProcess,0);
 			return -1;  
 		}  
 		
@@ -422,11 +461,10 @@ int CheckPortUsed(int nPort)
 			CloseHandle(hRead);
 			CloseHandle(pi.hProcess);
 			OutputDebugStringW(L"查询端口cmd执行超时失败\n");
+			TerminateProcess(pi.hProcess,0);
 			return -1;  
 		}
 
-		CloseHandle(pi.hThread);
-		CloseHandle(pi.hProcess);
 
 		if (hWrite)
 			CloseHandle(hWrite);  
@@ -447,10 +485,14 @@ int CheckPortUsed(int nPort)
 			strResult = szBuf;
 			free(szBuf);
 			CloseHandle(hRead);
-			//OutputDebugStringA(strResult.c_str());
+			OutputDebugStringA(strResult.c_str());
 		}
 		else
 			return -1;
+
+		TerminateProcess(pi.hProcess, 0);
+		CloseHandle(pi.hThread);
+		CloseHandle(pi.hProcess);
 
 		deque<string> theDeq;
 		SplitStringA(strResult,theDeq,"\r\n");
@@ -722,6 +764,42 @@ void CreateDesktopIcon(const xstring& strIconName,const xstring& strExeFile,cons
 			}
 		}
 	}
+}
+bool GetShellPath(const char *Src,wchar_t *ShellPath)
+{
+	bool blret=false;
+	//::CoInitialize(NULL); //初始化COM接口
+	IShellLink *psl = NULL;
+	//创建COM接口，IShellLink对象创建
+	HRESULT hr = CoCreateInstance(CLSID_ShellLink, NULL,CLSCTX_INPROC_SERVER,IID_IShellLink, (LPVOID *)&psl);
+	if (SUCCEEDED(hr))
+	{
+		IPersistFile *ppf ;
+		hr=psl->QueryInterface(IID_IPersistFile, (LPVOID*)&ppf);
+		if (SUCCEEDED(hr))
+		{
+			WCHAR wsz[MAX_PATH] = {0};
+			MultiByteToWideChar( CP_ACP, 0, Src, -1, wsz, MAX_PATH ) ;    //转下宽字节
+			hr=ppf->Load(wsz, STGM_READ);    //加载文件
+			if (SUCCEEDED(hr))
+			{
+				WIN32_FIND_DATA wfd ;
+				psl->GetPath(ShellPath,MAX_PATH, (WIN32_FIND_DATA*)&wfd,SLGP_SHORTPATH);  //获取目标路径
+				blret=true;
+			}
+			ppf->Release(); 
+		}
+		psl->Release();  //释放对象
+	}
+	//::CoUninitialize();   //释放COM接口
+	return blret;
+}
+bool IsLineFile(const wstring wstr)
+{
+	if (wstr.find(L".lnk") == string::npos)
+		return false;
+
+	return true;
 }
 
 bool SaveIconFileFromExeFile(const xstring& strExe,const xstring& strDestFile)
@@ -1164,6 +1242,65 @@ void GetOSVersion(int& nMajorVersion,int& nMinorVersion)
 		nMinorVersion = theVerInfo.dwMinorVersion;
 	}	
 }
+bool IsXp()
+{
+	static int static_is_init = 0;
+	if (static_is_init == 0)
+	{
+		int nMajorVer = 0, nMinorVer = 0;
+		GetOSVersion(nMajorVer, nMinorVer);
+		if (nMajorVer > 5)
+		{
+			static_is_init = 2;//不是xp
+		}
+		else
+			static_is_init = 1;//是xp
+	}
+
+	if (static_is_init == 1)
+	{
+		return true;
+	}
+
+	return false;
+}
+bool IsXpUp()
+{
+	bool bIsXpUp = false;
+	static int static_is_init = 0;
+	if (static_is_init == 0)
+	{
+		int nMajorVer = 0, nMinorVer = 0;
+		GetOSVersion(nMajorVer, nMinorVer);
+		if (nMajorVer > 5)
+			static_is_init = 2;//不是xp
+		else
+			static_is_init = 1;//是xp
+	}
+
+	if (static_is_init == 1)
+		bIsXpUp = false;
+
+	if (static_is_init == 2)
+		bIsXpUp = true;
+
+	return bIsXpUp;
+}
+bool IsWin7Up()
+{
+	int dwMajorVersion=-1,dwMinorVersion=-1;
+	GetOSVersion(dwMajorVersion, dwMinorVersion);
+	bool bIsWin7Up = false;
+	if (dwMajorVersion == 6)
+	{
+		if (dwMinorVersion >= 2)
+			bIsWin7Up = true;
+	}
+	else if (dwMajorVersion > 6)
+		bIsWin7Up = true;
+
+	return bIsWin7Up;
+}
 
 int CopyFolder(const xstring& strSource,const xstring& strDest)
 {
@@ -1301,6 +1438,81 @@ bool CopyFolderRecursive(const wstring& strSource,const wstring& strDest)
 	}//while
 	FindClose(hFind);
 	return true;	
+}
+// 递归查询文件源目录并复制源目录文件到目标目录
+bool RecursionSearchFile(const wchar_t* pszSource,const wchar_t* pszDestFileName,wchar_t* pszOutMsg,int nOutMaxLen)
+{
+	_wfinddata_t file_info;
+	int file_num = 0;
+	wstring current_path = pszSource;
+	current_path += L"\\*.*";//可以定义后面的后缀为*.exe，*.txt等来查找特定后缀的文件，*.*是通配符，匹配所有类型,路径连接符最好是左斜杠/，可跨平台 
+	//wstring target_path = pszDestDir;
+	int handle = _wfindfirst(current_path.c_str(),&file_info);
+	if (handle == -1)
+	{
+		if (pszOutMsg)
+			swprintf(pszOutMsg,_T("查找文件失败[%s]"),current_path);
+		return false;
+	}
+
+	do 
+	{
+		wstring attribute;		
+		if (wcscmp(file_info.name,L".") == 0 || wcscmp(file_info.name,L"..") == 0)
+		{
+			file_num++;
+			continue;
+		}
+
+		if (file_info.attrib == _A_SUBDIR)
+		{
+			// 是子目录，递归遍历
+			wstring sourcePath = pszSource;
+			sourcePath += L"\\";
+			sourcePath += file_info.name;
+			//wstring targetPath = pszDestDir;
+			//targetPath += L"\\";
+			//targetPath += file_info.name;
+			//if ( CreateDir(targetPath) == FALSE)
+			//{
+			//	if (pszOutMsg)
+			//		swprintf(pszOutMsg,_T("创建文件夹[%s]失败"),file_info.name);
+			//	return false;
+			//}
+
+			bool bRec = RecursionSearchFile(sourcePath.c_str(),pszDestFileName,pszOutMsg,nOutMaxLen);
+			if (!bRec)
+				return false;
+		}
+		else
+		{
+			wstring strNewFile = pszSource;
+			strNewFile += L"\\";
+			strNewFile += file_info.name;
+			wstring wstrFileName = GetFileNameFromPath(strNewFile);
+			if (wstrFileName == pszDestFileName)
+			{
+				if (pszOutMsg)
+					swprintf(pszOutMsg,_T("%s"),strNewFile.c_str());
+				return true;
+			}
+			//wstring strOldFile = pszDestDir;
+			//strOldFile += L"\\";
+			//strOldFile += file_info.name;
+			//if (CopyFile(strNewFile.c_str(),strOldFile.c_str(),FALSE) == FALSE)
+			//{
+			//	if (pszOutMsg)
+			//		swprintf(pszOutMsg,_T("[%s]新文件覆盖[%s]失败,err=%ld"),strNewFile.c_str(),strOldFile.c_str(),GetLastError());
+			//	return false;
+			//}	
+		}
+
+		file_num++;
+
+	} while (!_wfindnext(handle,&file_info));
+	_findclose(handle);
+
+	return true;
 }
 
 int GetProcesssIdFromName(const xstring& strPorcessName,bool bCaseSensitive/* = false*/)

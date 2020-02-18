@@ -3,7 +3,7 @@
 可以使用vs2008打开，新增一些学习测试用的demo，之后也可能会做很少的修改，但代码尽量会与官方保持一致。<br />
 有任何问题请联系我，邮箱juhuaguai@yeah.net<br />
 腾讯使用的的duilib修改版： https://github.com/tencentyun/TIMSDK/tree/master/cross-platform/Windows/IMApp/Basic/duilib <br />
-网易使用的duilib修改版： https://github.com/netease-im/NIM_Duilib_Framework/tree/master/tool_kits/duilib <br />
+网易使用的duilib修改版： https://github.com/netease-im/NIM_Duilib_Framework/tree/master/duilib <br />
 <br />
 本仓库改动日志：<br />
 1.将解决方案sln切换为vs2008打开<br />
@@ -92,6 +92,8 @@
 84.给窗口类引入IsHTCaptionFlag函数，用于判断指定控件是否不被Caption区域过滤，如果为true，则说明指定控件的区域可以作为caption区域<br />
 85.修复textui控件中非showhtml时a标签数量计数错误的问题。<br />
 86.修复richedit在win7系统上内容可能被缩小的bug。（richedit作为子控件放到容器中，如果容器中包含有滚动条，滚动容器的滚动条，richedit的内容可能会随之缩放）<br />
+87.修复某些情况下showmodal不能返回正确的关闭值的问题。(比如在子窗口标题栏被鼠标左键按下不松开时调用了Close来关闭窗口)<br />
+
 
 <br />
 其他改动：<br />
