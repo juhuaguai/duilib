@@ -23,3 +23,7 @@ Duilib界面文件预览工具
         Alt+F10
 	OK
     现在编辑xml的时候按"Alt+F10"快捷键就可以快速预览界面了
+
+
+**嵌入到sublime text 3：
+参看教程：https://blog.csdn.net/u012081284/article/details/104374826
