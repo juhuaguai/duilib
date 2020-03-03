@@ -1464,7 +1464,7 @@ bool RecursionSearchFile(const wchar_t* pszSource,const wchar_t* pszDestFileName
 			continue;
 		}
 
-		if (file_info.attrib == _A_SUBDIR)
+		if ((file_info.attrib&_A_SUBDIR)!=0)
 		{
 			// 是子目录，递归遍历
 			wstring sourcePath = pszSource;
