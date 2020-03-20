@@ -29,8 +29,9 @@ protected:
 	DWORD GetLogFileCurSize(const wstring& strLogFileName);
 
 private:
-	HANDLE m_hEvent;
 	wstring m_wstrFileName;
 	DWORD m_dwLogFileMaxSize;		//日志文件最大大小(KB)
 	bool m_bWrite;
+
+	CRITICAL_SECTION    m_CritSec;
 };

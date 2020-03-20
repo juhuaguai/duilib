@@ -13,32 +13,21 @@ CWriteLogFile::CWriteLogFile(const wstring& strLogFileName,int nLogFileMaxSize /
 			DeleteFileW(strLogFileName.c_str());
 		
 		m_wstrFileName = strLogFileName;
-		m_hEvent = CreateEvent(NULL,TRUE,TRUE,NULL);	//需要手动设置有/无信号,初始有信号
 
 		m_dwLogFileMaxSize = nLogFileMaxSize;
 	}
 	catch (...)
-	{
-		if (m_hEvent != INVALID_HANDLE_VALUE)
-			CloseHandle(m_hEvent);
-		m_hEvent = INVALID_HANDLE_VALUE;
-	}
+	{}
 	m_bWrite = true;
+
+	InitializeCriticalSection(&m_CritSec);
 }
 
 CWriteLogFile::CWriteLogFile()
 {
-	try
-	{
-		m_hEvent = CreateEventA(NULL,TRUE,TRUE,NULL);	//需要手动设置有/无信号,初始有信号
-	}
-	catch (...)
-	{
-		if (m_hEvent != INVALID_HANDLE_VALUE)
-			CloseHandle(m_hEvent);
-		m_hEvent = INVALID_HANDLE_VALUE;
-	}
 	m_bWrite = true;
+
+	InitializeCriticalSection(&m_CritSec);
 }
 
 void CWriteLogFile::SetLogFilePathName(const wstring& strLogFileName,int nLogFileMaxSize /* = 1024 */)
@@ -58,39 +47,28 @@ wstring CWriteLogFile::GetLogFilePathName()
 
 CWriteLogFile::~CWriteLogFile()
 {
-	if (m_hEvent != INVALID_HANDLE_VALUE)
-		CloseHandle(m_hEvent);
-	m_hEvent = INVALID_HANDLE_VALUE;
+	DeleteCriticalSection(&m_CritSec);  
 };
 
 DWORD CWriteLogFile::GetLogFileCurSize(const wstring& strLogFileName)
 {
+	EnterCriticalSection(&m_CritSec);
+	DWORD fileSize=0x0;
 	try
 	{
-		WIN32_FIND_DATAW fileInfo;
-		HANDLE hFind;
-		DWORD fileSize=0x0;
-		hFind = FindFirstFileW(strLogFileName.c_str() ,&fileInfo);
-		if(hFind != INVALID_HANDLE_VALUE)
-			fileSize = fileInfo.nFileSizeLow;
-		FindClose(hFind);
-		
-		//换另外一种测试文件大小的方法再次获取
 		FILE* file = NULL;
 		_wfopen_s(&file,strLogFileName.c_str(),L"r");	
 		if (file)
 		{
-			long nSize = _filelength(_fileno(file));
+			fileSize = _filelength(_fileno(file));
 			fclose(file);
-			if (fileSize != nSize)
-				return nSize;
 		}
-		return fileSize;
 	}
 	catch (...)
-	{
-		return 0;
-	}
+	{}
+
+	LeaveCriticalSection(&m_CritSec);
+	return fileSize;
 }
 
 void CWriteLogFile::WriteLogPrintW(LPCWSTR lpszCodeFile,const int& nCodeLine,LPCWSTR format, ...)
@@ -98,10 +76,8 @@ void CWriteLogFile::WriteLogPrintW(LPCWSTR lpszCodeFile,const int& nCodeLine,LPC
 	if (m_bWrite == false)
 		return ;
 
-	WaitForSingleObject(m_hEvent,3000);
-	if (m_hEvent == INVALID_HANDLE_VALUE)
-		return ;
-	ResetEvent(m_hEvent);
+	EnterCriticalSection(&m_CritSec);
+
 	try
 	{
 		if ( GetLogFileCurSize(m_wstrFileName)>m_dwLogFileMaxSize*1024)
@@ -114,14 +90,13 @@ void CWriteLogFile::WriteLogPrintW(LPCWSTR lpszCodeFile,const int& nCodeLine,LPC
 		FILE* fp = NULL;
 		_wfopen_s(&fp,m_wstrFileName.c_str(),L"ab+");	
 		if (fp)
-		{
-			
+		{			
 			if ( !bHave )  
 			{  
 				// 新创建的日志文件，则写入Unicode头  
 				BYTE chUnicodeHead[2] = { 0xff, 0xfe }; // Unicode头  
 				fwrite( chUnicodeHead, sizeof(BYTE), sizeof(chUnicodeHead), fp );  
-			}  
+			}
 
 			//内容
 			wchar_t sLogOutput[10240] = {0};
@@ -138,7 +113,8 @@ void CWriteLogFile::WriteLogPrintW(LPCWSTR lpszCodeFile,const int& nCodeLine,LPC
 	}
 	catch (...)
 	{}
-	SetEvent(m_hEvent);
+
+	LeaveCriticalSection(&m_CritSec);
 }
 
 void CWriteLogFile::SetWriteLog(bool bIsWrite)
@@ -151,10 +127,8 @@ void CWriteLogFile::WriteLogW(LPCWSTR lpszCodeFile,const int& nCodeLine,LPCWSTR 
 	if (m_bWrite == false)
 		return ;
 
-	WaitForSingleObject(m_hEvent,3000);
-	if (m_hEvent == INVALID_HANDLE_VALUE)
-		return ;
-	ResetEvent(m_hEvent);
+	EnterCriticalSection(&m_CritSec);
+
 	try
 	{
 		if ( GetLogFileCurSize(m_wstrFileName)>m_dwLogFileMaxSize*1024)
@@ -187,5 +161,6 @@ void CWriteLogFile::WriteLogW(LPCWSTR lpszCodeFile,const int& nCodeLine,LPCWSTR 
 	}
 	catch (...)
 	{}
-	SetEvent(m_hEvent);
+
+	LeaveCriticalSection(&m_CritSec);
 }
