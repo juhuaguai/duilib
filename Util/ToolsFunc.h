@@ -57,6 +57,7 @@ int DeleteFolder(const xstring& strDest);
 // 返回值true表示成功，false表示失败
 bool RecursionSearchFile(const wchar_t* pszSource,const wchar_t* pszDestFileName,wchar_t* pszOutMsg,int nOutMaxLen);
 
+
 //读取注册表
 bool ReadRegString(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,const DWORD& dwType ,xstring& strValue);
 //写注册表
@@ -69,7 +70,7 @@ bool DeleteRegKeyValueA(HKEY hKey,const string& strSubKey,const string& strKeyNa
 //删除注册表的项以及下面的所有子项
 bool DeleteRegSubKey(HKEY hKey,const xstring& strSubKey);
 
-//获取App所在目录(结尾没有'/'或者'\\')
+//获取App所在目录(结尾有'/'或者'\\')
 xstring GetAppPath(HMODULE hModul=NULL);
 
 //检查端口是否被占用 返回值:-1-表示未被使用,否则返回使用的进程PID

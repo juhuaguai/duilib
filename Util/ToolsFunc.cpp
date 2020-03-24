@@ -439,6 +439,7 @@ int CheckPortUsed(int nPort)
 		wchar_t szCmd[128] = {0};
 		_snwprintf_s(szCmd,_countof(szCmd),_TRUNCATE,L"cmd.exe /C netstat -ano | find \"%d\"",nPort);
 		STARTUPINFOW si;  
+		ZeroMemory(&si, sizeof(STARTUPINFOW));
 		PROCESS_INFORMATION pi;   
 		si.cb = sizeof(STARTUPINFOW);  
 		GetStartupInfoW(&si);   
@@ -464,7 +465,6 @@ int CheckPortUsed(int nPort)
 			TerminateProcess(pi.hProcess,0);
 			return -1;  
 		}
-
 
 		if (hWrite)
 			CloseHandle(hWrite);  
@@ -2089,6 +2089,7 @@ string GetBIOSUUID()
 		wchar_t szCmd[128] = {0};
 		_snwprintf_s(szCmd,_countof(szCmd),_TRUNCATE,L"cmd.exe /C wmic csproduct get UUID");
 		STARTUPINFOW si;  
+		ZeroMemory(&si, sizeof(STARTUPINFOW));
 		PROCESS_INFORMATION pi;   
 		si.cb = sizeof(STARTUPINFOW);  
 		GetStartupInfoW(&si);   
