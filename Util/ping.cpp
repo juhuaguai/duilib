@@ -29,6 +29,9 @@ CPing::CPing() :
 
 CPing::~CPing()
 {
+	WSACloseEvent(m_event);
+	closesocket(m_sockRaw);
+
     WSACleanup();
 
     if (NULL != m_szICMPData)

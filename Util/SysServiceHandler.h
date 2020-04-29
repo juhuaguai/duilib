@@ -16,6 +16,8 @@ public:
 
 private:
 	void SetServiceDescription(const wstring& strServiceName, const wstring& strDesc);
+	BOOL RunExec(const string& strCmd, const string& strPara, DWORD dwMilliseconds = INFINITE);
+
 public:
 	void make_upper(std::string& str);
 

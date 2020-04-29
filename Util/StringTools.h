@@ -62,7 +62,7 @@ void SplitStringA(const string& src,vector<string> &dst,const string& strDelim);
 
 void TrimLeftStringA(string &strVal, LPCSTR lpszOneOfFinds=" ");
 void TrimStringA(string &strVal, LPCSTR lpszOneOfFinds=" ");
-void TrimString(xstring &strVal, LPCTSTR lpszOneOfFinds=_T(" "));
+void TrimString(xstring &strVal, LPCTSTR lpszOneOfFinds=_T(" \t\n"));
 
 void ReplaceSubString(xstring &strSrc, LPCTSTR lpszStart, LPCTSTR lpszEnd, LPCTSTR lpszNew);
 

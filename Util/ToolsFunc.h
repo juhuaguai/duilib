@@ -4,7 +4,10 @@
 #include <string>
 #include <deque>
 #include <map>
+//下边的顺序不要错
+#include <ws2ipdef.h>
 #include <IPHlpApi.h>
+#include <netioapi.h>
 #pragma comment(lib,"Iphlpapi.lib") //需要添加Iphlpapi.lib库  
 #include <ShlObj.h>
 #pragma comment(lib,"Shell32.lib")
@@ -15,6 +18,13 @@
 #include <comdef.h>
 #include <Wbemidl.h>
 #pragma comment(lib, "wbemuuid.lib")
+
+//#include <wincrypt.h>
+//#pragma  comment(lib, "crypt32.lib")
+
+#pragma comment(lib, "Wintrust.lib") 
+//#pragma comment(lib, "crypt32.lib")
+#define ENCODING (X509_ASN_ENCODING | PKCS_7_ASN_ENCODING)
 
 #ifndef xstring
 #ifdef _UNICODE
@@ -31,10 +41,7 @@ void CenterWindowToScreen(HWND hWnd);
 void CenterWindowEx(HWND hParent,HWND hWnd);
 
 //功能:从提取一串字符串中的所有数字
-string GetNumFromStrBuf(const char* pszStrBuf);
-
-//GUID=>string,转换后是大写
-string Guid2StringA(const GUID& theGuid);
+std::string GetNumFromStrBuf(const char* pszStrBuf);
 
 void PrintfLog(const TCHAR * format, ...);
 
@@ -56,7 +63,8 @@ int DeleteFolder(const xstring& strDest);
 // 递归查询文件
 // 返回值true表示成功，false表示失败
 bool RecursionSearchFile(const wchar_t* pszSource,const wchar_t* pszDestFileName,wchar_t* pszOutMsg,int nOutMaxLen);
-
+// 文件夹是否为空
+bool IsEmptyFolder(const wchar_t* pszSource, const wchar_t* pszDestFileName, wchar_t* pszOutMsg, int nOutMaxLen);
 
 //读取注册表
 bool ReadRegString(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,const DWORD& dwType ,xstring& strValue);
@@ -80,6 +88,9 @@ int CheckPortUsed(int nPort);
 string GetLocalIp();
 //获取本机多个网卡的信息
 void GetIpAdapterInfoList(deque<IP_ADAPTER_INFO>& theIpAdapterList);
+// 获取正在使用的网卡
+string GetInnerIp(wstring& strAlias,ULONG& uIndex, string& strGetway);
+//string GetInnerIp(ULONG& uIndex, string& strGetway);
 
 //获取本机MAC
 string GetMAC();
@@ -133,13 +144,15 @@ BOOL Is64BitOS();
 void GetOSVersion(int& nMajorVersion,int& nMinorVersion);
 bool IsXp();
 bool IsXpUp();
+bool IsWin7();
 bool IsWin7Up();
+bool IsWin10();
 
 //查找进程ID //此函数获取到当前进程的PID可能是0
 int GetProcesssIdFromName(const xstring& strPorcessName,bool bCaseSensitive = false);
 void GetProcesssIdFromName(const xstring& strPorcessName,deque<int>& dequeOutID,bool bCaseSensitive = false);
 //查找进程PID,并获取绝对路径(32位进程只能查找32位进程)
-void GetProcesssInfoFromName(const xstring& strPorcessName,map<int,wstring>& mapOutID,bool bCaseSensitive = false);
+void GetProcesssInfoFromName(const xstring& strPorcessName,map<int,wstring>& mapOutID, DWORD& dwErrorCode, wstring& wstrErrMsg,bool bCaseSensitive = false);
 
 //获取文件大小(字节) //最大2G
 long GetFileSizeByte(const xstring& strFile);
@@ -197,6 +210,28 @@ xstring GetMachineGUID();
 //获取主板的UUID,可能获取失败,当失败时,字符串中仅包含全部都是F或者全部都是0
 string GetBIOSUUID();
 
+// 更快快捷方式图标
+bool ChangeLinkIcon(const wstring &strLnkName, const wstring &strIconPath);
 
 //复制字符串到剪切板
 bool CopyStringToClipboard(const wstring& strValue);
+
+// 提升系统权限
+// 这是一个通用的提升权限函数，如果需要提升其他权限  
+// 更改LookupPrivilegeValue的第二个参数SE_SHUTDOWN_NAME，即可  
+BOOL EnableShutDownPriv();
+// ReSetWindows(EWX_LOGOFF, false);		// 注销
+// ReSetWindows(EWX_REBOOT, true);		// 重启 
+// ReSetWindows(EWX_SHUTDOWN, true);	// 关机 
+BOOL ReSetWindows(DWORD dwFlags, BOOL bForce);
+//作用：获取软件的数字签名
+//参数：
+//		v_pwszFilePath  ---   程序的全路径
+//		v_pwszSign      ---   用于返回数字签名的缓冲区,如果为NULL，
+//					   	      那么将会需要的缓冲区大小
+//      v_iBufSize      ---   v_pwszSign缓冲区的大小
+//返回值：
+//		-1		---  失败
+//		0       ---  成功
+//		其它值  ---  需要的缓冲区大小
+LONG GetSoftSign(const wchar_t* v_pszFilePath,wchar_t * v_pszSign,int v_iBufSize, wchar_t* szSerialNumber, int nSerialSize);

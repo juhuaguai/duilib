@@ -246,7 +246,10 @@ BOOL CSysShellHelp::KillProcess(const xstring &strAppExeName, BOOL bIsAll/* = TR
 long CSysShellHelp::KillProcessDos(const xstring& strExeName)
 {
 	//taskkill /f /im steamwebhelper.exe /t
-	xstring strParam = _T("taskkill /f /im ");
+	TCHAR szWindows[1024] = {0};
+	GetWindowsDirectory(szWindows,1023);
+	xstring strParam = szWindows;
+	strParam += L"\\System32\\taskkill.exe /f /im ";
 	strParam += strExeName;
 	strParam += _T(" /t");
 
@@ -259,7 +262,7 @@ long CSysShellHelp::KillProcessDos(const xstring& strExeName)
 	xstring strCmdExe = szSystem;
 	strCmdExe += _T("\\cmd.exe");
 
-	OutputDebugStringW(strCmd.c_str());
+	//OutputDebugStringW(strCmd.c_str());
 	DWORD dwRet = (long)ShellExecute(NULL,_T("open"),strCmdExe.c_str(),strCmd.c_str(),_T(""),SW_HIDE);
 	return dwRet;
 }
