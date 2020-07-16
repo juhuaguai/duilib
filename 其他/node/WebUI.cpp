@@ -1,4 +1,5 @@
 #include "WebUI.h"
+#pragma comment(lib,"Msimg32.lib")
 
 bool CWebUI::m_static_bInit_webui=false;
 CWebUI::CWebUI()
@@ -59,7 +60,7 @@ void CWebUI::DoInit()
 	wkeOnLoadUrlBegin(m_WebView, OnLoadUrlBeginCallback, this);
 	wkeOnDidCreateScriptContext(m_WebView, OnCreateScriptContextCallback,this);
 
-	wkeShowWindow(m_WebView, true);
+	//wkeShowWindow(m_WebView, true);
 
 	if (m_pManager->IsLayered())
 		wkeSetTransparent( m_WebView, true);

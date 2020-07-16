@@ -1,8 +1,17 @@
 #pragma once
 
-#include "../../jsq/StdAfx.h"
-#include "../util/KCritSec.h"
+#include <Windows.h>
 #include "wke.h"
+#include <string>
+#include <map>
+using namespace std;
+
+#include "../util/KCritSec.h"
+
+#include "../duiLib/include/UIlib.h"
+using namespace DuiLib;
+#pragma comment(lib, "../duiLib/lib/Duilib_uStatic.lib")
+
 
 #define DUI_CTR_WEBUI			(_T("WebUI"))
 
