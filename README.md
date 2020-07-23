@@ -7,7 +7,7 @@
 
 <br />
 ## 说明：<br />
-## 官方库改为本仓库代码后，会遇到CDuiString的一些编译或者运行报错，原因在于我调整了CDuiString的代码（见下方第55点说明），解决方法就是重新使用本仓库的duillib的头文件和.lib重新编译和链接生成自己的程序，解决其中的编译报错（主要是CDuiString隐式转换为LPCTSTR修改CDuiString.GetData()）即可。<br />
+## 官方库改为本仓库代码后，会遇到CDuiString的一些编译或者运行报错，原因在于我调整了CDuiString的代码（见下方第55点说明），解决方法就是重新使用本仓库的duillib的头文件和.lib重新编译和链接生成自己的程序，解决其中的编译报错（主要是CDuiString转换为LPCTSTR时报错,修改CDuiString.GetData()）即可。<br />
 ## 有问题欢迎反馈！<br />
 <br />
 
