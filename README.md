@@ -6,9 +6,9 @@
 网易使用的duilib修改版： https://github.com/netease-im/NIM_Duilib_Framework/tree/master/duilib <br />
 
 <br />
-说明：<br />
-官方库改为本仓库代码后，会遇到CDuiString的一些编译或者运行报错，原因在于我调整了CDuiString的代码（见下方第55点说明），解决方法就是重新使用本仓库的duillib的头文件和.lib重新编译和链接生成自己的程序，解决其中的编译报错（主要是CDuiString隐式转换为LPCTSTR修改CDuiString.GetData()）即可。<br />
-有问题欢迎反馈！
+## 说明：<br />
+## 官方库改为本仓库代码后，会遇到CDuiString的一些编译或者运行报错，原因在于我调整了CDuiString的代码（见下方第55点说明），解决方法就是重新使用本仓库的duillib的头文件和.lib重新编译和链接生成自己的程序，解决其中的编译报错（主要是CDuiString隐式转换为LPCTSTR修改CDuiString.GetData()）即可。<br />
+## 有问题欢迎反馈！<br />
 <br />
 
 
