@@ -529,10 +529,19 @@ namespace DuiLib
 			SolidBrush nSolidBrush(ARGB2Color(clrColor));
 
 #ifdef _UNICODE
-			nGraphics.DrawString(m_sText.GetData(),m_sText.GetLength(),&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
+			CDuiString sText = m_sText;
+			CPaintManagerUI::ProcessMultiLanguageTokens(sText);
+			LPCWSTR pstrText = sText.GetData();
+
+			int iLen = wcslen(pstrText);
+			nGraphics.DrawString(pstrText,iLen,&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
 #else
-			int iLen = wcslen(m_pWideText);
-			nGraphics.DrawString(m_pWideText,iLen,&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
+			CDuiString sText = m_pWideText;
+			CPaintManagerUI::ProcessMultiLanguageTokens(sText);
+			LPCWSTR pstrText = sText.GetData();
+
+			int iLen = wcslen(pstrText);
+			nGraphics.DrawString(pstrText,iLen,&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
 #endif	//_UNICODE
 		}
 	}

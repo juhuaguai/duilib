@@ -272,10 +272,20 @@ Label_ForeImage:
 				SolidBrush nSolidBrush(ARGB2Color(IsEnabled()?m_dwTextColor:m_dwDisabledTextColor));
 
 #ifdef _UNICODE
-				nGraphics.DrawString(m_sText.GetData(),m_sText.GetLength(),&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
+				CDuiString sText1 = m_sText;
+				CPaintManagerUI::ProcessMultiLanguageTokens(sText1);
+				LPCWSTR pstrText = sText1.GetData();
+				int nLen = wcslen(pstrText);
+
+
+				nGraphics.DrawString(pstrText,nLen,&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
 #else
-				int iLen = wcslen(m_pWideText);
-				nGraphics.DrawString(m_pWideText,iLen,&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
+				CDuiString sText1 = m_pWideText;
+				CPaintManagerUI::ProcessMultiLanguageTokens(sText1);
+				LPWSTR pstrText = sText1.GetData();
+				int nLen = wcslen(pstrText);
+
+				nGraphics.DrawString(pstrText,nLen,&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
 #endif	//_UNICODE
 			}
 

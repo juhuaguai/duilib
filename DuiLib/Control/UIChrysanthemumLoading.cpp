@@ -214,7 +214,12 @@ namespace DuiLib
 				format.SetFormatFlags(StringFormatFlagsNoWrap);
 
 			SolidBrush nBrush( ARGB2Color(m_dwTextColor) );
-			g.DrawString(pWideText,wcslen(pWideText),&nFont,nRc,&format,&nBrush);
+
+			CDuiString sText = pWideText;
+			CPaintManagerUI::ProcessMultiLanguageTokens(sText);
+			LPCWSTR pstrText = sText.GetData();
+
+			g.DrawString(pstrText,wcslen(pstrText),&nFont,nRc,&format,&nBrush);
 #ifndef _UNICODE
 			delete[] pWideText;
 #endif

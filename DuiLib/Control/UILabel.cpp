@@ -505,8 +505,13 @@ namespace DuiLib
 
 				FontFamily ftFamily;
 				nFont.GetFamily(&ftFamily);
-				int iLen = wcslen(m_pWideText);
-				g1.DrawString(m_pWideText,iLen,&nFont,nRc,&format,&nLineGrBrushB);
+
+				CDuiString sText = m_pWideText;
+				CPaintManagerUI::ProcessMultiLanguageTokens(sText);
+				LPCWSTR pstrText = sText.GetData();
+
+				int iLen = wcslen(pstrText);
+				g1.DrawString(pstrText,iLen,&nFont,nRc,&format,&nLineGrBrushB);
 
 				g2.DrawImage(&Bit1, 0, 0, (int)iFuzzyWidth, (int)iFuzzyHeight);
 				g1.Clear(Color(0));
@@ -520,39 +525,57 @@ namespace DuiLib
 			{
 				LinearGradientBrush nLineGrBrushStroke(Point(GetGradientAngle(),0),Point(0,rc.bottom-rc.top+2),ARGB2Color(GetStrokeColor()),ARGB2Color(GetStrokeColor()));
 #ifdef _UNICODE
+				CDuiString sText1 = m_sText;
+				CPaintManagerUI::ProcessMultiLanguageTokens(sText1);
+				LPCWSTR pstrText = sText1.GetData();
+				int nLen = wcslen(pstrText);
+
 				nRc.Offset(-1,0);
-				nGraphics.DrawString(m_sText.GetData(),m_sText.GetLength(),&nFont,nRc,&format,&nLineGrBrushStroke);
+				nGraphics.DrawString(pstrText,nLen,&nFont,nRc,&format,&nLineGrBrushStroke);
 				nRc.Offset(2,0);
-				nGraphics.DrawString(m_sText.GetData(),m_sText.GetLength(),&nFont,nRc,&format,&nLineGrBrushStroke);
+				nGraphics.DrawString(pstrText,nLen,&nFont,nRc,&format,&nLineGrBrushStroke);
 				nRc.Offset(-1,-1);
-				nGraphics.DrawString(m_sText.GetData(),m_sText.GetLength(),&nFont,nRc,&format,&nLineGrBrushStroke);
+				nGraphics.DrawString(pstrText,nLen,&nFont,nRc,&format,&nLineGrBrushStroke);
 				nRc.Offset(0,2);
-				nGraphics.DrawString(m_sText.GetData(),m_sText.GetLength(),&nFont,nRc,&format,&nLineGrBrushStroke);
+				nGraphics.DrawString(pstrText,nLen,&nFont,nRc,&format,&nLineGrBrushStroke);
 				nRc.Offset(0,-1);
 #else
-				int iLen = wcslen(m_pWideText);
+				CDuiString sText = m_pWideText;
+				CPaintManagerUI::ProcessMultiLanguageTokens(sText);
+				LPCWSTR pstrText = sText.GetData();
+
+				int iLen = wcslen(pstrText);
 				nRc.Offset(-1,0);
-				nGraphics.DrawString(m_pWideText,iLen,&nFont,nRc,&format,&nLineGrBrushStroke);
+				nGraphics.DrawString(pstrText,iLen,&nFont,nRc,&format,&nLineGrBrushStroke);
 				nRc.Offset(2,0);
-				nGraphics.DrawString(m_pWideText,iLen,&nFont,nRc,&format,&nLineGrBrushStroke);
+				nGraphics.DrawString(pstrText,iLen,&nFont,nRc,&format,&nLineGrBrushStroke);
 				nRc.Offset(-1,-1);
-				nGraphics.DrawString(m_pWideText,iLen,&nFont,nRc,&format,&nLineGrBrushStroke);
+				nGraphics.DrawString(pstrText,iLen,&nFont,nRc,&format,&nLineGrBrushStroke);
 				nRc.Offset(0,2);
-				nGraphics.DrawString(m_pWideText,iLen,&nFont,nRc,&format,&nLineGrBrushStroke);
+				nGraphics.DrawString(pstrText,iLen,&nFont,nRc,&format,&nLineGrBrushStroke);
 				nRc.Offset(0,-1);
 #endif	
 			}
 #ifdef _UNICODE
-			if(GetEnabledShadow() && (GetTextShadowColorA() > 0 || GetTextShadowColorB() > 0))
-				nGraphics.DrawString(m_sText.GetData(),m_sText.GetLength(),&nFont,nShadowRc,&format,&nLineGrBrushA);
+			CDuiString sText1 = m_sText;
+			CPaintManagerUI::ProcessMultiLanguageTokens(sText1);
+			LPCWSTR pstrText = sText1.GetData();
+			int nLen = wcslen(pstrText);
 
-			nGraphics.DrawString(m_sText.GetData(),m_sText.GetLength(),&nFont,nRc,&format,&nLineGrBrushB);
+			if(GetEnabledShadow() && (GetTextShadowColorA() > 0 || GetTextShadowColorB() > 0))
+				nGraphics.DrawString(pstrText,nLen,&nFont,nShadowRc,&format,&nLineGrBrushA);
+
+			nGraphics.DrawString(pstrText,nLen,&nFont,nRc,&format,&nLineGrBrushB);
 #else
-			int iLen = wcslen(m_pWideText);
-			if(GetEnabledShadow() && (GetTextShadowColorA() > 0 || GetTextShadowColorB() > 0))
-				nGraphics.DrawString(m_pWideText,iLen,&nFont,nShadowRc,&format,&nLineGrBrushA);
+			CDuiString sText = m_pWideText;
+			CPaintManagerUI::ProcessMultiLanguageTokens(sText);
+			LPCWSTR pstrText = sText.GetData();
 
-			nGraphics.DrawString(m_pWideText,iLen,&nFont,nRc,&format,&nLineGrBrushB);
+			int iLen = wcslen(pstrText);
+			if(GetEnabledShadow() && (GetTextShadowColorA() > 0 || GetTextShadowColorB() > 0))
+				nGraphics.DrawString(pstrText,iLen,&nFont,nShadowRc,&format,&nLineGrBrushA);
+
+			nGraphics.DrawString(pstrText,iLen,&nFont,nRc,&format,&nLineGrBrushB);
 #endif
 		}
 	}

@@ -296,7 +296,12 @@ namespace DuiLib
 
 			SolidBrush nBrush( ARGB2Color(clrColor) );
 
-			graphics.DrawString(pWideText,wcslen(pWideText),&nFont,nRc,&format,&nBrush);
+			CDuiString sText1 = pWideText;
+			CPaintManagerUI::ProcessMultiLanguageTokens(sText1);
+			LPCWSTR pstrText = sText1.GetData();
+			int nLen = wcslen(pstrText);
+
+			graphics.DrawString(pstrText,wcslen(pstrText),&nFont,nRc,&format,&nBrush);
 #ifndef _UNICODE
 			delete[] pWideText;
 #endif
