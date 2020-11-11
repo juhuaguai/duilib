@@ -194,6 +194,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="0"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\..;..\..\..\zlib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CRT_SECURE_NO_WARNINGS"
@@ -203,6 +204,7 @@
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="pngpriv.h"
 				WarningLevel="3"
+				DebugInformationFormat="3"
 				CompileAs="0"
 			/>
 			<Tool

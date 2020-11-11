@@ -244,6 +244,7 @@ protected:                                                                \
 #define  DUI_CTR_ACTIVEX                         (_T("ActiveX"))
 #define  DUI_CTR_GIFANIM                         (_T("GifAnim"))
 
+#define  DUI_CTR_APNGANIM                        (_T("ApngAnim"))
 #define  DUI_CTR_PROGRESS                        (_T("Progress"))
 #define  DUI_CTR_RICHEDIT                        (_T("RichEdit"))
 #define  DUI_CTR_CHECKBOX                        (_T("CheckBox"))

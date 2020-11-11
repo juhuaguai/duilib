@@ -51,22 +51,6 @@
  * nothing can be done for an interlaced image (and the code below will fail
  * horribly trying to write extra data after writing garbage).
  */
-#if defined PNG_READ_SUPPORTED && /* else nothing can be done */\
-   defined PNG_READ_bKGD_SUPPORTED &&\
-   defined PNG_READ_cHRM_SUPPORTED &&\
-   defined PNG_READ_gAMA_SUPPORTED &&\
-   defined PNG_READ_oFFs_SUPPORTED &&\
-   defined PNG_READ_pCAL_SUPPORTED &&\
-   defined PNG_READ_pHYs_SUPPORTED &&\
-   defined PNG_READ_sBIT_SUPPORTED &&\
-   defined PNG_READ_sCAL_SUPPORTED &&\
-   defined PNG_READ_sRGB_SUPPORTED &&\
-   defined PNG_READ_sPLT_SUPPORTED &&\
-   defined PNG_READ_tEXt_SUPPORTED &&\
-   defined PNG_READ_tIME_SUPPORTED &&\
-   defined PNG_READ_zTXt_SUPPORTED &&\
-   (defined PNG_WRITE_INTERLACING_SUPPORTED || PNG_LIBPNG_VER >= 10700)
-
 #ifdef PNG_ZLIB_HEADER
 #  include PNG_ZLIB_HEADER /* defined by pnglibconf.h from 1.7 */
 #else
@@ -2267,16 +2251,6 @@ main(int argc, char *argv[])
 
    return (int)(ierror != 0);
 }
-#else
-int
-main(void)
-{
-   fprintf(STDERR,
-       " test ignored because libpng was not built with read support\n");
-   /* And skip this test */
-   return PNG_LIBPNG_VER < 10600 ? 0 : 77;
-}
-#endif
 
 /* Generate a compiler error if there is an old png.h in the search path. */
 typedef png_libpng_version_1_6_38_git Your_png_h_is_not_version_1_6_38_git;

@@ -10,3 +10,6 @@ zlib    1.2.11
 *增加了MT DLL Release编译配置选项；
 *移除了VB和LIB Debug编译配置选项；
 *其他为了顺利编译和运行所作的微调；
+
+libpng的sln文件在apng/libpng/projects/visualc71目录下
+生成apng/ibpng/projects/visualc71/bin目录下，请自行复制到apng/static或者apng/mt_dll目录下.
