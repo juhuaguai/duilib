@@ -477,7 +477,10 @@ HDC CPaintManagerUI::GetPaintDC() const
 {
     return m_hDcPaint;
 }
-
+HDC CPaintManagerUI::GetOffscreenDC() const
+{
+	return m_hDcOffscreen;
+}
 HBITMAP CPaintManagerUI::GetPaintOffscreenBitmap()
 {
 	return m_hbmpOffscreen;
