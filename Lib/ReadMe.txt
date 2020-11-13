@@ -1,0 +1,1 @@
+libpng.lib和zlib.lib请从apng目录下找
