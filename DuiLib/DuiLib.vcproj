@@ -667,6 +667,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Control\UIApngButton.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Control\UIButton.cpp"
 					>
 				</File>
@@ -865,6 +869,10 @@
 				</File>
 				<File
 					RelativePath=".\Control\UIApngAnim.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Control\UIApngButton.h"
 					>
 				</File>
 				<File

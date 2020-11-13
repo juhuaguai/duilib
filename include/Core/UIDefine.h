@@ -244,6 +244,7 @@ protected:                                                                \
 #define  DUI_CTR_ACTIVEX                         (_T("ActiveX"))
 #define  DUI_CTR_GIFANIM                         (_T("GifAnim"))
 
+#define  DUI_CTR_APNGANIM                        (_T("ApngAnim"))
 #define  DUI_CTR_PROGRESS                        (_T("Progress"))
 #define  DUI_CTR_RICHEDIT                        (_T("RichEdit"))
 #define  DUI_CTR_CHECKBOX                        (_T("CheckBox"))
@@ -263,6 +264,7 @@ protected:                                                                \
 #define  DUI_CTR_LISTHEADER                      (_T("ListHeader"))
 #define  DUI_CTR_TILELAYOUT                      (_T("TileLayout"))
 #define  DUI_CTR_WEBBROWSER                      (_T("WebBrowser"))
+#define  DUI_CTR_APNGBUTTON                      (_T("ApngButton"))
 
 #define  DUI_CTR_CHILDLAYOUT                     (_T("ChildLayout"))
 #define  DUI_CTR_LISTELEMENT                     (_T("ListElement"))

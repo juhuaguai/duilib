@@ -506,17 +506,24 @@ namespace DuiLib
 				FontFamily ftFamily;
 				nFont.GetFamily(&ftFamily);
 
-				CDuiString sText = m_pWideText;
-				CPaintManagerUI::ProcessMultiLanguageTokens(sText);
-				LPCWSTR pstrText = sText.GetData();
-
-				int iLen = wcslen(pstrText);
-				g1.DrawString(pstrText,iLen,&nFont,nRc,&format,&nLineGrBrushB);
-
+				CDuiString sText1 = m_sText;
+				CPaintManagerUI::ProcessMultiLanguageTokens(sText1);
+#ifdef _UNICODE				
+				LPCWSTR pstrText = sText1.GetData();
+#else
+				int iLen = _tcslen(sText1.GetData());
+				LPWSTR pWideText = new WCHAR[iLen + 1];
+				::ZeroMemory(pWideText, (iLen + 1) * sizeof(WCHAR));
+				::MultiByteToWideChar(CP_ACP, 0, sText1.GetData(), -1, pWideText, iLen);
+				LPCWSTR pstrText = pWideText;
+#endif
+				g1.DrawString(pstrText,wcslen(pstrText),&nFont,nRc,&format,&nLineGrBrushB);
+#ifndef _UNICODE
+				delete[] pWideText;
+#endif	
 				g2.DrawImage(&Bit1, 0, 0, (int)iFuzzyWidth, (int)iFuzzyHeight);
 				g1.Clear(Color(0));
 				g1.DrawImage(&Bit2, (int)m_ShadowOffset.X, (int)m_ShadowOffset.Y, (int)nRc.Width, (int)nRc.Height);
-				g1.SetTextRenderingHint(GetTextRenderingAlias());
 
 				nGraphics.DrawImage(&Bit1, nRc.X, nRc.Y);
 			}
@@ -524,58 +531,51 @@ namespace DuiLib
 			if(GetEnabledStroke() && GetStrokeColor() > 0)
 			{
 				LinearGradientBrush nLineGrBrushStroke(Point(GetGradientAngle(),0),Point(0,rc.bottom-rc.top+2),ARGB2Color(GetStrokeColor()),ARGB2Color(GetStrokeColor()));
-#ifdef _UNICODE
+
 				CDuiString sText1 = m_sText;
 				CPaintManagerUI::ProcessMultiLanguageTokens(sText1);
+#ifdef _UNICODE			
 				LPCWSTR pstrText = sText1.GetData();
-				int nLen = wcslen(pstrText);
-
-				nRc.Offset(-1,0);
-				nGraphics.DrawString(pstrText,nLen,&nFont,nRc,&format,&nLineGrBrushStroke);
-				nRc.Offset(2,0);
-				nGraphics.DrawString(pstrText,nLen,&nFont,nRc,&format,&nLineGrBrushStroke);
-				nRc.Offset(-1,-1);
-				nGraphics.DrawString(pstrText,nLen,&nFont,nRc,&format,&nLineGrBrushStroke);
-				nRc.Offset(0,2);
-				nGraphics.DrawString(pstrText,nLen,&nFont,nRc,&format,&nLineGrBrushStroke);
-				nRc.Offset(0,-1);
 #else
-				CDuiString sText = m_pWideText;
-				CPaintManagerUI::ProcessMultiLanguageTokens(sText);
-				LPCWSTR pstrText = sText.GetData();
-
-				int iLen = wcslen(pstrText);
+				int iLen = _tcslen(sText1.GetData());
+				LPWSTR pWideText = new WCHAR[iLen + 1];
+				::ZeroMemory(pWideText, (iLen + 1) * sizeof(WCHAR));
+				::MultiByteToWideChar(CP_ACP, 0, sText1.GetData(), -1, pWideText, iLen);
+				LPCWSTR pstrText = pWideText;			
+#endif
+				int nLen = wcslen(pstrText);
 				nRc.Offset(-1,0);
-				nGraphics.DrawString(pstrText,iLen,&nFont,nRc,&format,&nLineGrBrushStroke);
+				nGraphics.DrawString(pstrText,nLen,&nFont,nRc,&format,&nLineGrBrushStroke);
 				nRc.Offset(2,0);
-				nGraphics.DrawString(pstrText,iLen,&nFont,nRc,&format,&nLineGrBrushStroke);
+				nGraphics.DrawString(pstrText,nLen,&nFont,nRc,&format,&nLineGrBrushStroke);
 				nRc.Offset(-1,-1);
-				nGraphics.DrawString(pstrText,iLen,&nFont,nRc,&format,&nLineGrBrushStroke);
+				nGraphics.DrawString(pstrText,nLen,&nFont,nRc,&format,&nLineGrBrushStroke);
 				nRc.Offset(0,2);
-				nGraphics.DrawString(pstrText,iLen,&nFont,nRc,&format,&nLineGrBrushStroke);
+				nGraphics.DrawString(pstrText,nLen,&nFont,nRc,&format,&nLineGrBrushStroke);
 				nRc.Offset(0,-1);
+#ifndef _UNICODE
+				delete[] pWideText;
 #endif	
 			}
-#ifdef _UNICODE
+
 			CDuiString sText1 = m_sText;
 			CPaintManagerUI::ProcessMultiLanguageTokens(sText1);
+#ifdef _UNICODE			
 			LPCWSTR pstrText = sText1.GetData();
+#else
+			int iLen = _tcslen(sText1.GetData());
+			LPWSTR pWideText = new WCHAR[iLen + 1];
+			::ZeroMemory(pWideText, (iLen + 1) * sizeof(WCHAR));
+			::MultiByteToWideChar(CP_ACP, 0, sText1.GetData(), -1, pWideText, iLen);
+			LPCWSTR pstrText = pWideText;			
+#endif
 			int nLen = wcslen(pstrText);
-
 			if(GetEnabledShadow() && (GetTextShadowColorA() > 0 || GetTextShadowColorB() > 0))
 				nGraphics.DrawString(pstrText,nLen,&nFont,nShadowRc,&format,&nLineGrBrushA);
 
 			nGraphics.DrawString(pstrText,nLen,&nFont,nRc,&format,&nLineGrBrushB);
-#else
-			CDuiString sText = m_pWideText;
-			CPaintManagerUI::ProcessMultiLanguageTokens(sText);
-			LPCWSTR pstrText = sText.GetData();
-
-			int iLen = wcslen(pstrText);
-			if(GetEnabledShadow() && (GetTextShadowColorA() > 0 || GetTextShadowColorB() > 0))
-				nGraphics.DrawString(pstrText,iLen,&nFont,nShadowRc,&format,&nLineGrBrushA);
-
-			nGraphics.DrawString(pstrText,iLen,&nFont,nRc,&format,&nLineGrBrushB);
+#ifndef _UNICODE
+			delete[] pWideText;
 #endif
 		}
 	}

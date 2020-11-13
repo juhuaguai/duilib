@@ -339,6 +339,9 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
                 if( _tcsicmp(pstrClass, DUI_CTR_LISTHEADER) == 0 )            pControl = new CListHeaderUI;
                 else if( _tcsicmp(pstrClass, DUI_CTR_TILELAYOUT) == 0 )       pControl = new CTileLayoutUI;
 				else if( _tcsicmp(pstrClass, DUI_CTR_WEBBROWSER) == 0 )       pControl = new CWebBrowserUI;
+#ifdef SUPPORT_APNG
+				else if( _tcsicmp(pstrClass, DUI_CTR_APNGBUTTON) == 0 )       pControl = new CApngButtonUI;
+#endif
                 break;
 			case 11:
 				if (_tcsicmp(pstrClass, DUI_CTR_CHILDLAYOUT) == 0)			  pControl = new CChildLayoutUI;

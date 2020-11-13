@@ -528,21 +528,21 @@ namespace DuiLib
 			
 			SolidBrush nSolidBrush(ARGB2Color(clrColor));
 
-#ifdef _UNICODE
-			CDuiString sText = m_sText;
-			CPaintManagerUI::ProcessMultiLanguageTokens(sText);
-			LPCWSTR pstrText = sText.GetData();
-
-			int iLen = wcslen(pstrText);
-			nGraphics.DrawString(pstrText,iLen,&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
+			CDuiString sText1 = m_sText;
+			CPaintManagerUI::ProcessMultiLanguageTokens(sText1);
+#ifdef _UNICODE			
+			LPCWSTR pstrText = sText1.GetData();
 #else
-			CDuiString sText = m_pWideText;
-			CPaintManagerUI::ProcessMultiLanguageTokens(sText);
-			LPCWSTR pstrText = sText.GetData();
-
-			int iLen = wcslen(pstrText);
-			nGraphics.DrawString(pstrText,iLen,&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
-#endif	//_UNICODE
+			int iLen = _tcslen(sText1.GetData());
+			LPWSTR pWideText = new WCHAR[iLen + 1];
+			::ZeroMemory(pWideText, (iLen + 1) * sizeof(WCHAR));
+			::MultiByteToWideChar(CP_ACP, 0, sText1.GetData(), -1, pWideText, iLen);
+			LPCWSTR pstrText = pWideText;			
+#endif
+			nGraphics.DrawString(pstrText,wcslen(pstrText),&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
+#ifndef _UNICODE
+			delete[] pWideText;
+#endif	
 		}
 	}
 

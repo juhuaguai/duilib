@@ -184,14 +184,6 @@ namespace DuiLib
 		{
 			g.SetTextRenderingHint(GetTextRenderingAlias());
 			//»æÖÆÎÄ±¾
-#ifdef _UNICODE
-			LPWSTR pWideText = (LPWSTR)m_sText.GetData();
-#else 
-			int iLen = _tcslen(m_sText.GetData());
-			LPWSTR pWideText = new WCHAR[iLen + 1];
-			::ZeroMemory(pWideText, (iLen + 1) * sizeof(WCHAR));
-			::MultiByteToWideChar(CP_ACP, 0, m_sText.GetData(), -1, pWideText, iLen);
-#endif
 			Gdiplus::Font	nFont(m_pManager->GetPaintDC(),m_pManager->GetFont(GetFont()));
 
 			RECT rcText = {m_rcTextPadding.left,m_rcTextPadding.top,nWidth-m_rcTextPadding.right,nHeight-m_rcTextPadding.bottom};
@@ -215,10 +207,17 @@ namespace DuiLib
 
 			SolidBrush nBrush( ARGB2Color(m_dwTextColor) );
 
-			CDuiString sText = pWideText;
-			CPaintManagerUI::ProcessMultiLanguageTokens(sText);
-			LPCWSTR pstrText = sText.GetData();
-
+			CDuiString sText1 = m_sText;
+			CPaintManagerUI::ProcessMultiLanguageTokens(sText1);
+#ifdef _UNICODE			
+			LPCWSTR pstrText = sText1.GetData();
+#else
+			int iLen = _tcslen(sText1.GetData());
+			LPWSTR pWideText = new WCHAR[iLen + 1];
+			::ZeroMemory(pWideText, (iLen + 1) * sizeof(WCHAR));
+			::MultiByteToWideChar(CP_ACP, 0, sText1.GetData(), -1, pWideText, iLen);
+			LPCWSTR pstrText = pWideText;			
+#endif
 			g.DrawString(pstrText,wcslen(pstrText),&nFont,nRc,&format,&nBrush);
 #ifndef _UNICODE
 			delete[] pWideText;

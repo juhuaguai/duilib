@@ -271,22 +271,21 @@ Label_ForeImage:
 
 				SolidBrush nSolidBrush(ARGB2Color(IsEnabled()?m_dwTextColor:m_dwDisabledTextColor));
 
-#ifdef _UNICODE
 				CDuiString sText1 = m_sText;
 				CPaintManagerUI::ProcessMultiLanguageTokens(sText1);
+#ifdef _UNICODE				
 				LPCWSTR pstrText = sText1.GetData();
-				int nLen = wcslen(pstrText);
-
-
-				nGraphics.DrawString(pstrText,nLen,&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
 #else
-				CDuiString sText1 = m_pWideText;
-				CPaintManagerUI::ProcessMultiLanguageTokens(sText1);
-				LPWSTR pstrText = sText1.GetData();
-				int nLen = wcslen(pstrText);
-
-				nGraphics.DrawString(pstrText,nLen,&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
+				int iLen = _tcslen(sText1.GetData());
+				LPWSTR pWideText = new WCHAR[iLen + 1];
+				::ZeroMemory(pWideText, (iLen + 1) * sizeof(WCHAR));
+				::MultiByteToWideChar(CP_ACP, 0, sText1.GetData(), -1, pWideText, iLen);
+				LPCWSTR pstrText = pWideText;	
 #endif	//_UNICODE
+				nGraphics.DrawString(pstrText,wcslen(pstrText),&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
+#ifndef _UNICODE
+				delete[] pWideText;
+#endif
 			}
 
 			m_dwTextColor = oldTextColor;

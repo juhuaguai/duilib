@@ -209,6 +209,7 @@ public:
 
 	CDuiString GetName() const;
     HDC GetPaintDC() const;
+	HDC GetOffscreenDC() const;
 	HBITMAP GetPaintOffscreenBitmap();
     HWND GetPaintWindow() const;
     HWND GetTooltipWindow() const;
