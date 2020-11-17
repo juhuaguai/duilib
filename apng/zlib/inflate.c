@@ -116,7 +116,7 @@ z_streamp strm;
     return 0;
 }
 
-int ZEXPORT inflateResetKeep(strm)
+int ZEXPORT dui_inflateResetKeep(strm)
 z_streamp strm;
 {
     struct inflate_state FAR *state;
@@ -141,7 +141,7 @@ z_streamp strm;
     return Z_OK;
 }
 
-int ZEXPORT inflateReset(strm)
+int ZEXPORT dui_inflateReset(strm)
 z_streamp strm;
 {
     struct inflate_state FAR *state;
@@ -151,10 +151,10 @@ z_streamp strm;
     state->wsize = 0;
     state->whave = 0;
     state->wnext = 0;
-    return inflateResetKeep(strm);
+    return dui_inflateResetKeep(strm);
 }
 
-int ZEXPORT inflateReset2(strm, windowBits)
+int ZEXPORT dui_inflateReset2(strm, windowBits)
 z_streamp strm;
 int windowBits;
 {
@@ -189,10 +189,10 @@ int windowBits;
     /* update state and reset the rest of it */
     state->wrap = wrap;
     state->wbits = (unsigned)windowBits;
-    return inflateReset(strm);
+    return dui_inflateReset(strm);
 }
 
-int ZEXPORT inflateInit2_(strm, windowBits, version, stream_size)
+int ZEXPORT dui_inflateInit2_(strm, windowBits, version, stream_size)
 z_streamp strm;
 int windowBits;
 const char *version;
@@ -210,7 +210,7 @@ int stream_size;
 #ifdef Z_SOLO
         return Z_STREAM_ERROR;
 #else
-        strm->zalloc = zcalloc;
+        strm->zalloc = dui_zcalloc;
         strm->opaque = (voidpf)0;
 #endif
     }
@@ -218,7 +218,7 @@ int stream_size;
 #ifdef Z_SOLO
         return Z_STREAM_ERROR;
 #else
-        strm->zfree = zcfree;
+        strm->zfree = dui_zcfree;
 #endif
     state = (struct inflate_state FAR *)
             ZALLOC(strm, 1, sizeof(struct inflate_state));
@@ -228,7 +228,7 @@ int stream_size;
     state->strm = strm;
     state->window = Z_NULL;
     state->mode = HEAD;     /* to pass state test in inflateReset2() */
-    ret = inflateReset2(strm, windowBits);
+    ret = dui_inflateReset2(strm, windowBits);
     if (ret != Z_OK) {
         ZFREE(strm, state);
         strm->state = Z_NULL;
@@ -236,15 +236,15 @@ int stream_size;
     return ret;
 }
 
-int ZEXPORT inflateInit_(strm, version, stream_size)
+int ZEXPORT dui_inflateInit_(strm, version, stream_size)
 z_streamp strm;
 const char *version;
 int stream_size;
 {
-    return inflateInit2_(strm, DEF_WBITS, version, stream_size);
+    return dui_inflateInit2_(strm, DEF_WBITS, version, stream_size);
 }
 
-int ZEXPORT inflatePrime(strm, bits, value)
+int ZEXPORT dui_inflatePrime(strm, bits, value)
 z_streamp strm;
 int bits;
 int value;
@@ -448,7 +448,7 @@ unsigned copy;
 /* check function to use adler32() for zlib or crc32() for gzip */
 #ifdef GUNZIP
 #  define UPDATE(check, buf, len) \
-    (state->flags ? crc32(check, buf, len) : adler32(check, buf, len))
+    (state->flags ? dui_crc32(check, buf, len) : dui_adler32(check, buf, len))
 #else
 #  define UPDATE(check, buf, len) adler32(check, buf, len)
 #endif
@@ -459,7 +459,7 @@ unsigned copy;
     do { \
         hbuf[0] = (unsigned char)(word); \
         hbuf[1] = (unsigned char)((word) >> 8); \
-        check = crc32(check, hbuf, 2); \
+        check = dui_crc32(check, hbuf, 2); \
     } while (0)
 
 #  define CRC4(check, word) \
@@ -468,7 +468,7 @@ unsigned copy;
         hbuf[1] = (unsigned char)((word) >> 8); \
         hbuf[2] = (unsigned char)((word) >> 16); \
         hbuf[3] = (unsigned char)((word) >> 24); \
-        check = crc32(check, hbuf, 4); \
+        check = dui_crc32(check, hbuf, 4); \
     } while (0)
 #endif
 
@@ -619,7 +619,7 @@ unsigned copy;
    will return Z_BUF_ERROR if it has not reached the end of the stream.
  */
 
-int ZEXPORT inflate(strm, flush)
+int ZEXPORT dui_inflate(strm, flush)
 z_streamp strm;
 int flush;
 {
@@ -664,7 +664,7 @@ int flush;
             if ((state->wrap & 2) && hold == 0x8b1f) {  /* gzip header */
                 if (state->wbits == 0)
                     state->wbits = 15;
-                state->check = crc32(0L, Z_NULL, 0);
+                state->check = dui_crc32(0L, Z_NULL, 0);
                 CRC2(state->check, hold);
                 INITBITS();
                 state->mode = FLAGS;
@@ -698,7 +698,7 @@ int flush;
             }
             state->dmax = 1U << len;
             Tracev((stderr, "inflate:   zlib header ok\n"));
-            strm->adler = state->check = adler32(0L, Z_NULL, 0);
+            strm->adler = state->check = dui_adler32(0L, Z_NULL, 0);
             state->mode = hold & 0x200 ? DICTID : TYPE;
             INITBITS();
             break;
@@ -766,7 +766,7 @@ int flush;
                                 state->head->extra_max - len : copy);
                     }
                     if ((state->flags & 0x0200) && (state->wrap & 4))
-                        state->check = crc32(state->check, next, copy);
+                        state->check = dui_crc32(state->check, next, copy);
                     have -= copy;
                     next += copy;
                     state->length -= copy;
@@ -787,7 +787,7 @@ int flush;
                         state->head->name[state->length++] = (Bytef)len;
                 } while (len && copy < have);
                 if ((state->flags & 0x0200) && (state->wrap & 4))
-                    state->check = crc32(state->check, next, copy);
+                    state->check = dui_crc32(state->check, next, copy);
                 have -= copy;
                 next += copy;
                 if (len) goto inf_leave;
@@ -808,7 +808,7 @@ int flush;
                         state->head->comment[state->length++] = (Bytef)len;
                 } while (len && copy < have);
                 if ((state->flags & 0x0200) && (state->wrap & 4))
-                    state->check = crc32(state->check, next, copy);
+                    state->check = dui_crc32(state->check, next, copy);
                 have -= copy;
                 next += copy;
                 if (len) goto inf_leave;
@@ -830,7 +830,7 @@ int flush;
                 state->head->hcrc = (int)((state->flags >> 9) & 1);
                 state->head->done = 1;
             }
-            strm->adler = state->check = crc32(0L, Z_NULL, 0);
+            strm->adler = state->check = dui_crc32(0L, Z_NULL, 0);
             state->mode = TYPE;
             break;
 #endif
@@ -844,7 +844,7 @@ int flush;
                 RESTORE();
                 return Z_NEED_DICT;
             }
-            strm->adler = state->check = adler32(0L, Z_NULL, 0);
+            strm->adler = state->check = dui_adler32(0L, Z_NULL, 0);
             state->mode = TYPE;
         case TYPE:
             if (flush == Z_BLOCK || flush == Z_TREES) goto inf_leave;
@@ -1274,7 +1274,7 @@ int flush;
     return ret;
 }
 
-int ZEXPORT inflateEnd(strm)
+int ZEXPORT dui_inflateEnd(strm)
 z_streamp strm;
 {
     struct inflate_state FAR *state;
@@ -1288,7 +1288,7 @@ z_streamp strm;
     return Z_OK;
 }
 
-int ZEXPORT inflateGetDictionary(strm, dictionary, dictLength)
+int ZEXPORT dui_inflateGetDictionary(strm, dictionary, dictLength)
 z_streamp strm;
 Bytef *dictionary;
 uInt *dictLength;
@@ -1311,7 +1311,7 @@ uInt *dictLength;
     return Z_OK;
 }
 
-int ZEXPORT inflateSetDictionary(strm, dictionary, dictLength)
+int ZEXPORT dui_inflateSetDictionary(strm, dictionary, dictLength)
 z_streamp strm;
 const Bytef *dictionary;
 uInt dictLength;
@@ -1328,8 +1328,8 @@ uInt dictLength;
 
     /* check for correct dictionary identifier */
     if (state->mode == DICT) {
-        dictid = adler32(0L, Z_NULL, 0);
-        dictid = adler32(dictid, dictionary, dictLength);
+        dictid = dui_adler32(0L, Z_NULL, 0);
+        dictid = dui_adler32(dictid, dictionary, dictLength);
         if (dictid != state->check)
             return Z_DATA_ERROR;
     }
@@ -1346,7 +1346,7 @@ uInt dictLength;
     return Z_OK;
 }
 
-int ZEXPORT inflateGetHeader(strm, head)
+int ZEXPORT dui_inflateGetHeader(strm, head)
 z_streamp strm;
 gz_headerp head;
 {
@@ -1397,7 +1397,7 @@ unsigned len;
     return next;
 }
 
-int ZEXPORT inflateSync(strm)
+int ZEXPORT dui_inflateSync(strm)
 z_streamp strm;
 {
     unsigned len;               /* number of bytes to look at or looked at */
@@ -1434,7 +1434,7 @@ z_streamp strm;
     /* return no joy or set up to restart inflate() on a new block */
     if (state->have != 4) return Z_DATA_ERROR;
     in = strm->total_in;  out = strm->total_out;
-    inflateReset(strm);
+    dui_inflateReset(strm);
     strm->total_in = in;  strm->total_out = out;
     state->mode = TYPE;
     return Z_OK;
@@ -1448,7 +1448,7 @@ z_streamp strm;
    block. When decompressing, PPP checks that at the end of input packet,
    inflate is waiting for these length bytes.
  */
-int ZEXPORT inflateSyncPoint(strm)
+int ZEXPORT dui_inflateSyncPoint(strm)
 z_streamp strm;
 {
     struct inflate_state FAR *state;
@@ -1458,7 +1458,7 @@ z_streamp strm;
     return state->mode == STORED && state->bits == 0;
 }
 
-int ZEXPORT inflateCopy(dest, source)
+int ZEXPORT dui_inflateCopy(dest, source)
 z_streamp dest;
 z_streamp source;
 {
@@ -1505,7 +1505,7 @@ z_streamp source;
     return Z_OK;
 }
 
-int ZEXPORT inflateUndermine(strm, subvert)
+int ZEXPORT dui_inflateUndermine(strm, subvert)
 z_streamp strm;
 int subvert;
 {
@@ -1523,7 +1523,7 @@ int subvert;
 #endif
 }
 
-int ZEXPORT inflateValidate(strm, check)
+int ZEXPORT dui_inflateValidate(strm, check)
 z_streamp strm;
 int check;
 {
@@ -1538,7 +1538,7 @@ int check;
     return Z_OK;
 }
 
-long ZEXPORT inflateMark(strm)
+long ZEXPORT dui_inflateMark(strm)
 z_streamp strm;
 {
     struct inflate_state FAR *state;
@@ -1551,7 +1551,7 @@ z_streamp strm;
             (state->mode == MATCH ? state->was - state->length : 0));
 }
 
-unsigned long ZEXPORT inflateCodesUsed(strm)
+unsigned long ZEXPORT dui_inflateCodesUsed(strm)
 z_streamp strm;
 {
     struct inflate_state FAR *state;

@@ -404,7 +404,7 @@ png_inflate_claim(png_structrp png_ptr, png_uint_32 owner)
       if ((png_ptr->flags & PNG_FLAG_ZSTREAM_INITIALIZED) != 0)
       {
 #if ZLIB_VERNUM >= 0x1240
-         ret = inflateReset2(&png_ptr->zstream, window_bits);
+         ret = dui_inflateReset2(&png_ptr->zstream, window_bits);
 #else
          ret = inflateReset(&png_ptr->zstream);
 #endif
@@ -413,7 +413,7 @@ png_inflate_claim(png_structrp png_ptr, png_uint_32 owner)
       else
       {
 #if ZLIB_VERNUM >= 0x1240
-         ret = inflateInit2(&png_ptr->zstream, window_bits);
+         ret = dui_inflateInit2(&png_ptr->zstream, window_bits);
 #else
          ret = inflateInit(&png_ptr->zstream);
 #endif
@@ -426,7 +426,7 @@ png_inflate_claim(png_structrp png_ptr, png_uint_32 owner)
    defined(PNG_SET_OPTION_SUPPORTED) && defined(PNG_IGNORE_ADLER32)
       if (((png_ptr->options >> PNG_IGNORE_ADLER32) & 3) == PNG_OPTION_ON)
          /* Turn off validation of the ADLER32 checksum in IDAT chunks */
-         ret = inflateValidate(&png_ptr->zstream, 0);
+         ret = dui_inflateValidate(&png_ptr->zstream, 0);
 #endif
 
       if (ret == Z_OK)
@@ -464,7 +464,7 @@ png_zlib_inflate(png_structrp png_ptr, int flush)
       png_ptr->zstream_start = 0;
    }
 
-   return inflate(&png_ptr->zstream, flush);
+   return dui_inflate(&png_ptr->zstream, flush);
 }
 #endif /* Zlib >= 1.2.4 */
 
@@ -659,7 +659,7 @@ png_decompress_chunk(png_structrp png_ptr,
              * with Z_FINISH in almost all cases, so the window will not be
              * maintained.
              */
-            if (inflateReset(&png_ptr->zstream) == Z_OK)
+            if (dui_inflateReset(&png_ptr->zstream) == Z_OK)
             {
                /* Because of the limit checks above we know that the new,
                 * expanded, size will fit in a size_t (let alone an
@@ -4954,7 +4954,7 @@ png_progressive_read_reset(png_structp png_ptr)
         png_ptr->iwidth = png_ptr->width;
     }
     png_ptr->flags &= ~PNG_FLAG_ZSTREAM_ENDED;
-    if (inflateReset(&(png_ptr->zstream)) != Z_OK)
+    if (dui_inflateReset(&(png_ptr->zstream)) != Z_OK)
         png_error(png_ptr, "inflateReset failed");
     png_ptr->zstream.avail_in = 0;
     png_ptr->zstream.next_in = 0;

@@ -25,7 +25,7 @@ local void fixedtables OF((struct inflate_state FAR *state));
    windowBits is in the range 8..15, and window is a user-supplied
    window and output buffer that is 2**windowBits bytes.
  */
-int ZEXPORT inflateBackInit_(strm, windowBits, window, version, stream_size)
+int ZEXPORT dui_inflateBackInit_(strm, windowBits, window, version, stream_size)
 z_streamp strm;
 int windowBits;
 unsigned char FAR *window;
@@ -45,7 +45,7 @@ int stream_size;
 #ifdef Z_SOLO
         return Z_STREAM_ERROR;
 #else
-        strm->zalloc = zcalloc;
+        strm->zalloc = dui_zcalloc;
         strm->opaque = (voidpf)0;
 #endif
     }
@@ -53,7 +53,7 @@ int stream_size;
 #ifdef Z_SOLO
         return Z_STREAM_ERROR;
 #else
-    strm->zfree = zcfree;
+    strm->zfree = dui_zcfree;
 #endif
     state = (struct inflate_state FAR *)ZALLOC(strm, 1,
                                                sizeof(struct inflate_state));
@@ -247,7 +247,7 @@ struct inflate_state FAR *state;
    inflateBack() can also return Z_STREAM_ERROR if the input parameters
    are not correct, i.e. strm is Z_NULL or the state was not initialized.
  */
-int ZEXPORT inflateBack(strm, in, in_desc, out, out_desc)
+int ZEXPORT dui_inflateBack(strm, in, in_desc, out, out_desc)
 z_streamp strm;
 in_func in;
 void FAR *in_desc;
@@ -628,7 +628,7 @@ void FAR *out_desc;
     return ret;
 }
 
-int ZEXPORT inflateBackEnd(strm)
+int ZEXPORT dui_inflateBackEnd(strm)
 z_streamp strm;
 {
     if (strm == Z_NULL || strm->state == Z_NULL || strm->zfree == (free_func)0)

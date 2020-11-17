@@ -46,10 +46,10 @@ typedef unsigned short ush;
 typedef ush FAR ushf;
 typedef unsigned long  ulg;
 
-extern z_const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
+extern z_const char * const dui_z_errmsg[10]; /* indexed by 2-zlib_error */
 /* (size given to avoid silly warnings with Visual C++) */
 
-#define ERR_MSG(err) z_errmsg[Z_NEED_DICT-(err)]
+#define ERR_MSG(err) dui_z_errmsg[Z_NEED_DICT-(err)]
 
 #define ERR_RETURN(strm,err) \
   return (strm->msg = ERR_MSG(err), (err))
@@ -188,8 +188,8 @@ extern z_const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 /* provide prototypes for these when building zlib without LFS */
 #if !defined(_WIN32) && \
     (!defined(_LARGEFILE64_SOURCE) || _LFS64_LARGEFILE-0 == 0)
-    ZEXTERN uLong ZEXPORT adler32_combine64 OF((uLong, uLong, z_off_t));
-    ZEXTERN uLong ZEXPORT crc32_combine64 OF((uLong, uLong, z_off_t));
+    ZEXTERN uLong ZEXPORT dui_adler32_combine64 OF((uLong, uLong, z_off_t));
+    ZEXTERN uLong ZEXPORT dui_crc32_combine64 OF((uLong, uLong, z_off_t));
 #endif
 
         /* common defaults */
@@ -254,9 +254,9 @@ extern z_const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #endif
 
 #ifndef Z_SOLO
-   voidpf ZLIB_INTERNAL zcalloc OF((voidpf opaque, unsigned items,
+   voidpf ZLIB_INTERNAL dui_zcalloc OF((voidpf opaque, unsigned items,
                                     unsigned size));
-   void ZLIB_INTERNAL zcfree  OF((voidpf opaque, voidpf ptr));
+   void ZLIB_INTERNAL dui_zcfree  OF((voidpf opaque, voidpf ptr));
 #endif
 
 #define ZALLOC(strm, items, size) \

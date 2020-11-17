@@ -392,7 +392,7 @@ png_deflate_claim(png_structrp png_ptr, png_uint_32 owner,
          png_ptr->zlib_set_mem_level != memLevel ||
          png_ptr->zlib_set_strategy != strategy))
       {
-         if (deflateEnd(&png_ptr->zstream) != Z_OK)
+         if (dui_deflateEnd(&png_ptr->zstream) != Z_OK)
             png_warning(png_ptr, "deflateEnd failed (ignored)");
 
          png_ptr->flags &= ~PNG_FLAG_ZSTREAM_INITIALIZED;
@@ -410,11 +410,11 @@ png_deflate_claim(png_structrp png_ptr, png_uint_32 owner,
        * do a simple reset to the previous parameters.
        */
       if ((png_ptr->flags & PNG_FLAG_ZSTREAM_INITIALIZED) != 0)
-         ret = deflateReset(&png_ptr->zstream);
+         ret = dui_deflateReset(&png_ptr->zstream);
 
       else
       {
-         ret = deflateInit2(&png_ptr->zstream, level, method, windowBits,
+         ret = dui_deflateInit2(&png_ptr->zstream, level, method, windowBits,
              memLevel, strategy);
 
          if (ret == Z_OK)
@@ -577,7 +577,7 @@ png_text_compress(png_structrp png_ptr, png_uint_32 chunk_name,
          }
 
          /* Compress the data */
-         ret = deflate(&png_ptr->zstream,
+         ret = dui_deflate(&png_ptr->zstream,
              input_len > 0 ? Z_NO_FLUSH : Z_FINISH);
 
          /* Claw back input data that was not consumed (because avail_in is
@@ -983,7 +983,7 @@ png_compress_IDAT(png_structrp png_ptr, png_const_bytep input,
       png_ptr->zstream.avail_in = avail;
       input_len -= avail;
 
-      ret = deflate(&png_ptr->zstream, input_len > 0 ? Z_NO_FLUSH : flush);
+      ret = dui_deflate(&png_ptr->zstream, input_len > 0 ? Z_NO_FLUSH : flush);
 
       /* Include as-yet unconsumed input */
       input_len += png_ptr->zstream.avail_in;

@@ -5,15 +5,8 @@
 
 #pragma once
 #include "../../apng/libpng/png.h"
-#ifdef UILIB_STATIC 
-#pragma comment(lib,"../apng/static/libpng.lib")
-#pragma comment(lib,"../apng/static/zlib.lib")
-#endif
-
-#ifdef DUILIB_API
-#pragma comment(lib,"../apng/mt_dll/libpng16.lib")
-#pragma comment(lib,"../apng/mt_dll/zlib1.lib")
-#endif
+//修改为在 项目属性>链接器>输入>附加依赖项 中设置，这样可以将libpng.lib合并到duilib.lib中,外部仅链接duilib.lib即可使用
+//#pragma comment(lib,"../apng/static/libpng.lib")
 
 namespace DuiLib
 {

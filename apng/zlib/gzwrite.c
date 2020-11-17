@@ -41,7 +41,7 @@ local int gz_init(state)
         strm->zalloc = Z_NULL;
         strm->zfree = Z_NULL;
         strm->opaque = Z_NULL;
-        ret = deflateInit2(strm, state->level, Z_DEFLATED,
+        ret = dui_deflateInit2(strm, state->level, Z_DEFLATED,
                            MAX_WBITS + 16, DEF_MEM_LEVEL, state->strategy);
         if (ret != Z_OK) {
             free(state->out);
@@ -123,7 +123,7 @@ local int gz_comp(state, flush)
 
         /* compress */
         have = strm->avail_out;
-        ret = deflate(strm, flush);
+        ret = dui_deflate(strm, flush);
         if (ret == Z_STREAM_ERROR) {
             gz_error(state, Z_STREAM_ERROR,
                       "internal error: deflate stream corrupt");
@@ -134,7 +134,7 @@ local int gz_comp(state, flush)
 
     /* if that completed a deflate stream, allow another to start */
     if (flush == Z_FINISH)
-        deflateReset(strm);
+        dui_deflateReset(strm);
 
     /* all done, no errors */
     return 0;
@@ -243,7 +243,7 @@ local z_size_t gz_write(state, buf, len)
 }
 
 /* -- see zlib.h -- */
-int ZEXPORT gzwrite(file, buf, len)
+int ZEXPORT dui_gzwrite(file, buf, len)
     gzFile file;
     voidpc buf;
     unsigned len;
@@ -271,7 +271,7 @@ int ZEXPORT gzwrite(file, buf, len)
 }
 
 /* -- see zlib.h -- */
-z_size_t ZEXPORT gzfwrite(buf, size, nitems, file)
+z_size_t ZEXPORT dui_gzfwrite(buf, size, nitems, file)
     voidpc buf;
     z_size_t size;
     z_size_t nitems;
@@ -301,7 +301,7 @@ z_size_t ZEXPORT gzfwrite(buf, size, nitems, file)
 }
 
 /* -- see zlib.h -- */
-int ZEXPORT gzputc(file, c)
+int ZEXPORT dui_gzputc(file, c)
     gzFile file;
     int c;
 {
@@ -349,7 +349,7 @@ int ZEXPORT gzputc(file, c)
 }
 
 /* -- see zlib.h -- */
-int ZEXPORT gzputs(file, str)
+int ZEXPORT dui_gzputs(file, str)
     gzFile file;
     const char *str;
 {
@@ -376,7 +376,7 @@ int ZEXPORT gzputs(file, str)
 #include <stdarg.h>
 
 /* -- see zlib.h -- */
-int ZEXPORTVA gzvprintf(gzFile file, const char *format, va_list va)
+int ZEXPORTVA dui_gzvprintf(gzFile file, const char *format, va_list va)
 {
     int len;
     unsigned left;
@@ -448,13 +448,13 @@ int ZEXPORTVA gzvprintf(gzFile file, const char *format, va_list va)
     return len;
 }
 
-int ZEXPORTVA gzprintf(gzFile file, const char *format, ...)
+int ZEXPORTVA dui_gzprintf(gzFile file, const char *format, ...)
 {
     va_list va;
     int ret;
 
     va_start(va, format);
-    ret = gzvprintf(file, format, va);
+    ret = dui_gzvprintf(file, format, va);
     va_end(va);
     return ret;
 }
@@ -462,7 +462,7 @@ int ZEXPORTVA gzprintf(gzFile file, const char *format, ...)
 #else /* !STDC && !Z_HAVE_STDARG_H */
 
 /* -- see zlib.h -- */
-int ZEXPORTVA gzprintf (file, format, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10,
+int ZEXPORTVA dui_gzprintf (file, format, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10,
                        a11, a12, a13, a14, a15, a16, a17, a18, a19, a20)
     gzFile file;
     const char *format;
@@ -550,7 +550,7 @@ int ZEXPORTVA gzprintf (file, format, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10,
 #endif
 
 /* -- see zlib.h -- */
-int ZEXPORT gzflush(file, flush)
+int ZEXPORT dui_gzflush(file, flush)
     gzFile file;
     int flush;
 {
@@ -582,7 +582,7 @@ int ZEXPORT gzflush(file, flush)
 }
 
 /* -- see zlib.h -- */
-int ZEXPORT gzsetparams(file, level, strategy)
+int ZEXPORT dui_gzsetparams(file, level, strategy)
     gzFile file;
     int level;
     int strategy;
@@ -616,7 +616,7 @@ int ZEXPORT gzsetparams(file, level, strategy)
         /* flush previous input with previous parameters before changing */
         if (strm->avail_in && gz_comp(state, Z_BLOCK) == -1)
             return state->err;
-        deflateParams(strm, level, strategy);
+        dui_deflateParams(strm, level, strategy);
     }
     state->level = level;
     state->strategy = strategy;
@@ -624,7 +624,7 @@ int ZEXPORT gzsetparams(file, level, strategy)
 }
 
 /* -- see zlib.h -- */
-int ZEXPORT gzclose_w(file)
+int ZEXPORT dui_gzclose_w(file)
     gzFile file;
 {
     int ret = Z_OK;
@@ -651,7 +651,7 @@ int ZEXPORT gzclose_w(file)
         ret = state->err;
     if (state->size) {
         if (!state->direct) {
-            (void)deflateEnd(&(state->strm));
+            (void)dui_deflateEnd(&(state->strm));
             free(state->out);
         }
         free(state->in);

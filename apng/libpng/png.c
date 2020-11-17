@@ -127,7 +127,7 @@ void /* PRIVATE */
 png_reset_crc(png_structrp png_ptr)
 {
    /* The cast is safe because the crc is a 32-bit value. */
-   png_ptr->crc = (png_uint_32)crc32(0, Z_NULL, 0);
+   png_ptr->crc = (png_uint_32)dui_crc32(0, Z_NULL, 0);
 }
 
 /* Calculate the CRC over a section of data.  We can only pass as
@@ -170,7 +170,7 @@ png_calculate_crc(png_structrp png_ptr, png_const_bytep ptr, size_t length)
             safe_length = (uInt)-1; /* evil, but safe */
 #endif
 
-         crc = crc32(crc, ptr, safe_length);
+         crc = dui_crc32(crc, ptr, safe_length);
 
          /* The following should never issue compiler warnings; if they do the
           * target system has characteristics that will probably violate other
@@ -977,7 +977,7 @@ png_reset_zstream(png_structrp png_ptr)
       return Z_STREAM_ERROR;
 
    /* WARNING: this resets the window bits to the maximum! */
-   return (inflateReset(&png_ptr->zstream));
+   return (dui_inflateReset(&png_ptr->zstream));
 }
 #endif /* READ */
 
@@ -2359,8 +2359,8 @@ png_compare_ICC_profile_with_sRGB(png_const_structrp png_ptr,
             /* Now calculate the adler32 if not done already. */
             if (adler == 0)
             {
-               adler = adler32(0, NULL, 0);
-               adler = adler32(adler, profile, length);
+               adler = dui_adler32(0, NULL, 0);
+               adler = dui_adler32(adler, profile, length);
             }
 
             if (adler == png_sRGB_checks[i].adler)
@@ -2372,8 +2372,8 @@ png_compare_ICC_profile_with_sRGB(png_const_structrp png_ptr,
 #              if PNG_sRGB_PROFILE_CHECKS > 1
                   if (crc == 0)
                   {
-                     crc = crc32(0, NULL, 0);
-                     crc = crc32(crc, profile, length);
+                     crc = dui_crc32(0, NULL, 0);
+                     crc = dui_crc32(crc, profile, length);
                   }
 
                   /* So this check must pass for the 'return' below to happen.

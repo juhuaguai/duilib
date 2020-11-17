@@ -72,6 +72,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="../apng/static/libpng.lib"
 				OutputFile="../bin/DuiLib.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -167,6 +168,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="../apng/static/libpng.lib"
 				OutputFile="../bin/DuiLib_d.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -263,6 +265,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="../apng/static/libpng.lib"
 				OutputFile="../bin/DuiLib_ud.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -358,6 +361,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="../apng/static/libpng.lib"
 				OutputFile="../bin/DuiLib_u.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -457,6 +461,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="../apng/static/libpng.lib"
 				OutputFile="..\Lib\Duilib_uStatic.lib"
 			/>
 			<Tool

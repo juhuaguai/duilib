@@ -10,7 +10,7 @@
 #  include "gzguts.h"
 #endif
 
-z_const char * const z_errmsg[10] = {
+z_const char * const dui_z_errmsg[10] = {
     (z_const char *)"need dictionary",     /* Z_NEED_DICT       2  */
     (z_const char *)"stream end",          /* Z_STREAM_END      1  */
     (z_const char *)"",                    /* Z_OK              0  */
@@ -24,12 +24,12 @@ z_const char * const z_errmsg[10] = {
 };
 
 
-const char * ZEXPORT zlibVersion()
+const char * ZEXPORT dui_zlibVersion()
 {
     return ZLIB_VERSION;
 }
 
-uLong ZEXPORT zlibCompileFlags()
+uLong ZEXPORT dui_zlibCompileFlags()
 {
     uLong flags;
 
@@ -130,7 +130,7 @@ void ZLIB_INTERNAL z_error (m)
 /* exported to allow conversion of error code to string for compress() and
  * uncompress()
  */
-const char * ZEXPORT zError(err)
+const char * ZEXPORT dui_zError(err)
     int err;
 {
     return ERR_MSG(err);
@@ -214,7 +214,7 @@ local ptr_table table[MAX_PTR];
  * a protected system like OS/2. Use Microsoft C instead.
  */
 
-voidpf ZLIB_INTERNAL zcalloc (voidpf opaque, unsigned items, unsigned size)
+voidpf ZLIB_INTERNAL dui_zcalloc (voidpf opaque, unsigned items, unsigned size)
 {
     voidpf buf;
     ulg bsize = (ulg)items*size;
@@ -240,7 +240,7 @@ voidpf ZLIB_INTERNAL zcalloc (voidpf opaque, unsigned items, unsigned size)
     return buf;
 }
 
-void ZLIB_INTERNAL zcfree (voidpf opaque, voidpf ptr)
+void ZLIB_INTERNAL dui_zcfree (voidpf opaque, voidpf ptr)
 {
     int n;
 
@@ -277,13 +277,13 @@ void ZLIB_INTERNAL zcfree (voidpf opaque, voidpf ptr)
 #  define _hfree   hfree
 #endif
 
-voidpf ZLIB_INTERNAL zcalloc (voidpf opaque, uInt items, uInt size)
+voidpf ZLIB_INTERNAL dui_zcalloc (voidpf opaque, uInt items, uInt size)
 {
     (void)opaque;
     return _halloc((long)items, size);
 }
 
-void ZLIB_INTERNAL zcfree (voidpf opaque, voidpf ptr)
+void ZLIB_INTERNAL dui_zcfree (voidpf opaque, voidpf ptr)
 {
     (void)opaque;
     _hfree(ptr);
@@ -302,7 +302,7 @@ extern voidp  calloc OF((uInt items, uInt size));
 extern void   free   OF((voidpf ptr));
 #endif
 
-voidpf ZLIB_INTERNAL zcalloc (opaque, items, size)
+voidpf ZLIB_INTERNAL dui_zcalloc (opaque, items, size)
     voidpf opaque;
     unsigned items;
     unsigned size;
@@ -312,7 +312,7 @@ voidpf ZLIB_INTERNAL zcalloc (opaque, items, size)
                               (voidpf)calloc(items, size);
 }
 
-void ZLIB_INTERNAL zcfree (opaque, ptr)
+void ZLIB_INTERNAL dui_zcfree (opaque, ptr)
     voidpf opaque;
     voidpf ptr;
 {

@@ -9,6 +9,11 @@
 ## 说明：<br />
 ## 官方库改为本仓库代码后，会遇到CDuiString的一些编译或者运行报错，原因在于我调整了CDuiString的代码（见下方第55点说明），解决方法就是重新使用本仓库的duillib的头文件和.lib重新编译和链接生成自己的程序，解决其中的编译报错（主要是CDuiString转换为LPCTSTR时报错,修改CDuiString.GetData()）即可。<br />
 ## 有问题欢迎反馈！<br />
+<br/>
+因为引入了libpng来支持apng，而libpng依赖zlib，所以如果使用duilib时提示zlib冲突，有两种办法：<br />1.去掉duilib项目预处理器中的SUPPORT_APNG，去掉libpng.lib依赖，这样就不使用apng相关的东西了。<br />
+2.打开apng/libpng/projects/visualc71/libpng.sln，搜索链接冲突的函数或者全局变量，给函数名或者变量名前加前缀dui_，然后重新编译生成libpng.lib，重新生成duilib。链接时冲突提示的函数或者变量名前面一般会多一个_，比如zcfree冲突时会提示为_zcfree已经存在(zutil.obj)，obj对应的都有C文件，去里面搜索或者全局搜索即可。<br />
+3.联系我发编译或者链接错误提示，我看到了会及时修改。<br />
+4.原始提供的是vs2008编译的静态库，其他版本vs使用可能会有问题，如需更换为其他版本vs，打开sln重启编译生成即可。生成顺序是zlib->libpng->duilib。<br />
 <br />
 
 

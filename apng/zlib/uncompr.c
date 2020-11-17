@@ -24,7 +24,7 @@
    Z_DATA_ERROR if the input data was corrupted, including if the input data is
    an incomplete zlib stream.
 */
-int ZEXPORT uncompress2 (dest, destLen, source, sourceLen)
+int ZEXPORT dui_uncompress2 (dest, destLen, source, sourceLen)
     Bytef *dest;
     uLongf *destLen;
     const Bytef *source;
@@ -52,7 +52,7 @@ int ZEXPORT uncompress2 (dest, destLen, source, sourceLen)
     stream.zfree = (free_func)0;
     stream.opaque = (voidpf)0;
 
-    err = inflateInit(&stream);
+    err = dui_inflateInit(&stream);
     if (err != Z_OK) return err;
 
     stream.next_out = dest;
@@ -67,7 +67,7 @@ int ZEXPORT uncompress2 (dest, destLen, source, sourceLen)
             stream.avail_in = len > (uLong)max ? max : (uInt)len;
             len -= stream.avail_in;
         }
-        err = inflate(&stream, Z_NO_FLUSH);
+        err = dui_inflate(&stream, Z_NO_FLUSH);
     } while (err == Z_OK);
 
     *sourceLen -= len + stream.avail_in;
@@ -76,18 +76,18 @@ int ZEXPORT uncompress2 (dest, destLen, source, sourceLen)
     else if (stream.total_out && err == Z_BUF_ERROR)
         left = 1;
 
-    inflateEnd(&stream);
+    dui_inflateEnd(&stream);
     return err == Z_STREAM_END ? Z_OK :
            err == Z_NEED_DICT ? Z_DATA_ERROR  :
            err == Z_BUF_ERROR && left + stream.avail_out ? Z_DATA_ERROR :
            err;
 }
 
-int ZEXPORT uncompress (dest, destLen, source, sourceLen)
+int ZEXPORT dui_uncompress (dest, destLen, source, sourceLen)
     Bytef *dest;
     uLongf *destLen;
     const Bytef *source;
     uLong sourceLen;
 {
-    return uncompress2(dest, destLen, source, &sourceLen);
+    return dui_uncompress2(dest, destLen, source, &sourceLen);
 }

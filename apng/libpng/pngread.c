@@ -1056,7 +1056,7 @@ png_read_destroy(png_structrp png_ptr)
    png_ptr->free_me &= ~PNG_FREE_TRNS;
 #endif
 
-   inflateEnd(&png_ptr->zstream);
+   dui_inflateEnd(&png_ptr->zstream);
 
 #ifdef PNG_PROGRESSIVE_READ_SUPPORTED
    png_free(png_ptr, png_ptr->save_buffer);

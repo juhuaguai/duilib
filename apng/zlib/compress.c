@@ -19,7 +19,7 @@
    memory, Z_BUF_ERROR if there was not enough room in the output buffer,
    Z_STREAM_ERROR if the level parameter is invalid.
 */
-int ZEXPORT compress2 (dest, destLen, source, sourceLen, level)
+int ZEXPORT dui_compress2 (dest, destLen, source, sourceLen, level)
     Bytef *dest;
     uLongf *destLen;
     const Bytef *source;
@@ -38,7 +38,7 @@ int ZEXPORT compress2 (dest, destLen, source, sourceLen, level)
     stream.zfree = (free_func)0;
     stream.opaque = (voidpf)0;
 
-    err = deflateInit(&stream, level);
+    err = dui_deflateInit(&stream, level);
     if (err != Z_OK) return err;
 
     stream.next_out = dest;
@@ -55,30 +55,30 @@ int ZEXPORT compress2 (dest, destLen, source, sourceLen, level)
             stream.avail_in = sourceLen > (uLong)max ? max : (uInt)sourceLen;
             sourceLen -= stream.avail_in;
         }
-        err = deflate(&stream, sourceLen ? Z_NO_FLUSH : Z_FINISH);
+        err = dui_deflate(&stream, sourceLen ? Z_NO_FLUSH : Z_FINISH);
     } while (err == Z_OK);
 
     *destLen = stream.total_out;
-    deflateEnd(&stream);
+    dui_deflateEnd(&stream);
     return err == Z_STREAM_END ? Z_OK : err;
 }
 
 /* ===========================================================================
  */
-int ZEXPORT compress (dest, destLen, source, sourceLen)
+int ZEXPORT dui_compress (dest, destLen, source, sourceLen)
     Bytef *dest;
     uLongf *destLen;
     const Bytef *source;
     uLong sourceLen;
 {
-    return compress2(dest, destLen, source, sourceLen, Z_DEFAULT_COMPRESSION);
+    return dui_compress2(dest, destLen, source, sourceLen, Z_DEFAULT_COMPRESSION);
 }
 
 /* ===========================================================================
      If the default memLevel or windowBits for deflateInit() is changed, then
    this function needs to be updated.
  */
-uLong ZEXPORT compressBound (sourceLen)
+uLong ZEXPORT dui_compressBound (sourceLen)
     uLong sourceLen;
 {
     return sourceLen + (sourceLen >> 12) + (sourceLen >> 14) +

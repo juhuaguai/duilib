@@ -951,7 +951,7 @@ png_write_destroy(png_structrp png_ptr)
 
    /* Free any memory zlib uses */
    if ((png_ptr->flags & PNG_FLAG_ZSTREAM_INITIALIZED) != 0)
-      deflateEnd(&png_ptr->zstream);
+      dui_deflateEnd(&png_ptr->zstream);
 
    /* Free our memory.  png_free checks NULL for us. */
    png_free_buffer_list(png_ptr, &png_ptr->zbuffer_list);

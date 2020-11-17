@@ -18,6 +18,7 @@ namespace DuiLib
 		bool Activate();
 		void SetEnabled(bool bEnable = true);
 		void DoEvent(TEventUI& event);
+		bool DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
 
 		void SetBkImageDest(const RECT& rcDest);
 

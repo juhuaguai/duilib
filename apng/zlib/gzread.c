@@ -112,7 +112,7 @@ local int gz_look(state)
         state->strm.opaque = Z_NULL;
         state->strm.avail_in = 0;
         state->strm.next_in = Z_NULL;
-        if (inflateInit2(&(state->strm), 15 + 16) != Z_OK) {    /* gunzip */
+        if (dui_inflateInit2(&(state->strm), 15 + 16) != Z_OK) {    /* gunzip */
             free(state->out);
             free(state->in);
             state->size = 0;
@@ -138,7 +138,7 @@ local int gz_look(state)
        single byte is sufficient indication that it is not a gzip file) */
     if (strm->avail_in > 1 &&
             strm->next_in[0] == 31 && strm->next_in[1] == 139) {
-        inflateReset(strm);
+        dui_inflateReset(strm);
         state->how = GZIP;
         state->direct = 0;
         return 0;
@@ -191,7 +191,7 @@ local int gz_decomp(state)
         }
 
         /* decompress and handle errors */
-        ret = inflate(strm, Z_NO_FLUSH);
+        ret = dui_inflate(strm, Z_NO_FLUSH);
         if (ret == Z_STREAM_ERROR || ret == Z_NEED_DICT) {
             gz_error(state, Z_STREAM_ERROR,
                      "internal error: inflate stream corrupt");
@@ -372,7 +372,7 @@ local z_size_t gz_read(state, buf, len)
 }
 
 /* -- see zlib.h -- */
-int ZEXPORT gzread(file, buf, len)
+int ZEXPORT dui_gzread(file, buf, len)
     gzFile file;
     voidp buf;
     unsigned len;
@@ -408,7 +408,7 @@ int ZEXPORT gzread(file, buf, len)
 }
 
 /* -- see zlib.h -- */
-z_size_t ZEXPORT gzfread(buf, size, nitems, file)
+z_size_t ZEXPORT dui_gzfread(buf, size, nitems, file)
     voidp buf;
     z_size_t size;
     z_size_t nitems;
@@ -444,7 +444,7 @@ z_size_t ZEXPORT gzfread(buf, size, nitems, file)
 #else
 #  undef gzgetc
 #endif
-int ZEXPORT gzgetc(file)
+int ZEXPORT dui_gzgetc(file)
     gzFile file;
 {
     int ret;
@@ -473,14 +473,14 @@ int ZEXPORT gzgetc(file)
     return ret < 1 ? -1 : buf[0];
 }
 
-int ZEXPORT gzgetc_(file)
+int ZEXPORT dui_gzgetc_(file)
 gzFile file;
 {
-    return gzgetc(file);
+    return dui_gzgetc(file);
 }
 
 /* -- see zlib.h -- */
-int ZEXPORT gzungetc(c, file)
+int ZEXPORT dui_gzungetc(c, file)
     int c;
     gzFile file;
 {
@@ -540,7 +540,7 @@ int ZEXPORT gzungetc(c, file)
 }
 
 /* -- see zlib.h -- */
-char * ZEXPORT gzgets(file, buf, len)
+char * ZEXPORT dui_gzgets(file, buf, len)
     gzFile file;
     char *buf;
     int len;
@@ -604,7 +604,7 @@ char * ZEXPORT gzgets(file, buf, len)
 }
 
 /* -- see zlib.h -- */
-int ZEXPORT gzdirect(file)
+int ZEXPORT dui_gzdirect(file)
     gzFile file;
 {
     gz_statep state;
@@ -624,7 +624,7 @@ int ZEXPORT gzdirect(file)
 }
 
 /* -- see zlib.h -- */
-int ZEXPORT gzclose_r(file)
+int ZEXPORT dui_gzclose_r(file)
     gzFile file;
 {
     int ret, err;
@@ -641,7 +641,7 @@ int ZEXPORT gzclose_r(file)
 
     /* free memory and close file */
     if (state->size) {
-        inflateEnd(&(state->strm));
+        dui_inflateEnd(&(state->strm));
         free(state->out);
         free(state->in);
     }

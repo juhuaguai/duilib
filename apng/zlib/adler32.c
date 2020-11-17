@@ -60,7 +60,7 @@ local uLong adler32_combine_ OF((uLong adler1, uLong adler2, z_off64_t len2));
 #endif
 
 /* ========================================================================= */
-uLong ZEXPORT adler32_z(adler, buf, len)
+uLong ZEXPORT dui_adler32_z(adler, buf, len)
     uLong adler;
     const Bytef *buf;
     z_size_t len;
@@ -131,12 +131,12 @@ uLong ZEXPORT adler32_z(adler, buf, len)
 }
 
 /* ========================================================================= */
-uLong ZEXPORT adler32(adler, buf, len)
+uLong ZEXPORT dui_adler32(adler, buf, len)
     uLong adler;
     const Bytef *buf;
     uInt len;
 {
-    return adler32_z(adler, buf, len);
+    return dui_adler32_z(adler, buf, len);
 }
 
 /* ========================================================================= */
@@ -169,7 +169,7 @@ local uLong adler32_combine_(adler1, adler2, len2)
 }
 
 /* ========================================================================= */
-uLong ZEXPORT adler32_combine(adler1, adler2, len2)
+uLong ZEXPORT dui_adler32_combine(adler1, adler2, len2)
     uLong adler1;
     uLong adler2;
     z_off_t len2;
@@ -177,7 +177,7 @@ uLong ZEXPORT adler32_combine(adler1, adler2, len2)
     return adler32_combine_(adler1, adler2, len2);
 }
 
-uLong ZEXPORT adler32_combine64(adler1, adler2, len2)
+uLong ZEXPORT dui_adler32_combine64(adler1, adler2, len2)
     uLong adler1;
     uLong adler2;
     z_off64_t len2;
