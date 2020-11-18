@@ -4,7 +4,7 @@
 #ifdef SUPPORT_APNG
 
 #pragma once
-#include "../../apng/libpng/png.h"
+
 //修改为在 项目属性>链接器>输入>附加依赖项 中设置，这样可以将libpng.lib合并到duilib.lib中,外部仅链接duilib.lib即可使用
 //#pragma comment(lib,"../apng/static/libpng.lib")
 
@@ -90,7 +90,6 @@ namespace DuiLib
 		void	DrawFrame( HDC hDC );		// 绘制每帧
 		void	LoadApngFromFile(LPCTSTR pstrApngPath);
 		void	LoadApngFromMemory( LPVOID pBuf,size_t dwSize );
-		static void pngReadCallback(png_structp png_ptr, png_bytep data, png_size_t length);
 		void BlendOver(BYTE** rows_dst, BYTE** rows_src, UINT32 x, UINT32 y, UINT32 w, UINT32 h);
 	protected:
 		CDuiPtrArray	m_ApngImage;
