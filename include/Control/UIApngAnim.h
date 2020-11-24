@@ -69,6 +69,8 @@ namespace DuiLib
 		void	Play();
 		void	Pause();
 		void	Stop();
+		void	SetPlayNums(const int& nNums);//设置播放次数
+		int		GetPlayNums();
 
 		void SetTextColor(DWORD dwTextColor);
 		DWORD GetTextColor() const;
@@ -98,7 +100,8 @@ namespace DuiLib
 		int m_nPngWidth;
 		int m_nPngHeight;
 		DWORD m_nRowSize;	//一行像素大小,乘以m_nPngHeight就是一帧图片的像素大小
-		UINT m_nPlays;		//播放几次
+		int m_nPlays;		//播放几次
+		int m_nPlayeds;
 		UINT32 m_nChannels;     //1,3,4
 
 		UINT			m_nFramePosition;			// 当前放到第几帧
