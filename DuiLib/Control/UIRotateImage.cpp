@@ -312,7 +312,11 @@ namespace DuiLib
 		if (m_bStretch)
 		{
 			Graphics graphics(hDC);
+			graphics.SetPixelOffsetMode(PixelOffsetModeHighQuality);
+			graphics.SetCompositingQuality(CompositingQualityHighQuality);
 			graphics.SetSmoothingMode(SmoothingMode::SmoothingModeHighQuality);
+			graphics.SetInterpolationMode(InterpolationModeHighQuality);
+
 			graphics.TranslateTransform(m_centerPos.X,m_centerPos.Y);
 			graphics.RotateTransform(m_nCurAngle);
 			graphics.TranslateTransform(-m_centerPos.X, -m_centerPos.Y);//还原源点
@@ -321,16 +325,20 @@ namespace DuiLib
 		}
 		else
 		{
+			float imgWidth = m_pBkimage->GetWidth();
+			float imgHeight = m_pBkimage->GetHeight();
+
 			Graphics graphics(hDC);
+			graphics.SetPixelOffsetMode(PixelOffsetModeHighQuality);
+			graphics.SetCompositingQuality(CompositingQualityHighQuality);
 			graphics.SetSmoothingMode(SmoothingMode::SmoothingModeHighQuality);
+			graphics.SetInterpolationMode(InterpolationModeHighQuality);
+
 			graphics.TranslateTransform(m_centerPos.X,m_centerPos.Y);
 			graphics.RotateTransform(m_nCurAngle);
-			graphics.TranslateTransform(-m_centerPos.X, -m_centerPos.Y);//还原源点		
+			graphics.TranslateTransform(-m_centerPos.X, -m_centerPos.Y);//还原源点
 
-			int imgWidth = m_pBkimage->GetWidth();
-			int imgHeight = m_pBkimage->GetHeight();
-
-			graphics.DrawImage(m_pBkimage,(int)m_centerPos.X-imgWidth/2,(int)m_centerPos.Y-imgHeight/2,imgWidth,imgHeight);
+			graphics.DrawImage(m_pBkimage,m_centerPos.X-imgWidth/2.0,m_centerPos.Y-imgHeight/2.0+1,imgWidth,imgHeight);
 		}		
 	}
 
@@ -388,8 +396,8 @@ namespace DuiLib
 		int nH = m_rcItem.bottom-m_rcItem.top;
 		if (nW>0 && nH>0)
 		{
-			m_centerPos.X = m_rcItem.left + nW/2;
-			m_centerPos.Y = m_rcItem.top + nH/2;
+			m_centerPos.X = m_rcItem.left + nW/2.0;
+			m_centerPos.Y = m_rcItem.top + nH/2.0;
 		}
 	}
 }
