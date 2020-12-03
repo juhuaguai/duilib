@@ -313,9 +313,9 @@ namespace DuiLib
 		{
 			Graphics graphics(hDC);
 			graphics.SetPixelOffsetMode(PixelOffsetModeHighQuality);
-			graphics.SetCompositingQuality(CompositingQualityHighQuality);
-			graphics.SetSmoothingMode(SmoothingMode::SmoothingModeHighQuality);
-			graphics.SetInterpolationMode(InterpolationModeHighQuality);
+			//graphics.SetCompositingQuality(CompositingQualityHighQuality);
+			//graphics.SetSmoothingMode(SmoothingMode::SmoothingModeHighQuality);
+			//graphics.SetInterpolationMode(InterpolationModeHighQuality);
 
 			graphics.TranslateTransform(m_centerPos.X,m_centerPos.Y);
 			graphics.RotateTransform(m_nCurAngle);
@@ -330,15 +330,15 @@ namespace DuiLib
 
 			Graphics graphics(hDC);
 			graphics.SetPixelOffsetMode(PixelOffsetModeHighQuality);
-			graphics.SetCompositingQuality(CompositingQualityHighQuality);
-			graphics.SetSmoothingMode(SmoothingMode::SmoothingModeHighQuality);
-			graphics.SetInterpolationMode(InterpolationModeHighQuality);
+			//graphics.SetCompositingQuality(CompositingQualityHighQuality);
+			//graphics.SetSmoothingMode(SmoothingMode::SmoothingModeHighQuality);
+			//graphics.SetInterpolationMode(InterpolationModeHighQuality);
 
 			graphics.TranslateTransform(m_centerPos.X,m_centerPos.Y);
 			graphics.RotateTransform(m_nCurAngle);
 			graphics.TranslateTransform(-m_centerPos.X, -m_centerPos.Y);//还原源点
 
-			graphics.DrawImage(m_pBkimage,m_centerPos.X-imgWidth/2.0,m_centerPos.Y-imgHeight/2.0+1,imgWidth,imgHeight);
+			graphics.DrawImage(m_pBkimage,m_centerPos.X-imgWidth/2.0,m_centerPos.Y-imgHeight/2.0,imgWidth,imgHeight);
 		}		
 	}
 
