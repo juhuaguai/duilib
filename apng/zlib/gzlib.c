@@ -82,7 +82,7 @@ local void gz_reset(state)
         state->how = LOOK;          /* look for gzip header */
     }
     state->seek = 0;                /* no seek request pending */
-    gz_error(state, Z_OK, NULL);    /* clear error */
+    dui_gz_error(state, Z_OK, NULL);    /* clear error */
     state->x.pos = 0;               /* no uncompressed data yet */
     state->strm.avail_in = 0;       /* no input data yet */
 }
@@ -404,7 +404,7 @@ z_off64_t ZEXPORT dui_gzseek64(file, offset, whence)
         state->eof = 0;
         state->past = 0;
         state->seek = 0;
-        gz_error(state, Z_OK, NULL);
+        dui_gz_error(state, Z_OK, NULL);
         state->strm.avail_in = 0;
         state->x.pos += offset;
         return state->x.pos;
@@ -567,7 +567,7 @@ void ZEXPORT dui_dui_gzclearerr(file)
         state->eof = 0;
         state->past = 0;
     }
-    gz_error(state, Z_OK, NULL);
+    dui_gz_error(state, Z_OK, NULL);
 }
 
 /* Create an error message in allocated memory and set state->err and
@@ -576,7 +576,7 @@ void ZEXPORT dui_dui_gzclearerr(file)
    memory).  Simply save the error message as a static string.  If there is an
    allocation failure constructing the error message, then convert the error to
    out of memory. */
-void ZLIB_INTERNAL gz_error(state, err, msg)
+void ZLIB_INTERNAL dui_gz_error(state, err, msg)
     gz_statep state;
     int err;
     const char *msg;
@@ -622,7 +622,7 @@ void ZLIB_INTERNAL gz_error(state, err, msg)
    available) -- we need to do this to cover cases where 2's complement not
    used, since C standard permits 1's complement and sign-bit representations,
    otherwise we could just use ((unsigned)-1) >> 1 */
-unsigned ZLIB_INTERNAL gz_intmax()
+unsigned ZLIB_INTERNAL dui_gz_intmax()
 {
     unsigned p, q;
 

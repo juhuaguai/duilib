@@ -376,7 +376,7 @@ void gen_trees_header()
 /* ===========================================================================
  * Initialize the tree data structures for a new zlib stream.
  */
-void ZLIB_INTERNAL _tr_init(s)
+void ZLIB_INTERNAL dui__tr_init(s)
     deflate_state *s;
 {
     tr_static_init();
@@ -860,7 +860,7 @@ local void send_all_trees(s, lcodes, dcodes, blcodes)
 /* ===========================================================================
  * Send a stored block
  */
-void ZLIB_INTERNAL _tr_stored_block(s, buf, stored_len, last)
+void ZLIB_INTERNAL dui__tr_stored_block(s, buf, stored_len, last)
     deflate_state *s;
     charf *buf;       /* input block */
     ulg stored_len;   /* length of input block */
@@ -883,7 +883,7 @@ void ZLIB_INTERNAL _tr_stored_block(s, buf, stored_len, last)
 /* ===========================================================================
  * Flush the bits in the bit buffer to pending output (leaves at most 7 bits)
  */
-void ZLIB_INTERNAL _tr_flush_bits(s)
+void ZLIB_INTERNAL dui__tr_flush_bits(s)
     deflate_state *s;
 {
     bi_flush(s);
@@ -893,7 +893,7 @@ void ZLIB_INTERNAL _tr_flush_bits(s)
  * Send one empty static block to give enough lookahead for inflate.
  * This takes 10 bits, of which 7 may remain in the bit buffer.
  */
-void ZLIB_INTERNAL _tr_align(s)
+void ZLIB_INTERNAL dui__tr_align(s)
     deflate_state *s;
 {
     send_bits(s, STATIC_TREES<<1, 3);
@@ -908,7 +908,7 @@ void ZLIB_INTERNAL _tr_align(s)
  * Determine the best encoding for the current block: dynamic trees, static
  * trees or store, and write out the encoded block.
  */
-void ZLIB_INTERNAL _tr_flush_block(s, buf, stored_len, last)
+void ZLIB_INTERNAL dui__tr_flush_block(s, buf, stored_len, last)
     deflate_state *s;
     charf *buf;       /* input block, or NULL if too old */
     ulg stored_len;   /* length of input block */
@@ -968,7 +968,7 @@ void ZLIB_INTERNAL _tr_flush_block(s, buf, stored_len, last)
          * successful. If LIT_BUFSIZE <= WSIZE, it is never too late to
          * transform a block into a stored block.
          */
-        _tr_stored_block(s, buf, stored_len, last);
+        dui__tr_stored_block(s, buf, stored_len, last);
 
 #ifdef FORCE_STATIC
     } else if (static_lenb >= 0) { /* force static trees */
@@ -1011,7 +1011,7 @@ void ZLIB_INTERNAL _tr_flush_block(s, buf, stored_len, last)
  * Save the match info and tally the frequency counts. Return true if
  * the current block must be flushed.
  */
-int ZLIB_INTERNAL _tr_tally (s, dist, lc)
+int ZLIB_INTERNAL dui__tr_tally (s, dist, lc)
     deflate_state *s;
     unsigned dist;  /* distance of matched string */
     unsigned lc;    /* match length-MIN_MATCH or unmatched char (if dist==0) */
@@ -1029,7 +1029,7 @@ int ZLIB_INTERNAL _tr_tally (s, dist, lc)
                (ush)lc <= (ush)(MAX_MATCH-MIN_MATCH) &&
                (ush)d_code(dist) < (ush)D_CODES,  "_tr_tally: bad match");
 
-        s->dyn_ltree[_length_code[lc]+LITERALS+1].Freq++;
+        s->dyn_ltree[dui__length_code[lc]+LITERALS+1].Freq++;
         s->dyn_dtree[d_code(dist)].Freq++;
     }
 
@@ -1080,7 +1080,7 @@ local void compress_block(s, ltree, dtree)
             Tracecv(isgraph(lc), (stderr," '%c' ", lc));
         } else {
             /* Here, lc is the match length - MIN_MATCH */
-            code = _length_code[lc];
+            code = dui__length_code[lc];
             send_code(s, code+LITERALS+1, ltree); /* send the length code */
             extra = extra_lbits[code];
             if (extra != 0) {

@@ -946,7 +946,7 @@ int flush;
             state->next = state->codes;
             state->lencode = (const code FAR *)(state->next);
             state->lenbits = 7;
-            ret = inflate_table(CODES, state->lens, 19, &(state->next),
+            ret = dui_inflate_table(CODES, state->lens, 19, &(state->next),
                                 &(state->lenbits), state->work);
             if (ret) {
                 strm->msg = (char *)"invalid code lengths set";
@@ -1020,7 +1020,7 @@ int flush;
             state->next = state->codes;
             state->lencode = (const code FAR *)(state->next);
             state->lenbits = 9;
-            ret = inflate_table(LENS, state->lens, state->nlen, &(state->next),
+            ret = dui_inflate_table(LENS, state->lens, state->nlen, &(state->next),
                                 &(state->lenbits), state->work);
             if (ret) {
                 strm->msg = (char *)"invalid literal/lengths set";
@@ -1029,7 +1029,7 @@ int flush;
             }
             state->distcode = (const code FAR *)(state->next);
             state->distbits = 6;
-            ret = inflate_table(DISTS, state->lens + state->nlen, state->ndist,
+            ret = dui_inflate_table(DISTS, state->lens + state->nlen, state->ndist,
                             &(state->next), &(state->distbits), state->work);
             if (ret) {
                 strm->msg = (char *)"invalid distances set";
@@ -1044,7 +1044,7 @@ int flush;
         case LEN:
             if (have >= 6 && left >= 258) {
                 RESTORE();
-                inflate_fast(strm, out);
+                dui_inflate_fast(strm, out);
                 LOAD();
                 if (state->mode == TYPE)
                     state->back = -1;

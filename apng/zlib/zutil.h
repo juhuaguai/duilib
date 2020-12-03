@@ -228,9 +228,9 @@ extern z_const char * const dui_z_errmsg[10]; /* indexed by 2-zlib_error */
 #    define zmemzero(dest, len) memset(dest, 0, len)
 #  endif
 #else
-   void ZLIB_INTERNAL zmemcpy OF((Bytef* dest, const Bytef* source, uInt len));
-   int ZLIB_INTERNAL zmemcmp OF((const Bytef* s1, const Bytef* s2, uInt len));
-   void ZLIB_INTERNAL zmemzero OF((Bytef* dest, uInt len));
+   void ZLIB_INTERNAL dui_zmemcpy OF((Bytef* dest, const Bytef* source, uInt len));
+   int ZLIB_INTERNAL dui_zmemcmp OF((const Bytef* s1, const Bytef* s2, uInt len));
+   void ZLIB_INTERNAL dui_zmemzero OF((Bytef* dest, uInt len));
 #endif
 
 /* Diagnostic functions */

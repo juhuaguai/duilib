@@ -296,17 +296,17 @@ typedef struct internal_state {
    memory checker errors from longest match routines */
 
         /* in trees.c */
-void ZLIB_INTERNAL _tr_init OF((deflate_state *s));
-int ZLIB_INTERNAL _tr_tally OF((deflate_state *s, unsigned dist, unsigned lc));
-void ZLIB_INTERNAL _tr_flush_block OF((deflate_state *s, charf *buf,
+void ZLIB_INTERNAL dui__tr_init OF((deflate_state *s));
+int ZLIB_INTERNAL dui__tr_tally OF((deflate_state *s, unsigned dist, unsigned lc));
+void ZLIB_INTERNAL dui__tr_flush_block OF((deflate_state *s, charf *buf,
                         ulg stored_len, int last));
-void ZLIB_INTERNAL _tr_flush_bits OF((deflate_state *s));
-void ZLIB_INTERNAL _tr_align OF((deflate_state *s));
-void ZLIB_INTERNAL _tr_stored_block OF((deflate_state *s, charf *buf,
+void ZLIB_INTERNAL dui__tr_flush_bits OF((deflate_state *s));
+void ZLIB_INTERNAL dui__tr_align OF((deflate_state *s));
+void ZLIB_INTERNAL dui__tr_stored_block OF((deflate_state *s, charf *buf,
                         ulg stored_len, int last));
 
 #define d_code(dist) \
-   ((dist) < 256 ? _dist_code[dist] : _dist_code[256+((dist)>>7)])
+   ((dist) < 256 ? dui__dist_code[dist] : dui__dist_code[256+((dist)>>7)])
 /* Mapping from a distance to a distance code. dist is the distance - 1 and
  * must not have side effects. _dist_code[256] and _dist_code[257] are never
  * used.
@@ -316,11 +316,11 @@ void ZLIB_INTERNAL _tr_stored_block OF((deflate_state *s, charf *buf,
 /* Inline versions of _tr_tally for speed: */
 
 #if defined(GEN_TREES_H) || !defined(STDC)
-  extern uch ZLIB_INTERNAL _length_code[];
-  extern uch ZLIB_INTERNAL _dist_code[];
+  extern uch ZLIB_INTERNAL dui__length_code[];
+  extern uch ZLIB_INTERNAL dui__dist_code[];
 #else
-  extern const uch ZLIB_INTERNAL _length_code[];
-  extern const uch ZLIB_INTERNAL _dist_code[];
+  extern const uch ZLIB_INTERNAL dui__length_code[];
+  extern const uch ZLIB_INTERNAL dui__dist_code[];
 #endif
 
 # define _tr_tally_lit(s, c, flush) \
@@ -336,7 +336,7 @@ void ZLIB_INTERNAL _tr_stored_block OF((deflate_state *s, charf *buf,
     s->d_buf[s->last_lit] = dist; \
     s->l_buf[s->last_lit++] = len; \
     dist--; \
-    s->dyn_ltree[_length_code[len]+LITERALS+1].Freq++; \
+    s->dyn_ltree[dui__length_code[len]+LITERALS+1].Freq++; \
     s->dyn_dtree[d_code(dist)].Freq++; \
     flush = (s->last_lit == s->lit_bufsize-1); \
   }

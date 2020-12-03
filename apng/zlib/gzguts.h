@@ -202,7 +202,7 @@ typedef struct {
 typedef gz_state FAR *gz_statep;
 
 /* shared functions */
-void ZLIB_INTERNAL gz_error OF((gz_statep, int, const char *));
+void ZLIB_INTERNAL dui_gz_error OF((gz_statep, int, const char *));
 #if defined UNDER_CE
 char ZLIB_INTERNAL *gz_strwinerror OF((DWORD error));
 #endif
@@ -213,6 +213,6 @@ char ZLIB_INTERNAL *gz_strwinerror OF((DWORD error));
 #ifdef INT_MAX
 #  define GT_OFF(x) (sizeof(int) == sizeof(z_off64_t) && (x) > INT_MAX)
 #else
-unsigned ZLIB_INTERNAL gz_intmax OF((void));
-#  define GT_OFF(x) (sizeof(int) == sizeof(z_off64_t) && (x) > gz_intmax())
+unsigned ZLIB_INTERNAL dui_gz_intmax OF((void));
+#  define GT_OFF(x) (sizeof(int) == sizeof(z_off64_t) && (x) > dui_gz_intmax())
 #endif

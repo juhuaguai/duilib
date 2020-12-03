@@ -496,7 +496,7 @@ int ZEXPORT dui_deflateResetKeep (strm)
         dui_adler32(0L, Z_NULL, 0);
     s->last_flush = Z_NO_FLUSH;
 
-    _tr_init(s);
+    dui__tr_init(s);
 
     return Z_OK;
 }
@@ -557,7 +557,7 @@ int ZEXPORT dui_deflatePrime (strm, bits, value)
             put = bits;
         s->bi_buf |= (ush)((value & ((1 << put) - 1)) << s->bi_valid);
         s->bi_valid += put;
-        _tr_flush_bits(s);
+        dui__tr_flush_bits(s);
         value >>= put;
         bits -= put;
     } while (bits);
@@ -733,7 +733,7 @@ local void flush_pending(strm)
     unsigned len;
     deflate_state *s = strm->state;
 
-    _tr_flush_bits(s);
+    dui__tr_flush_bits(s);
     len = s->pending;
     if (len > strm->avail_out) len = strm->avail_out;
     if (len == 0) return;
@@ -1020,9 +1020,9 @@ int ZEXPORT dui_deflate (strm, flush)
         }
         if (bstate == block_done) {
             if (flush == Z_PARTIAL_FLUSH) {
-                _tr_align(s);
+                dui__tr_align(s);
             } else if (flush != Z_BLOCK) { /* FULL_FLUSH or SYNC_FLUSH */
-                _tr_stored_block(s, (char*)0, 0L, 0);
+                dui__tr_stored_block(s, (char*)0, 0L, 0);
                 /* For a full flush, this empty block will be recognized
                  * as a special marker by inflate_sync().
                  */
@@ -1603,7 +1603,7 @@ local void fill_window(s)
  * IN assertion: strstart is set to the end of the current match.
  */
 #define FLUSH_BLOCK_ONLY(s, last) { \
-   _tr_flush_block(s, (s->block_start >= 0L ? \
+   dui__tr_flush_block(s, (s->block_start >= 0L ? \
                    (charf *)&s->window[(unsigned)s->block_start] : \
                    (charf *)Z_NULL), \
                 (ulg)((long)s->strstart - s->block_start), \
@@ -1687,7 +1687,7 @@ local block_state deflate_stored(s, flush)
          * including any pending bits. This also updates the debugging counts.
          */
         last = flush == Z_FINISH && len == left + s->strm->avail_in ? 1 : 0;
-        _tr_stored_block(s, (char *)0, 0L, last);
+        dui__tr_stored_block(s, (char *)0, 0L, last);
 
         /* Replace the lengths in the dummy stored block with len. */
         s->pending_buf[s->pending - 4] = len;
@@ -1805,7 +1805,7 @@ local block_state deflate_stored(s, flush)
         len = MIN(left, have);
         last = flush == Z_FINISH && s->strm->avail_in == 0 &&
                len == left ? 1 : 0;
-        _tr_stored_block(s, (charf *)s->window + s->block_start, len, last);
+        dui__tr_stored_block(s, (charf *)s->window + s->block_start, len, last);
         s->block_start += len;
         flush_pending(s->strm);
     }

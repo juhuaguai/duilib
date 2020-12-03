@@ -38,7 +38,7 @@ local int gz_load(state, buf, len, have)
         *have += (unsigned)ret;
     } while (*have < len);
     if (ret < 0) {
-        gz_error(state, Z_ERRNO, zstrerror());
+        dui_gz_error(state, Z_ERRNO, zstrerror());
         return -1;
     }
     if (ret == 0)
@@ -101,7 +101,7 @@ local int gz_look(state)
         if (state->in == NULL || state->out == NULL) {
             free(state->out);
             free(state->in);
-            gz_error(state, Z_MEM_ERROR, "out of memory");
+            dui_gz_error(state, Z_MEM_ERROR, "out of memory");
             return -1;
         }
         state->size = state->want;
@@ -116,7 +116,7 @@ local int gz_look(state)
             free(state->out);
             free(state->in);
             state->size = 0;
-            gz_error(state, Z_MEM_ERROR, "out of memory");
+            dui_gz_error(state, Z_MEM_ERROR, "out of memory");
             return -1;
         }
     }
@@ -186,23 +186,23 @@ local int gz_decomp(state)
         if (strm->avail_in == 0 && gz_avail(state) == -1)
             return -1;
         if (strm->avail_in == 0) {
-            gz_error(state, Z_BUF_ERROR, "unexpected end of file");
+            dui_gz_error(state, Z_BUF_ERROR, "unexpected end of file");
             break;
         }
 
         /* decompress and handle errors */
         ret = dui_inflate(strm, Z_NO_FLUSH);
         if (ret == Z_STREAM_ERROR || ret == Z_NEED_DICT) {
-            gz_error(state, Z_STREAM_ERROR,
+            dui_gz_error(state, Z_STREAM_ERROR,
                      "internal error: inflate stream corrupt");
             return -1;
         }
         if (ret == Z_MEM_ERROR) {
-            gz_error(state, Z_MEM_ERROR, "out of memory");
+            dui_gz_error(state, Z_MEM_ERROR, "out of memory");
             return -1;
         }
         if (ret == Z_DATA_ERROR) {              /* deflate stream invalid */
-            gz_error(state, Z_DATA_ERROR,
+            dui_gz_error(state, Z_DATA_ERROR,
                      strm->msg == NULL ? "compressed data error" : strm->msg);
             return -1;
         }
@@ -392,7 +392,7 @@ int ZEXPORT dui_gzread(file, buf, len)
     /* since an int is returned, make sure len fits in one, otherwise return
        with an error (this avoids a flaw in the interface) */
     if ((int)len < 0) {
-        gz_error(state, Z_STREAM_ERROR, "request does not fit in an int");
+        dui_gz_error(state, Z_STREAM_ERROR, "request does not fit in an int");
         return -1;
     }
 
@@ -430,7 +430,7 @@ z_size_t ZEXPORT dui_gzfread(buf, size, nitems, file)
     /* compute bytes to read -- error on overflow */
     len = nitems * size;
     if (size && len / size != nitems) {
-        gz_error(state, Z_STREAM_ERROR, "request does not fit in a size_t");
+        dui_gz_error(state, Z_STREAM_ERROR, "request does not fit in a size_t");
         return 0;
     }
 
@@ -519,7 +519,7 @@ int ZEXPORT dui_gzungetc(c, file)
 
     /* if no room, give up (must have already done a gzungetc()) */
     if (state->x.have == (state->size << 1)) {
-        gz_error(state, Z_DATA_ERROR, "out of room to push characters");
+        dui_gz_error(state, Z_DATA_ERROR, "out of room to push characters");
         return -1;
     }
 
@@ -646,7 +646,7 @@ int ZEXPORT dui_gzclose_r(file)
         free(state->in);
     }
     err = state->err == Z_BUF_ERROR ? Z_BUF_ERROR : Z_OK;
-    gz_error(state, Z_OK, NULL);
+    dui_gz_error(state, Z_OK, NULL);
     free(state->path);
     ret = close(state->fd);
     free(state);

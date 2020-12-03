@@ -23,7 +23,7 @@ local int gz_init(state)
     /* allocate input buffer (double size for gzprintf) */
     state->in = (unsigned char *)malloc(state->want << 1);
     if (state->in == NULL) {
-        gz_error(state, Z_MEM_ERROR, "out of memory");
+        dui_gz_error(state, Z_MEM_ERROR, "out of memory");
         return -1;
     }
 
@@ -33,7 +33,7 @@ local int gz_init(state)
         state->out = (unsigned char *)malloc(state->want);
         if (state->out == NULL) {
             free(state->in);
-            gz_error(state, Z_MEM_ERROR, "out of memory");
+            dui_gz_error(state, Z_MEM_ERROR, "out of memory");
             return -1;
         }
 
@@ -46,7 +46,7 @@ local int gz_init(state)
         if (ret != Z_OK) {
             free(state->out);
             free(state->in);
-            gz_error(state, Z_MEM_ERROR, "out of memory");
+            dui_gz_error(state, Z_MEM_ERROR, "out of memory");
             return -1;
         }
         strm->next_in = NULL;
@@ -88,7 +88,7 @@ local int gz_comp(state, flush)
             put = strm->avail_in > max ? max : strm->avail_in;
             writ = write(state->fd, strm->next_in, put);
             if (writ < 0) {
-                gz_error(state, Z_ERRNO, zstrerror());
+                dui_gz_error(state, Z_ERRNO, zstrerror());
                 return -1;
             }
             strm->avail_in -= (unsigned)writ;
@@ -109,7 +109,7 @@ local int gz_comp(state, flush)
                       (unsigned)(strm->next_out - state->x.next);
                 writ = write(state->fd, state->x.next, put);
                 if (writ < 0) {
-                    gz_error(state, Z_ERRNO, zstrerror());
+                    dui_gz_error(state, Z_ERRNO, zstrerror());
                     return -1;
                 }
                 state->x.next += writ;
@@ -125,7 +125,7 @@ local int gz_comp(state, flush)
         have = strm->avail_out;
         ret = dui_deflate(strm, flush);
         if (ret == Z_STREAM_ERROR) {
-            gz_error(state, Z_STREAM_ERROR,
+            dui_gz_error(state, Z_STREAM_ERROR,
                       "internal error: deflate stream corrupt");
             return -1;
         }
@@ -262,7 +262,7 @@ int ZEXPORT dui_gzwrite(file, buf, len)
     /* since an int is returned, make sure len fits in one, otherwise return
        with an error (this avoids a flaw in the interface) */
     if ((int)len < 0) {
-        gz_error(state, Z_DATA_ERROR, "requested length does not fit in int");
+        dui_gz_error(state, Z_DATA_ERROR, "requested length does not fit in int");
         return 0;
     }
 
@@ -292,7 +292,7 @@ z_size_t ZEXPORT dui_gzfwrite(buf, size, nitems, file)
     /* compute bytes to read -- error on overflow */
     len = nitems * size;
     if (size && len / size != nitems) {
-        gz_error(state, Z_STREAM_ERROR, "request does not fit in a size_t");
+        dui_gz_error(state, Z_STREAM_ERROR, "request does not fit in a size_t");
         return 0;
     }
 
@@ -656,7 +656,7 @@ int ZEXPORT dui_gzclose_w(file)
         }
         free(state->in);
     }
-    gz_error(state, Z_OK, NULL);
+    dui_gz_error(state, Z_OK, NULL);
     free(state->path);
     if (close(state->fd) == -1)
         ret = Z_ERRNO;
