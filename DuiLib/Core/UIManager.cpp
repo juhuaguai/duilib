@@ -85,6 +85,7 @@ short CPaintManagerUI::m_L = 100;
 CDuiPtrArray CPaintManagerUI::m_aPreMessages;
 CDuiPtrArray CPaintManagerUI::m_aPlugins;
 char CPaintManagerUI::m_szResourceZipPassword[64]={0};
+CDuiPtrArray CPaintManagerUI::m_aTTFHandle;
 
 CPaintManagerUI::CPaintManagerUI() :
 m_hWndPaint(NULL),
@@ -194,6 +195,7 @@ CPaintManagerUI::~CPaintManagerUI()
 	RemoveAllWindowCustomAttribute();
     RemoveAllOptionGroups();
     RemoveAllTimers();
+	ReleaseAllTTF();
 
     // Reset other parts...
     if( m_hwndTooltip != NULL )
@@ -2455,6 +2457,62 @@ void CPaintManagerUI::SetDefaultSelectedBkColor(DWORD dwColor, bool bShared)
 	}
 }
 
+HANDLE CPaintManagerUI::AddTTF(const CDuiString& strTTFfile)
+{
+	HANDLE hFile = CreateFile( strTTFfile.GetData(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile == INVALID_HANDLE_VALUE)
+	{
+		return NULL;
+	}
+
+	DWORD dwFileSize	= GetFileSize(hFile, NULL);
+	BYTE* lpBuffer		= new BYTE[dwFileSize+1];
+	memset(lpBuffer,0,dwFileSize+1);
+	DWORD dwReadSize	= 0;
+	if (!ReadFile( hFile, lpBuffer, dwFileSize, &dwReadSize, NULL))
+	{
+		delete[] lpBuffer;
+		CloseHandle(hFile);
+		return NULL;
+	}
+	
+	HANDLE hTTF = AddTTF(lpBuffer,dwFileSize);	
+	delete[] lpBuffer;
+	CloseHandle(hFile);
+
+	return hTTF;
+}
+HANDLE CPaintManagerUI::AddTTF(LPVOID pData, unsigned int len)
+{
+	DWORD dwFontNumber	= 0;
+	HANDLE hTTF = AddFontMemResourceEx(pData, len, 0, &dwFontNumber);
+	if ( hTTF == NULL )
+		return NULL;
+
+	m_aTTFHandle.Add(hTTF);
+
+	return hTTF;
+}
+void CPaintManagerUI::ReleaseTTF(const HANDLE& hTTF)
+{
+	RemoveFontMemResourceEx(hTTF);
+	for (int i=0;i<m_aTTFHandle.GetSize();i++)
+	{
+		if (hTTF == m_aTTFHandle.GetAt(i))
+		{
+			m_aTTFHandle.Remove(i);
+			break;
+		}
+	}
+}
+void CPaintManagerUI::ReleaseAllTTF()
+{
+	for (int i=0;i<m_aTTFHandle.GetSize();i++)
+	{
+		RemoveFontMemResourceEx(m_aTTFHandle.GetAt(i));
+		m_aTTFHandle.Remove(i);
+	}
+}
 TFontInfo* CPaintManagerUI::GetDefaultFontInfo()
 {
 	if (m_ResInfo.m_DefaultFontInfo.sFontName.IsEmpty())

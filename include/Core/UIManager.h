@@ -297,6 +297,10 @@ public:
     DWORD GetDefaultSelectedBkColor() const;
     void SetDefaultSelectedBkColor(DWORD dwColor, bool bShared = false);
 
+	static HANDLE AddTTF(const CDuiString& strTTFfile);
+	static HANDLE AddTTF(LPVOID pData, unsigned int len);
+	static void ReleaseTTF(const HANDLE& hTTF);
+	static void ReleaseAllTTF();
     TFontInfo* GetDefaultFontInfo();
 	void SetDefaultFont(const CDuiString& strFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bStrikeOut,bool bShared = false);
     DWORD GetCustomFontCount(bool bShared = false) const;
@@ -507,6 +511,7 @@ private:
     CDuiStringPtrMap m_mNameHash;
 	CDuiStringPtrMap m_mWindowAttrHash;
     CDuiStringPtrMap m_mOptionGroup;
+	static CDuiPtrArray m_aTTFHandle;
 
     //
 	bool m_bForceUseSharedRes;
