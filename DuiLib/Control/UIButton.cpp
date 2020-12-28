@@ -548,82 +548,59 @@ namespace DuiLib
 
 	void CButtonUI::PaintBkColor(HDC hDC)
 	{
-		if ( IsEnabled() )
+		do 
 		{
-			if ( IsFocused() )
+			if ( IsEnabled() )
 			{
-				if (m_dwFocusedBkColor == 0)
+				if ( IsFocused() && m_dwFocusedBkColor)
 				{
-					if( m_dwBackColor != 0 ) {
-						if( m_dwBackColor2 != 0 ) {
-							if( m_dwBackColor3 != 0 ) {
-								RECT rc = m_rcItem;
-								rc.bottom = (rc.bottom + rc.top) / 2;
-								CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 8);
-								rc.top = rc.bottom;
-								rc.bottom = m_rcItem.bottom;
-								CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor2), GetAdjustColor(m_dwBackColor3), true, 8);
-							}
-							else 
-								CRenderEngine::DrawGradient(hDC, m_rcItem, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 16);
-						}
-						else if( m_dwBackColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwBackColor));
-						else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwBackColor));
-					}
+					if( m_dwFocusedBkColor >= 0xFF000000 ) 
+						CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwFocusedBkColor));
+					else 
+						CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwFocusedBkColor));
+
+					break;
 				}
-				else
+				if( ((m_uButtonState & UISTATE_HOT) != 0) && m_dwHotBkColor ) 
 				{
-					if( m_dwFocusedBkColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwFocusedBkColor));
-					else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwFocusedBkColor));
+					if( m_dwHotBkColor >= 0xFF000000 ) 
+						CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwHotBkColor));
+					else 
+						CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwHotBkColor));
+
+					break;
 				}
 			}
 			else
 			{
-				if( m_dwBackColor != 0 ) {
-					if( m_dwBackColor2 != 0 ) {
-						if( m_dwBackColor3 != 0 ) {
-							RECT rc = m_rcItem;
-							rc.bottom = (rc.bottom + rc.top) / 2;
-							CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 8);
-							rc.top = rc.bottom;
-							rc.bottom = m_rcItem.bottom;
-							CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor2), GetAdjustColor(m_dwBackColor3), true, 8);
-						}
-						else 
-							CRenderEngine::DrawGradient(hDC, m_rcItem, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 16);
+				if (m_dwDisabledBkColor)
+				{
+					if( m_dwDisabledBkColor >= 0xFF000000 ) 
+						CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwDisabledBkColor));
+					else 
+						CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwDisabledBkColor));
+
+					break;
+				}				
+			}
+				
+			if( m_dwBackColor != 0 ) {
+				if( m_dwBackColor2 != 0 ) {
+					if( m_dwBackColor3 != 0 ) {
+						RECT rc = m_rcItem;
+						rc.bottom = (rc.bottom + rc.top) / 2;
+						CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 8);
+						rc.top = rc.bottom;
+						rc.bottom = m_rcItem.bottom;
+						CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor2), GetAdjustColor(m_dwBackColor3), true, 8);
 					}
-					else if( m_dwBackColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwBackColor));
-					else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwBackColor));
+					else 
+						CRenderEngine::DrawGradient(hDC, m_rcItem, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 16);
 				}
+				else if( m_dwBackColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwBackColor));
+				else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwBackColor));
 			}
-		}
-		else
-		{
-			if (m_dwDisabledBkColor == 0)
-			{
-				if( m_dwBackColor != 0 ) {
-					if( m_dwBackColor2 != 0 ) {
-						if( m_dwBackColor3 != 0 ) {
-							RECT rc = m_rcItem;
-							rc.bottom = (rc.bottom + rc.top) / 2;
-							CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 8);
-							rc.top = rc.bottom;
-							rc.bottom = m_rcItem.bottom;
-							CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor2), GetAdjustColor(m_dwBackColor3), true, 8);
-						}
-						else 
-							CRenderEngine::DrawGradient(hDC, m_rcItem, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 16);
-					}
-					else if( m_dwBackColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwBackColor));
-					else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwBackColor));
-				}
-			}
-			else
-			{
-				if( m_dwDisabledBkColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwDisabledBkColor));
-				else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwDisabledBkColor));
-			}
-		}
+		} while (0);
 	}
 
 	void CButtonUI::PaintStatusImage(HDC hDC)
@@ -644,9 +621,6 @@ namespace DuiLib
 		}
 		else if( (m_uButtonState & UISTATE_HOT) != 0 ) 
 		{
-			if(m_dwHotBkColor != 0) 
-				CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwHotBkColor));
-
 			if( GetFadeAlphaDelta() > 0 ) 
 			{
 				if( m_uFadeAlpha == 0 ) {

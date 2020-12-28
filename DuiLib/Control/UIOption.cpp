@@ -203,9 +203,6 @@ namespace DuiLib
 	{
 		if(IsEnabled() && (m_uButtonState & UISTATE_SELECTED) != 0 ) 
 		{
-			if(m_dwSelectedBkColor != 0) 
-				CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwSelectedBkColor));
-
 			if ((m_uButtonState & UISTATE_HOT) != 0)
 			{
 				if (DrawImage(hDC, m_diSelectedHot)) 
@@ -223,6 +220,73 @@ namespace DuiLib
 
 Label_ForeImage:
 		DrawImage(hDC, m_diFore);
+	}
+	void COptionUI::PaintBkColor(HDC hDC)
+	{
+		do 
+		{
+			if ( IsEnabled() )
+			{
+				if ( IsFocused() && m_dwFocusedBkColor)
+				{
+					if( m_dwFocusedBkColor >= 0xFF000000 ) 
+						CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwFocusedBkColor));
+					else 
+						CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwFocusedBkColor));
+
+					break;
+				}
+				if( ((m_uButtonState & UISTATE_HOT) != 0) && m_dwHotBkColor) 
+				{
+					if( m_dwHotBkColor >= 0xFF000000 ) 
+						CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwHotBkColor));
+					else 
+						CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwHotBkColor));
+
+					break;
+				}
+
+				if(((m_uButtonState & UISTATE_SELECTED) != 0) && m_dwSelectedBkColor) 
+				{
+
+					if( m_dwSelectedBkColor >= 0xFF000000 ) 
+						CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwSelectedBkColor));
+					else 
+						CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwSelectedBkColor));
+
+					break;
+				}
+			}
+			else
+			{
+				if (m_dwDisabledBkColor)
+				{
+					if( (m_dwDisabledBkColor >= 0xFF000000)) 
+						CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwDisabledBkColor));
+					else 
+						CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwDisabledBkColor));
+
+					break;
+				}				
+			}
+
+			if( m_dwBackColor != 0 ) {
+				if( m_dwBackColor2 != 0 ) {
+					if( m_dwBackColor3 != 0 ) {
+						RECT rc = m_rcItem;
+						rc.bottom = (rc.bottom + rc.top) / 2;
+						CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 8);
+						rc.top = rc.bottom;
+						rc.bottom = m_rcItem.bottom;
+						CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor2), GetAdjustColor(m_dwBackColor3), true, 8);
+					}
+					else 
+						CRenderEngine::DrawGradient(hDC, m_rcItem, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 16);
+				}
+				else if( m_dwBackColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwBackColor));
+				else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwBackColor));
+			}
+		} while (0);
 	}
 
 	void COptionUI::PaintText(HDC hDC)
