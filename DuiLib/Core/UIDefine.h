@@ -32,6 +32,29 @@ typedef struct tagTNotifyUI
 	LPARAM lParam;
 } TNotifyUI;
 
+typedef struct tagFrame
+{
+	tagFrame()
+	{
+		nFrameId=0;
+		hBmpFrame = NULL;
+		nDelayMs=0;
+	};
+	~tagFrame()
+	{
+		if (hBmpFrame)
+		{
+			DeleteObject(hBmpFrame);
+			hBmpFrame = NULL;
+		}
+	}
+
+	UINT32 nFrameId;
+	HBITMAP hBmpFrame;
+	UINT32 nDelayMs;
+}Frame;
+
+
 class CNotifyPump;
 typedef void (CNotifyPump::*DUI_PMSG)(TNotifyUI& msg);  //÷∏’Î¿‡–Õ
 

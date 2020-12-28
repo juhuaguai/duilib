@@ -7,8 +7,8 @@
 
 extern "C"
 {
-    extern unsigned char *stbi_load_from_memory(unsigned char const *buffer, int len, int *x, int *y, \
-        int *comp, int req_comp);
+    extern unsigned char *stbi_load_from_memory(unsigned char const *buffer, int len, int *x, int *y, int *comp, int req_comp);
+	extern unsigned char *stbi_load_gif_from_memory(unsigned char const *buffer, int len, int **delays, int *x, int *y, int *z, int *comp, int req_comp);
 	extern void     stbi_image_free(void *retval_from_stbi_load);
 
 };
@@ -520,6 +520,16 @@ void CRenderEngine::FreeImage(TImageInfo* bitmap, bool bDelete)
 		bitmap->pSrcBits = NULL;
 	}
 	if (bDelete) delete bitmap ;
+}
+
+unsigned char* CRenderEngine::ParseGifFromMemory(unsigned char const *buffer, int len, int **delays, int *width, int *height, int *layers)
+{
+	int comp=0;
+	return stbi_load_gif_from_memory(buffer,len,delays,width,height,layers,&comp,4);
+}
+void CRenderEngine::FreeGifFromMemory(void* pParseGifFromMemoryRetval)
+{
+	stbi_image_free(pParseGifFromMemoryRetval);
 }
 
 void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RECT& rcPaint,

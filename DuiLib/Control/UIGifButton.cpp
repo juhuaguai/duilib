@@ -9,10 +9,6 @@ namespace DuiLib
 	{
 		m_uButtonState = 0;
 		m_sCursor = _T("hand");
-		m_rcBkImageDest.left = 0;
-		m_rcBkImageDest.top = 0;
-		m_rcBkImageDest.right = 0;
-		m_rcBkImageDest.bottom = 0;
 
 		m_dwHotTextColor = 0xFF000000;
 	}
@@ -190,6 +186,13 @@ namespace DuiLib
 	{
 		if( _tcscmp(pstrName, _T("cursor")) == 0 ) 
 			SetCursor(pstrValue);
+		else if( _tcscmp(pstrName, _T("hotbkcolor")) == 0 )
+		{
+			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+			LPTSTR pstr = NULL;
+			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			SetHotBkColor(clrColor);
+		}
 		else if( _tcscmp(pstrName, _T("hottextcolor")) == 0 )
 		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
@@ -197,10 +200,25 @@ namespace DuiLib
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetHotTextColor(clrColor);
 		}
+		else if( _tcscmp(pstrName, _T("pushedtextcolor")) == 0 )
+		{
+			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+			LPTSTR pstr = NULL;
+			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			SetPushedTextColor(clrColor);
+		}
 		else
 			CGifAnimUI::SetAttribute(pstrName, pstrValue);
 	}
 
+	void CGifButtonUI::SetHotBkColor( DWORD dwColor )
+	{
+		m_dwHotBkColor = dwColor;
+	}
+	DWORD CGifButtonUI::GetHotBkColor() const
+	{
+		return m_dwHotBkColor;
+	}
 	void CGifButtonUI::SetHotTextColor(DWORD dwColor)
 	{
 		m_dwHotTextColor = dwColor;
@@ -209,84 +227,107 @@ namespace DuiLib
 	{
 		return m_dwHotTextColor;
 	}
-
-	void CGifButtonUI::SetBkImageDest(const RECT& rcDest)
+	void CGifButtonUI::SetPushedTextColor(DWORD dwColor)
 	{
-		if (rcDest.left==0 && rcDest.top==0 && rcDest.right==0 && rcDest.bottom==0)
-		{
-			m_rcBkImageDest.left = 0;
-			m_rcBkImageDest.top = 0;
-			m_rcBkImageDest.right = m_rcItem.right-m_rcItem.left;
-			m_rcBkImageDest.bottom = m_rcItem.bottom-m_rcItem.top;
-		}
-		else
-			m_rcBkImageDest = rcDest;
+		m_dwPushedTextColor = dwColor;
+	}
+	DWORD CGifButtonUI::GetPushedTextColor() const
+	{
+		return m_dwPushedTextColor;
 	}
 
-	bool CGifButtonUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
+	void CGifButtonUI::PaintBkColor(HDC hDC)
 	{
-		if ( NULL == m_pGifImage )
-		{		
-			InitGifImage();
-		}
-		DrawFrame( hDC );
-		return true;
-	}
-
-	void CGifButtonUI::DrawFrame( HDC hDC )
-	{
-		if ( NULL == hDC || NULL == m_pGifImage ) 
-			return;
-		GUID pageGuid = Gdiplus::FrameDimensionTime;
-		Gdiplus::Graphics graphics( hDC );
-		graphics.SetSmoothingMode(SmoothingMode::SmoothingModeHighQuality);
-		graphics.SetTextRenderingHint(m_TextRenderingAlias);
-		RECT rcTemp = {0,0,0,0};
-		if (m_rcBkImageDest.left==0 && m_rcBkImageDest.top==0 && m_rcBkImageDest.right==0 && m_rcBkImageDest.bottom==0)
+		do 
 		{
-			rcTemp.left = m_rcItem.left;
-			rcTemp.top = m_rcItem.top;
-			rcTemp.right = m_rcItem.right;
-			rcTemp.bottom = m_rcItem.bottom;		
+			if ( (IsEnabled()==false) && (m_dwDisabledBkColor != 0) )
+			{
+				if( m_dwDisabledBkColor >= 0xFF000000 ) 
+					CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwDisabledBkColor));
+				else 
+					CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwDisabledBkColor));
+
+				break;
+			}
+
+			if( (m_uButtonState & UISTATE_HOT)!=0 && (m_dwHotBkColor!=0)) 
+			{
+				CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwHotBkColor));
+				break;
+			}
+
+			if( m_dwBackColor != 0 ) {
+				if( m_dwBackColor2 != 0 ) {
+					if( m_dwBackColor3 != 0 ) {
+						RECT rc = m_rcItem;
+						rc.bottom = (rc.bottom + rc.top) / 2;
+						CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 8);
+						rc.top = rc.bottom;
+						rc.bottom = m_rcItem.bottom;
+						CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor2), GetAdjustColor(m_dwBackColor3), true, 8);
+					}
+					else 
+						CRenderEngine::DrawGradient(hDC, m_rcItem, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 16);
+				}
+				else if( m_dwBackColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwBackColor));
+				else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwBackColor));
+			}
+		} while (0);
+	}
+	void CGifButtonUI::PaintText(HDC hDC)
+	{
+		if( IsFocused() ) m_uButtonState |= UISTATE_FOCUSED;
+		else m_uButtonState &= ~ UISTATE_FOCUSED;
+		if( !IsEnabled() ) m_uButtonState |= UISTATE_DISABLED;
+		else m_uButtonState &= ~ UISTATE_DISABLED;
+
+		if( m_dwTextColor == 0 ) m_dwTextColor = m_pManager->GetDefaultFontColor();
+		if( m_dwDisabledTextColor == 0 ) m_dwDisabledTextColor = m_pManager->GetDefaultDisabledColor();
+
+		if( m_sText.IsEmpty() ) return;
+		int nLinks = 0;
+		RECT rc = m_rcItem;
+		rc.left += m_rcTextPadding.left;
+		rc.right -= m_rcTextPadding.right;
+		rc.top += m_rcTextPadding.top;
+		rc.bottom -= m_rcTextPadding.bottom;
+
+		DWORD clrColor = IsEnabled()?m_dwTextColor:m_dwDisabledTextColor;
+
+		if( ((m_uButtonState & UISTATE_PUSHED) != 0) && (GetPushedTextColor() != 0) )
+			clrColor = GetPushedTextColor();
+		else if( ((m_uButtonState & UISTATE_HOT) != 0) && (GetHotTextColor() != 0) )
+			clrColor = GetHotTextColor();
+		//else if( ((m_uButtonState & UISTATE_FOCUSED) != 0) && (GetFocusedTextColor() != 0) )
+		//	clrColor = GetFocusedTextColor();
+
+		if(!GetEnabledEffect())
+		{
+			if( m_bShowHtml )
+				CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText.GetData(), clrColor, \
+				NULL, NULL, nLinks, m_iFont, m_uTextStyle);
+			else
+				CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText.GetData(), clrColor, \
+				m_iFont, m_uTextStyle);
 		}
 		else
 		{
-			rcTemp.left = m_rcItem.left + m_rcBkImageDest.left;
-			rcTemp.top = m_rcItem.top + m_rcBkImageDest.top;
-			rcTemp.right = rcTemp.left + m_rcBkImageDest.right - m_rcBkImageDest.left;
-			rcTemp.bottom = rcTemp.top + m_rcBkImageDest.bottom - m_rcBkImageDest.top;
-		}
-		graphics.DrawImage( m_pGifImage, rcTemp.left, rcTemp.top, rcTemp.right-rcTemp.left, rcTemp.bottom-rcTemp.top );
-
-		if (m_sText.IsEmpty() == false)
-		{
-			//»æÖÆÎÄ±¾
-			Gdiplus::Font	nFont(hDC,m_pManager->GetFont(GetFont()));
-
-			RECT rcText = {m_rcItem.left+m_rcTextPadding.left,m_rcItem.top+m_rcTextPadding.top,m_rcItem.right-m_rcTextPadding.right,m_rcItem.bottom-m_rcTextPadding.bottom};
-			RectF nRc((float)rcText.left,(float)rcText.top,(float)rcText.right-rcText.left,(float)rcText.bottom-rcText.top);
+			Font	nFont(hDC,m_pManager->GetFont(GetFont()));
+			Graphics nGraphics(hDC);
+			nGraphics.SetTextRenderingHint(GetTextRenderingAlias());
 
 			StringFormat format;
-			StringAlignment sa = StringAlignmentNear;
-			if ((m_uTextStyle & DT_VCENTER) != 0) 
-				sa = StringAlignmentCenter;
-			else if( (m_uTextStyle & DT_BOTTOM) != 0) 
-				sa = StringAlignmentFar;
+			StringAlignment sa = StringAlignment::StringAlignmentNear;
+			if ((m_uTextStyle & DT_VCENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
+			else if( (m_uTextStyle & DT_BOTTOM) != 0) sa = StringAlignment::StringAlignmentFar;
 			format.SetLineAlignment((StringAlignment)sa);
-			sa = StringAlignmentNear;
-			if ((m_uTextStyle & DT_CENTER) != 0) 
-				sa = StringAlignmentCenter;
-			else if( (m_uTextStyle & DT_RIGHT) != 0) 
-				sa = StringAlignmentFar;
+			sa = StringAlignment::StringAlignmentNear;
+			if ((m_uTextStyle & DT_CENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
+			else if( (m_uTextStyle & DT_RIGHT) != 0) sa = StringAlignment::StringAlignmentFar;
 			format.SetAlignment((StringAlignment)sa);
-			if ((m_uTextStyle & DT_SINGLELINE) != 0) 
-				format.SetFormatFlags(StringFormatFlagsNoWrap);
+			if ((m_uTextStyle & DT_SINGLELINE) != 0) format.SetFormatFlags(StringFormatFlagsNoWrap);
 
-			DWORD clrColor = IsEnabled()?m_dwTextColor:m_dwDisabledTextColor;
-			if( ((m_uButtonState & UISTATE_HOT) != 0) && (GetHotTextColor() != 0) )
-				clrColor = GetHotTextColor();
-
-			SolidBrush nBrush( ARGB2Color(clrColor) );
+			SolidBrush nSolidBrush(ARGB2Color(clrColor));
 
 			CDuiString sText1 = m_sText;
 			CPaintManagerUI::ProcessMultiLanguageTokens(sText1);
@@ -299,12 +340,10 @@ namespace DuiLib
 			::MultiByteToWideChar(CP_ACP, 0, sText1.GetData(), -1, pWideText, iLen);
 			LPCWSTR pstrText = pWideText;			
 #endif
-			graphics.DrawString(pstrText,wcslen(pstrText),&nFont,nRc,&format,&nBrush);
+			nGraphics.DrawString(pstrText,wcslen(pstrText),&nFont,RectF((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top),&format,&nSolidBrush);
 #ifndef _UNICODE
 			delete[] pWideText;
-#endif
+#endif	
 		}
-
-		m_pGifImage->SelectActiveFrame( &pageGuid, m_nFramePosition );
 	}
 }

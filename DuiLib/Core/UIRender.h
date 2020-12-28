@@ -33,6 +33,8 @@ public:
 	static void AdjustImage(bool bUseHSL, TImageInfo* imageInfo, short H, short S, short L);
     static TImageInfo* LoadImage(STRINGorID bitmap, LPCTSTR type = NULL, DWORD mask = 0);
     static void FreeImage(TImageInfo* bitmap, bool bDelete = true);
+	static unsigned char* ParseGifFromMemory(unsigned char const *buffer, int len, int **delays, int *width, int *height, int *layers);
+	static void FreeGifFromMemory(void* pParseGifFromMemoryRetval);
     static void DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RECT& rcPaint, \
         const RECT& rcBmpPart, const RECT& rcScale9, bool alphaChannel, BYTE uFade = 255, 
         bool hole = false, bool xtiled = false, bool ytiled = false);
