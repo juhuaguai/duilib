@@ -62,6 +62,7 @@ namespace DuiLib
 			if( ::PtInRect(&m_rcItem, event.ptMouse) && IsEnabled() ) 
 			{
 				m_uButtonState |= UISTATE_PUSHED | UISTATE_CAPTURED;
+				Invalidate();
 			}
 			return;
 		}
@@ -73,6 +74,8 @@ namespace DuiLib
 					m_uButtonState |= UISTATE_PUSHED;
 				else 
 					m_uButtonState &= ~UISTATE_PUSHED;
+
+				Invalidate();
 			}
 			return;
 		}
@@ -83,6 +86,8 @@ namespace DuiLib
 				if( ::PtInRect(&m_rcItem, event.ptMouse) && IsEnabled()) 
 					Activate();
 				m_uButtonState &= ~(UISTATE_PUSHED | UISTATE_CAPTURED);
+
+				Invalidate();
 			}
 			return;
 		}
@@ -103,6 +108,7 @@ namespace DuiLib
 					if( (m_uButtonState & UISTATE_HOT) == 0  ) 
 					{
 						m_uButtonState |= UISTATE_HOT;
+						Invalidate();
 					}
 				}
 				if (m_pManager) 
@@ -118,6 +124,7 @@ namespace DuiLib
 					if( (m_uButtonState & UISTATE_HOT) != 0  ) 
 					{
 						m_uButtonState &= ~UISTATE_HOT;
+						Invalidate();
 					}
 				}
 				if (m_pManager) 
