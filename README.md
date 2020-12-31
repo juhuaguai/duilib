@@ -10,10 +10,8 @@
 ## 官方库改为本仓库代码后，会遇到CDuiString的一些编译或者运行报错，原因在于我调整了CDuiString的代码（见下方第55点说明），解决方法就是重新使用本仓库的duillib的头文件和.lib重新编译和链接生成自己的程序，解决其中的编译报错（主要是CDuiString转换为LPCTSTR时报错,修改CDuiString.GetData()）即可。<br />
 ## 有问题欢迎反馈！<br />
 <br/>
-因为引入了libpng来支持apng，而libpng依赖zlib，所以如果使用duilib时提示zlib冲突，有两种办法：<br />1.去掉duilib项目预处理器中的SUPPORT_APNG，去掉libpng.lib依赖，这样就不使用apng相关的东西了。<br />
-2.打开apng/libpng/projects/visualc71/libpng.sln，搜索链接冲突的函数或者全局变量，给函数名或者变量名前加前缀dui_，然后重新编译生成libpng.lib，重新生成duilib。链接时冲突提示的函数或者变量名前面一般会多一个_，比如zcfree冲突时会提示为_zcfree已经存在(zutil.obj)，obj对应的都有C文件，去里面搜索或者全局搜索即可。<br />
-3.联系我发编译或者链接错误提示，我看到了会及时修改。<br />
-4.原始提供的是vs2008编译的静态库，其他版本vs使用可能会有问题，如需更换为其他版本vs，打开sln重启编译生成即可。生成顺序是zlib->libpng->duilib。<br />
+### 2020/12/31更新移除掉了libpng相关库，apng解析绘制直接使用stbimage和自己实现的代码来处理了。同时gif也由gdi+解析改为了stbimage处理。<br />
+这样看来是有机会将gif和apng统一成一个控件的，进一步来看考虑，是有机会让所有支持背景图的控件支持gif和apng的，暂无需求先不考虑了。<br />
 <br />
 
 
@@ -106,10 +104,11 @@
 85.修复textui控件中非showhtml时a标签数量计数错误的问题。<br />
 86.修复richedit在win7系统上内容可能被缩小的bug。（richedit作为子控件放到容器中，如果容器中包含有滚动条，滚动容器的滚动条，richedit的内容可能会随之缩放）<br />
 87.修复某些情况下showmodal不能返回正确的关闭值的问题。(比如在子窗口标题栏被鼠标左键按下不松开时调用了Close来关闭窗口)<br />
-88.新增了一个动画控件用来支持apng，使用了libpng来解析生成每帧数据，GDI+去绘制，同时支持设置背景色和文本<br />
-89.新增了一个支持apng动画的按钮控件，使用了libpng来解析生成每帧数据，GDI+去绘制，同时支持设置背景色和文本，支持背景图dest设置。<br />
+~~88.新增了一个动画控件用来支持apng，使用了libpng来解析生成每帧数据，GDI+去绘制，同时支持设置背景色和文本~~<br />
+~~89.新增了一个支持apng动画的按钮控件，使用了libpng来解析生成每帧数据，GDI+去绘制，同时支持设置背景色和文本，支持背景图dest设置。~~<br />
 90.修复图片旋转控件旋转时图像像素漂移的问题。<br />
 91.PaintManager新增了字体相关静态接口，可以使用ttf文件或者ttf内存流来引入新字体，比如PingFang字体，思源字体等win没有自带的字体。在窗体创建之前调用。AddTTF之后，可以像使用系统字体（比如宋体、微软雅黑）那样在xml或者程序中使用。注意字体版权问题。<br />
+92.gif和apng解析都使用stbimage解析，同时绘制采用gdi,gif抛弃了gdi+，apng抛弃了libpng库。这样gif控件和apng控件的背景图就类似普通控件背景图，支持file,source,dest,xtiled,ytiled,mask等属性了。<br />
 
 
 <br />

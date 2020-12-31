@@ -48,6 +48,14 @@ typedef struct tagFrame
 			hBmpFrame = NULL;
 		}
 	}
+	tagFrame& operator=(const tagFrame& value)
+	{
+		nFrameId = value.nFrameId;
+		hBmpFrame = value.hBmpFrame;
+		nDelayMs = value.nDelayMs;
+
+		return *this;
+	};
 
 	UINT32 nFrameId;
 	HBITMAP hBmpFrame;

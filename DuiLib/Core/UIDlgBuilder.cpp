@@ -325,9 +325,7 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
 				else if( _tcsicmp(pstrClass, DUI_CTR_DATETIME) == 0 )		  pControl = new CDateTimeUI;
                 else if( _tcsicmp(pstrClass, DUI_CTR_TREEVIEW) == 0 )         pControl = new CTreeViewUI;
                 else if( _tcsicmp(pstrClass, DUI_CTR_TREENODE) == 0 )		  pControl = new CTreeNodeUI;
-#ifdef SUPPORT_APNG
 				else if( _tcsicmp(pstrClass, DUI_CTR_APNGANIM) == 0 )         pControl = new CApngAnimUI;
-#endif
                 break;
             case 9:
                 if( _tcsicmp(pstrClass, DUI_CTR_CONTAINER) == 0 )             pControl = new CContainerUI;
@@ -339,9 +337,7 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
                 if( _tcsicmp(pstrClass, DUI_CTR_LISTHEADER) == 0 )            pControl = new CListHeaderUI;
                 else if( _tcsicmp(pstrClass, DUI_CTR_TILELAYOUT) == 0 )       pControl = new CTileLayoutUI;
 				else if( _tcsicmp(pstrClass, DUI_CTR_WEBBROWSER) == 0 )       pControl = new CWebBrowserUI;
-#ifdef SUPPORT_APNG
 				else if( _tcsicmp(pstrClass, DUI_CTR_APNGBUTTON) == 0 )       pControl = new CApngButtonUI;
-#endif
                 break;
 			case 11:
 				if (_tcsicmp(pstrClass, DUI_CTR_CHILDLAYOUT) == 0)			  pControl = new CChildLayoutUI;

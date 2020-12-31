@@ -522,14 +522,93 @@ void CRenderEngine::FreeImage(TImageInfo* bitmap, bool bDelete)
 	if (bDelete) delete bitmap ;
 }
 
-unsigned char* CRenderEngine::ParseGifFromMemory(unsigned char const *buffer, int len, int **delays, int *width, int *height, int *layers)
+unsigned char* CRenderEngine::ParseGifFromMemory(unsigned char const *buffer, int len, int **delays, int *width, int *height, int *layers,int* loop)
 {
 	int comp=0;
+	*loop = 0;
 	return stbi_load_gif_from_memory(buffer,len,delays,width,height,layers,&comp,4);
 }
 void CRenderEngine::FreeGifFromMemory(void* pParseGifFromMemoryRetval)
 {
 	stbi_image_free(pParseGifFromMemoryRetval);
+}
+
+unsigned char* CRenderEngine::ParseApngFromMemory(unsigned char const *buffer, int len, void **pngframes, int *width, int *height, int *layers,int* loop,bool* bFirstHidden)
+{
+	stbi__result_info ri;
+	stbi__png p;
+	stbi_uc *result = NULL;
+
+	size_t dir_offset = 0;
+	stbi__context s;
+	stbi__start_mem(&s,buffer,len);
+	
+	int comp = 0;
+	int req_comp = STBI_rgb_alpha;
+	p.s = &s;
+	do 
+	{
+		if (stbi__apng_load_main(&p, width, height, &comp, req_comp, &ri) == 0)
+			break;
+
+		if (ri.bits_per_channel != 8) {
+			STBI_ASSERT(ri.bits_per_channel == 16);
+			p.out = stbi__convert_16_to_8((stbi__uint16 *) p.out, *width, *height, req_comp == 0 ? comp : req_comp);
+			for (unsigned int i = 0; i < p.num_frames; ++i) {
+				if (p.frames[i].out)
+					p.frames[i].out = stbi__convert_16_to_8((stbi__uint16 *) p.frames[i].out, p.frames[i].width, p.frames[i].height, req_comp == 0 ? comp : req_comp);
+			}
+			ri.bits_per_channel = 8;
+		}
+
+		// @TODO: move stbi__convert_format to here
+		if (stbi__vertically_flip_on_load) {
+			int channels = req_comp ? req_comp : comp;
+			stbi__vertical_flip(p.out, *width, *height, channels * sizeof(stbi_uc));
+			for (unsigned int i = 0; i < p.num_frames; ++i) {
+				if (p.frames[i].out)
+					stbi__vertical_flip(p.frames[i].out, p.frames[i].width, p.frames[i].height, channels * sizeof(stbi_uc));
+			}
+		}
+
+		result = stbi__apng_pack_output_buffer(&p, &dir_offset);
+	} while (0);
+
+	STBI_FREE(p.out);         p.out         = NULL;
+	STBI_FREE(p.expanded);    p.expanded    = NULL;
+	STBI_FREE(p.idata);       p.idata       = NULL;
+	for (stbi__uint32 i = 0; i < p.num_frames; ++i) {
+		STBI_FREE(p.frames[i].out);      p.frames[i].out      = NULL;
+		STBI_FREE(p.frames[i].expanded); p.frames[i].expanded = NULL;
+		STBI_FREE(p.frames[i].idata);    p.frames[i].idata    = NULL;
+	}
+	STBI_FREE(p.frames); p.frames = NULL;
+
+	stbi__apng_directory *dir  = NULL;
+	if (result && dir_offset > 0) 
+	{
+		dir = (stbi__apng_directory *) (result + dir_offset);
+		// Sanity check that the data actually came from stbi.
+		if (dir->type == STBI__STRUCTURE_TYPE_APNG_DIRECTORY) 
+		{
+			*layers = dir->num_frames;
+			*loop = dir->num_plays;
+			*bFirstHidden = (dir->default_image_is_first_frame ? false : true);
+		}
+		else
+		{
+			fprintf(stderr, "invalid apng directory\n");
+			stbi_image_free(result);
+			result = NULL;
+		}
+	}
+
+	*pngframes = dir->frames;
+	return result;
+}
+void CRenderEngine::FreeApngFromMemory(void* pParseApngFromMemoryRetval)
+{
+	stbi_image_free(pParseApngFromMemoryRetval);
 }
 
 void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RECT& rcPaint,

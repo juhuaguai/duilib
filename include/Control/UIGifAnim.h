@@ -15,26 +15,24 @@ namespace DuiLib
 
 		LPCTSTR	GetClass() const;
 		LPVOID	GetInterface(LPCTSTR pstrName);
-		void	DoInit() override;
-		void	DoEvent(TEventUI& event);
-		void	SetVisible(bool bVisible = true );
-		void	SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
-		void	SetBkImage(const CDuiString& strImage);
+		virtual void	DoEvent(TEventUI& event);
+		virtual void	SetVisible(bool bVisible = true );
+		virtual void	SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
+		virtual void	SetBkImage(const CDuiString& strImage);
 
 		virtual void PaintBkImage(HDC hDC);
 
-		void	SetAutoPlay(bool bIsAuto = true );
-		bool	IsAutoPlay() const;
-		void	SetAutoSize(bool bIsAuto = true );
-		bool	IsAutoSize() const;
-		void	Play();
-		void	Pause();
-		void	Stop();
+		virtual void	SetAutoPlay(bool bIsAuto = true );
+		virtual bool	IsAutoPlay() const;
+		virtual void	SetAutoSize(bool bIsAuto = true );
+		virtual bool	IsAutoSize() const;
+		virtual void	Play();
+		virtual void	Pause();
+		virtual void	Stop();
 
-	protected:
-		void    OnTimer( UINT_PTR idEvent );
-		bool	LoadFromFile(LPCTSTR pstrGifPath);
-		bool	LoadFromMemory( LPVOID pBuf,size_t dwSize,DWORD dwMask );
+		virtual void    OnTimer( UINT_PTR idEvent );
+		virtual bool	LoadFromFile(LPCTSTR pstrGifPath);
+		virtual bool	LoadFromMemory( LPVOID pBuf,size_t dwSize,DWORD dwMask );
 	protected:
 		CDuiPtrArray	m_Frames;
 		UINT			m_nFramePosition;			// 当前放到第几帧
@@ -42,7 +40,7 @@ namespace DuiLib
 		int m_nFrameWidth;
 		int m_nFrameHeight;
 
-		int m_nLoopCout;		//播放几次 0无限循环
+		int m_nLoopCout;		//播放几次 0无限循环//stbimg里面，解析gif时似乎没有读取这个值
 		int m_nLoopedNum;		
 
 		CDuiString		m_sBkImage;

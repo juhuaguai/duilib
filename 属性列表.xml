@@ -437,7 +437,6 @@
 		<Attribute name="pos" default="0,0,0,0" type="RECT" comment="位置，如果为float控件则指定位置和大小，否则只指定大小,如(0,0,100,100)"/>
 		<Attribute name="padding" default="0,0,0,0" type="RECT" comment="外边距,如(2,2,2,2)"/>
 		<Attribute name="bkcolor" default="0x00000000" type="DWORD" comment="背景颜色,如(0xFFFF0000)"/>
-		<Attribute name="hotbkcolor" default="0x00000000" type="DWORD" comment="悬停背景颜色,如(0xFFFF0000)"/>
 		<Attribute name="selectedbkcolor" default="0x00000000" type="DWORD" comment="选中时背景颜色,如(0xFFFF0000)"/>
 		<Attribute name="bkcolor2" default="0x00000000" type="DWORD" comment="背景渐变色2,和bkcolor配合使用,如(0xFFFFFF00)"/>
 		<Attribute name="bkcolor3" default="0x00000000" type="DWORD" comment="背景渐变色3,和bkcolor、bkcolor2配合使用,如(0xFFFF00FF)"/>
@@ -1121,6 +1120,7 @@
 		<Attribute name="textcolor" default="0x00000000" type="DWORD" comment="字体颜色，0表示使用默认字体颜色,如(0xFFFF0000)"/>
 		<Attribute name="disabledtextcolor" default="0x00000000" type="DWORD" comment="disabled字体颜色，0表示使用默认disabled字体颜色,如(0xFFFF0000)"/>
 		<Attribute name="hottextcolor" default="0x00000000" type="DWORD" comment="鼠标悬浮字体颜色，0表示不使用此颜色,如(0xFFFF0000)"/>
+		<Attribute name="hotbkcolor" default="0x00000000" type="DWORD" comment="鼠标悬浮背景颜色,如(0xFFFF0000)"/>
 		<Attribute name="multiline" default="true" type="BOOL" comment="是否使用多行,如(true)"/>
 		<Attribute name="font" default="-1" type="INT" comment="字体id,如(0)"/>
 		<Attribute name="align" default="left" type="STRING" comment="文字横向对齐方式,取值left、center、right"/>
@@ -1128,7 +1128,7 @@
 		<Attribute name="rhaa" default="4" type="INT" comment="文本抗锯齿程度"/>
 		<Attribute name="textpadding" default="0,0,0,0" type="RECT" comment="文字显示的边距,如(2,2,2,2)"/>
 	</GifButton>
-	<ApngAnim parent="Control" notifies="setfocus killfocus timer menu windowinit(root)">
+	<ApngAnim parent="GifAnim" notifies="setfocus killfocus timer menu windowinit(root)">
 		<Attribute name="bkcolor" default="0x00000000" type="DWORD" comment="背景颜色,如(0xFFFF0000)"/>
 		<Attribute name="bkimage" default="" type="STRING" comment="动画图片路径"/>
 		<Attribute name="autoplay" default="true" type="BOOL" comment="是否自动播放动画"/>
@@ -1150,6 +1150,7 @@
 		<Attribute name="textcolor" default="0x00000000" type="DWORD" comment="字体颜色，0表示使用默认字体颜色,如(0xFFFF0000)"/>
 		<Attribute name="disabledtextcolor" default="0x00000000" type="DWORD" comment="disabled字体颜色，0表示使用默认disabled字体颜色,如(0xFFFF0000)"/>
 		<Attribute name="hottextcolor" default="0x00000000" type="DWORD" comment="鼠标悬浮字体颜色，0表示不使用此颜色,如(0xFFFF0000)"/>
+		<Attribute name="hotbkcolor" default="0x00000000" type="DWORD" comment="鼠标悬浮背景颜色,如(0xFFFF0000)"/>
 		<Attribute name="multiline" default="true" type="BOOL" comment="是否使用多行,如(true)"/>
 		<Attribute name="font" default="-1" type="INT" comment="字体id,如(0)"/>
 		<Attribute name="align" default="left" type="STRING" comment="文字横向对齐方式,取值left、center、right"/>

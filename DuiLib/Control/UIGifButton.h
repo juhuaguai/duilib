@@ -16,8 +16,8 @@ namespace DuiLib
 		void SetEnabled(bool bEnable = true);
 		void DoEvent(TEventUI& event);
 
-		void CGifButtonUI::PaintBkColor(HDC hDC);
-		void CGifButtonUI::PaintText(HDC hDC);
+		void PaintBkColor(HDC hDC);
+		void PaintText(HDC hDC);
 
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 		CDuiString GetCursor();

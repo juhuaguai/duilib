@@ -1,8 +1,6 @@
 #ifndef ApngButtonUI_h__
 #define ApngButtonUI_h__
 
-#ifdef SUPPORT_APNG
-
 namespace DuiLib
 {
 	class DUILIB_API CApngButtonUI : public CApngAnimUI
@@ -18,29 +16,30 @@ namespace DuiLib
 		bool Activate();
 		void SetEnabled(bool bEnable = true);
 		void DoEvent(TEventUI& event);
-		bool DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
 
-		void SetBkImageDest(const RECT& rcDest);
+		void PaintBkColor(HDC hDC);
+		void PaintText(HDC hDC);
 
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 		CDuiString GetCursor();
 		void SetCursor(LPCTSTR pStrCursor);
 
+		void SetHotBkColor(DWORD dwColor);
+		DWORD GetHotBkColor() const;
 		void SetHotTextColor(DWORD dwColor);
 		DWORD GetHotTextColor() const;
+		void SetPushedTextColor(DWORD dwColor);
+		DWORD GetPushedTextColor() const;
 
 		UINT GetButtonState() {return m_uButtonState;};
-
-	protected:	
-		void	DrawFrame( HDC hDC );		// 绘制每帧
-
 	protected:
 		UINT m_uButtonState;
 		CDuiString m_sCursor;			//光标形状 arrow/hand 其他根据需要添加
-		DWORD	m_dwHotTextColor;
-		RECT m_rcBkImageDest;
+
+		DWORD m_dwHotBkColor;
+		DWORD m_dwHotTextColor;
+		DWORD m_dwPushedTextColor;
 	};
 }
 
-#endif	//SUPPORT_APNG
 #endif // ApngButtonUI_h__

@@ -124,8 +124,8 @@
 #include "Control/UIChrysanthemumLoading.h"
 #include "Control/UIRotateImage.h"
 #include "Control/UIGifButton.h"
-#ifdef SUPPORT_APNG
+
 #include "Control/UIApngAnim.h"
 #include "Control/UIApngButton.h"
-#endif
+
 //#include "Control/UIFlash.h"

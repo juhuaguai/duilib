@@ -11,6 +11,8 @@ namespace DuiLib
 		m_sCursor = _T("hand");
 
 		m_dwHotTextColor = 0xFF000000;
+
+		m_uTextStyle = DT_SINGLELINE | DT_VCENTER | DT_CENTER;
 	}
 
 	CGifButtonUI::~CGifButtonUI(void)
