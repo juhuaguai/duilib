@@ -1571,6 +1571,32 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             m_pEventClick = pControl;
         }
         break;
+	case WM_RBUTTONUP:
+		{
+			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+			m_ptLastMousePos = pt;
+			if( m_pEventClick == NULL ) break;
+			//ReleaseCapture();
+			TEventUI event = { 0 };
+			event.Type = UIEVENT_RBUTTONUP;
+			event.pSender = m_pEventClick;
+			event.wParam = wParam;
+			event.lParam = lParam;
+			event.ptMouse = pt;
+			event.wKeyState = (WORD)wParam;
+			event.dwTimestamp = ::GetTickCount();
+			// By daviyang35 at 2015-6-5 16:10:13
+			// 在Click事件中弹出了模态对话框，退出阶段窗口实例可能已经删除
+			// this成员属性赋值将会导致heap错误
+			// this成员函数调用将会导致野指针异常
+			// 使用栈上的成员来调用响应，提前清空成员
+			// 当阻塞的模态窗口返回时，回栈阶段不访问任何类实例方法或属性
+			// 将不会触发异常
+			CControlUI* pClick = m_pEventClick;
+			m_pEventClick = NULL;
+			pClick->Event(event);
+		}
+		break;
     case WM_CONTEXTMENU:
         {
             if( m_pRoot == NULL ) break;
