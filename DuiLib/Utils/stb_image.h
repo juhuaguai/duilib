@@ -4545,8 +4545,19 @@ typedef struct
    stbi_uc *idata, *expanded, *out; // all NULL if frame corresponds to default image
 } stbi__apng_frame;
 
-typedef struct
+typedef struct tag_stbi__png
 {
+   tag_stbi__png()
+   {
+	   s = NULL;
+	   idata = NULL;
+	   expanded = NULL;
+	   out = NULL;
+	   frames = NULL;
+	   num_frames = 0;
+	   num_plays = 0;
+	   depth = 0;
+   }
    stbi__context *s;
    stbi_uc *idata, *expanded, *out;
    stbi__apng_frame *frames;
@@ -4844,7 +4855,7 @@ static int stbi__create_png_image(stbi__context *s, stbi__create_png_image_data 
             }
          }
          STBI_FREE(*data->out);
-         *data->image_data += img_len;
+         *(data->image_data) += img_len;
          data->image_data_len -= img_len;
       }
    }
@@ -5249,8 +5260,9 @@ static int stbi__parse_png_file(stbi__png *z, int scan, int req_comp)
             if (z->num_frames != curr_frame) return stbi__err("missing fcTL chunks", "Corrupt PNG");
             // initial guess for decoded data size to avoid unnecessary reallocs
             bpl = (s->img_x * z->depth + 7) / 8; // bytes per line, per component
-            raw_len = bpl * s->img_y * s->img_n /* pixels */ + s->img_y /* filter mode per row */;
+            raw_len = bpl * s->img_y * s->img_n /* pixels */ + s->img_y /* filter mode per row */;			
             z->expanded = (stbi_uc *) stbi_zlib_decode_malloc_guesssize_headerflag((char *) z->idata, ioff, raw_len, (int *) &raw_len, !is_iphone);
+			stbi_uc * pbackexpand = z->expanded;
             if (z->expanded == NULL) return 0; // zlib should set error
             STBI_FREE(z->idata); z->idata = NULL;
             for (i = 0; i < z->num_frames; ++i) {
@@ -5269,7 +5281,7 @@ static int stbi__parse_png_file(stbi__png *z, int scan, int req_comp)
                s->img_out_n = s->img_n;
             data.img_x          = z->s->img_x;
             data.img_y          = z->s->img_y;
-            data.image_data     = &z->expanded;
+            data.image_data     = &(z->expanded);
             data.out            = &z->out;
             data.image_data_len = raw_len;
             if (!stbi__create_png_image(s, &data, z->s->img_n, s->img_out_n, z->depth, color, interlace)) return 0;
@@ -5303,7 +5315,12 @@ static int stbi__parse_png_file(stbi__png *z, int scan, int req_comp)
                // non-paletted image with tRNS -> source image has (constant) alpha
                ++s->img_n;
             }
-            STBI_FREE(z->expanded); z->expanded = NULL;
+			if (z->num_frames==0)
+			{
+				z->expanded = pbackexpand;
+				STBI_FREE(z->expanded); z->expanded = NULL;
+			}
+            //STBI_FREE(z->expanded); z->expanded = NULL;
             for (i = 0; i < z->num_frames; ++i) {
                STBI_FREE(z->frames[i].expanded); z->frames[i].expanded = NULL;
             }

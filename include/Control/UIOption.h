@@ -42,6 +42,7 @@ namespace DuiLib
 		SIZE EstimateSize(SIZE szAvailable);
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
+		void PaintBkColor(HDC hDC);
 		void PaintStatusImage(HDC hDC);
 		void PaintText(HDC hDC);
 
