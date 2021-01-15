@@ -7,7 +7,7 @@
 //下边的顺序不要错
 #include <ws2ipdef.h>
 #include <IPHlpApi.h>
-#include <netioapi.h>
+//#include <netioapi.h>
 #pragma comment(lib,"Iphlpapi.lib") //需要添加Iphlpapi.lib库  
 #include <ShlObj.h>
 #pragma comment(lib,"Shell32.lib")
@@ -86,10 +86,11 @@ int CheckPortUsed(int nPort);
 
 //获取本机IP
 string GetLocalIp();
+string getLocalIp();
 //获取本机多个网卡的信息
 void GetIpAdapterInfoList(deque<IP_ADAPTER_INFO>& theIpAdapterList);
 // 获取正在使用的网卡
-string GetInnerIp(wstring& strAlias,ULONG& uIndex, string& strGetway);
+string GetInnerIp(wstring& strAlias,ULONG& uIndex, string& strGetway, string& strAdapterName);
 //string GetInnerIp(ULONG& uIndex, string& strGetway);
 
 //获取本机MAC
@@ -110,6 +111,8 @@ bool IsLineFile(const wstring wstr);
 
 //提取exe中的Icon并保存为文件 (strDestFile一般以ico结尾) (里面包含了1个大小的图像,如果需要多个,参考实现代码进行修改即可)
 bool SaveIconFileFromExeFile(const xstring& strExe,const xstring& strDestFile);
+//提取exe中的Icon并保存为文件 (strDestFile一般以ico结尾) (里面包含了1个大小的图像,如果需要多个,参考实现代码进行修改即可)
+bool SaveIconToPngFromExeFile(const xstring& strExe, const xstring& strDestFile,int nInWidth,int nInHeight);
 
 //由绝对路径获取文件名
 xstring GetAppNameFromPath(const xstring& strAppPath);
@@ -141,7 +144,7 @@ xstring GetOSName();
 //是否是64位OS
 BOOL Is64BitOS();
 //获取操作系统版本
-void GetOSVersion(int& nMajorVersion,int& nMinorVersion);
+int GetOSVersion(int& nMajorVersion,int& nMinorVersion);
 bool IsXp();
 bool IsXpUp();
 bool IsWin7();
@@ -200,6 +203,10 @@ string GetCpuIndex();
 wstring GetCpuDescr();
 //CPU核心数
 int GetCpuCoreNum();
+// cpu型号
+string GetCPUType();
+// 获取系统信息
+wstring GetSysInfo();
 
 //获取内存大小 //sprintf(szMemorySize,"%I64d",dwMemorySize);
 DWORDLONG GetMemorySize();
