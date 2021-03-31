@@ -1107,13 +1107,13 @@
 		<Attribute name="selhotitemtextcolor" default="0x00000000" type="DWORD" comment="item被选中时且鼠标进入时的文本颜色"/>
 	</TreeNode>
 	<GifAnim parent="Label" notifies="setfocus killfocus timer menu windowinit(root)">
-		<Attribute name="bkimage" default="" type="STRING" comment="Gif动画图片路径(不支持source等属性设置)"/>
+		<Attribute name="bkimage" default="" type="STRING" comment="Gif动画图片路径(支持source,dest,xtiled,ytiled等属性)"/>
 		<Attribute name="autoplay" default="true" type="BOOL" comment="是否自动播放GIF动画"/>
 		<Attribute name="autosize" default="false" type="BOOL" comment="是否根据图片自动设置控件大小(开启后width和height属性失效)"/>
 		<Attribute name="textcolor" default="0x00000000" type="DWORD" comment="字体颜色，0表示使用默认字体颜色,如(0xFFFF0000)"/>
 	</GifAnim>
 	<GifButton parent="GifAnim" notifies="setfocus killfocus timer menu windowinit(root)">
-		<Attribute name="bkimage" default="" type="STRING" comment="Gif动画图片路径(不支持source等属性设置，可通过接口设置图片的dest)"/>
+		<Attribute name="bkimage" default="" type="STRING" comment="Gif动画图片路径(支持source,dest,xtiled,ytiled等属性)"/>
 		<Attribute name="autoplay" default="true" type="BOOL" comment="是否自动播放GIF动画"/>
 		<Attribute name="autosize" default="false" type="BOOL" comment="是否根据图片自动设置控件大小(开启后width和height属性失效)"/>
 		<Attribute name="cursor" default="hand" type="STRING" comment="鼠标的形状 hand,arrow"/>

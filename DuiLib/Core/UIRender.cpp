@@ -686,8 +686,8 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 							lDrawWidth -= lDestRight - rcDest.right;
 							lDestRight = rcDest.right;
 						}
-						rcDest.bottom -= rcDest.top;
-						lpAlphaBlend(hDC, lDestLeft, rcDest.top, lDestRight - lDestLeft, rcDest.bottom, 
+						//rcDest.bottom -= rcDest.top;
+						lpAlphaBlend(hDC, lDestLeft, rcDest.top, lDestRight - lDestLeft, rcDest.bottom-rcDest.top, 
 							hCloneDC, rcBmpPart.left + rcScale9.left, rcBmpPart.top + rcScale9.top, \
 							lDrawWidth, rcBmpPart.bottom - rcBmpPart.top - rcScale9.top - rcScale9.bottom, bf);
 					}
@@ -703,8 +703,8 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 							lDrawHeight -= lDestBottom - rcDest.bottom;
 							lDestBottom = rcDest.bottom;
 						}
-						rcDest.right -= rcDest.left;
-						lpAlphaBlend(hDC, rcDest.left, rcDest.top + lHeight * i, rcDest.right, lDestBottom - lDestTop, 
+						//rcDest.right -= rcDest.left;
+						lpAlphaBlend(hDC, rcDest.left, rcDest.top + lHeight * i, rcDest.right-rcDest.left, lDestBottom - lDestTop, 
 							hCloneDC, rcBmpPart.left + rcScale9.left, rcBmpPart.top + rcScale9.top, \
 							rcBmpPart.right - rcBmpPart.left - rcScale9.left - rcScale9.right, lDrawHeight, bf);                    
 					}
