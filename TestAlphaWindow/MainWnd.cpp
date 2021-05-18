@@ -42,10 +42,10 @@ void CMainWnd::InitDlg()
 {
 	RECT rcWnd = {0,0,0,0};
 	GetWindowRect(m_hWnd,&rcWnd);
-	CRichEditUI* pEdit = static_cast<CRichEditUI*>(m_PM.FindControl(_T("log_edit")));
-	TCHAR szValue[512] = {0};
-	_stprintf_s(szValue,_T("rcWnd=%d,%d,%d,%d"),rcWnd.left,rcWnd.top,rcWnd.right,rcWnd.bottom);
-	pEdit->AppendText(szValue);
+	//CRichEditUI* pEdit = static_cast<CRichEditUI*>(m_PM.FindControl(_T("log_edit")));
+	//TCHAR szValue[512] = {0};
+	//_stprintf_s(szValue,_T("rcWnd=%d,%d,%d,%d"),rcWnd.left,rcWnd.top,rcWnd.right,rcWnd.bottom);
+	//pEdit->AppendText(szValue);
 }
 
 LRESULT CMainWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -112,6 +112,15 @@ LRESULT CMainWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			else
 				bHandled = FALSE;
 		}
+		break;
+	case WM_MOUSEWHEEL:
+		{
+			int zDelta = (int) (short) HIWORD(wParam);
+			CControlUI* pBtn = m_PM.FindControl(L"btn");
+			pBtn->SetFixedWidth(pBtn->GetWidth()+zDelta);
+			//OutputDebugStringW(L"22222=>>>>>>>>>>>>>>>\n");
+		}
+		break;
 	default:
 		bHandled = FALSE;
 	}
@@ -137,6 +146,7 @@ void CMainWnd::Notify(TNotifyUI& msg)
 			pBtnEx->OnTimer(msg.wParam);
 		}
 	}
+
 }
 
 LRESULT CMainWnd::OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

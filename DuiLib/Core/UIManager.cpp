@@ -61,8 +61,19 @@ void tagTDrawInfo::Clear()
 {
 	sDrawString.Empty();
     sImageName.Empty();
-	::ZeroMemory(&bLoaded, sizeof(tagTDrawInfo) - offsetof(tagTDrawInfo, bLoaded));
+
+	bLoaded = false;
+	pImageInfo = NULL;
+	rcDestOffset.left = rcDestOffset.right = rcDestOffset.top = rcDestOffset.bottom = 0;
+	rcBmpPart.left = rcBmpPart.right = rcBmpPart.top = rcBmpPart.bottom = 0;
+	rcScale9.left = rcScale9.right = rcScale9.top = rcScale9.bottom = 0;
 	uFade = 255;
+	bHole = false;
+	bTiledX = false;
+	bTiledY = false;
+	dwMask = 0;
+	//::ZeroMemory(&bLoaded, sizeof(tagTDrawInfo) - offsetof(tagTDrawInfo, bLoaded));
+	//uFade = 255;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -3103,6 +3114,18 @@ void CPaintManagerUI::RemoveAllImages(bool bShared)
 		}
 		m_ResInfo.m_ImageHash.RemoveAll();
 	}
+}
+const TImageInfo* CPaintManagerUI::ModifyImage(LPCTSTR bitmap, HBITMAP hBitmap,LPBYTE pBits, int iWidth, int iHeight, bool bAlpha)
+{
+	TImageInfo* data = static_cast<TImageInfo*>(m_ResInfo.m_ImageHash.Find(bitmap));
+	if( !data ) data = static_cast<TImageInfo*>(m_SharedResInfo.m_ImageHash.Find(bitmap));
+	
+	data->hBitmap = hBitmap;
+	data->nX = iWidth;
+	data->nY = iHeight;
+	data->bAlpha = bAlpha;
+
+	return data;
 }
 
 void CPaintManagerUI::AdjustSharedImagesHSL()

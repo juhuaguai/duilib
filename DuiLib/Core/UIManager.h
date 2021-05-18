@@ -113,6 +113,7 @@ typedef struct DUILIB_API tagTImageInfo
     bool bUseHSL;
     CDuiString sResType;
     DWORD dwMask;
+	void* pSvg;
 } TImageInfo;
 
 typedef struct DUILIB_API tagTDrawInfo
@@ -131,6 +132,7 @@ typedef struct DUILIB_API tagTDrawInfo
 	bool bHole;
 	bool bTiledX;
 	bool bTiledY;
+	DWORD dwMask;
 } TDrawInfo;
 
 typedef struct DUILIB_API tagTPercentInfo
@@ -324,6 +326,7 @@ public:
     void RemoveAllImages(bool bShared = false);
 	static void ReloadSharedImages();
 	void ReloadImages();
+	const TImageInfo* ModifyImage(LPCTSTR bitmap, HBITMAP hBitmap,LPBYTE pBits, int iWidth, int iHeight, bool bAlpha);
 
     void AddDefaultAttributeList(LPCTSTR pStrControlName, LPCTSTR pStrControlAttrList, bool bShared = false);
     LPCTSTR GetDefaultAttributeList(LPCTSTR pStrControlName) const;

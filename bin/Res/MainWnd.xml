@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<Window size="640,480" caption="0,0,0,-1" layeredimage="" shadowsize="20" shadowcolor="ffffff00" shadowfocusscales="0.6">
+<Window size="640,480" caption="0,0,0,-1" layeredimage="">
 	<Font shared="true" id="0" name="微软雅黑" size="14" bold="false" default="true"/>
-    <HorizontalLayout>
-    	<ApngButton bkimage="apngtest.png" bkcolor="80ffff00" autosize="false" text="这是APNG动画，效果比gif要好" textcolor="ffff0000" rhaa="4"/>
+    <HorizontalLayout bkcolor="ffff0000">
+    	<Control bkcolor="ffff00ff"/>
+    	<Button name="btn" width="320" bkcolor="3000ff00"/>
+    	<Control bkimage="file='nano.svg' source='320,0,640,400' dest='100,300,200,400' " bkcolor="ff00ffff"/>
     </HorizontalLayout>
 </Window>

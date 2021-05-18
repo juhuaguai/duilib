@@ -772,6 +772,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Utils\nanosvg.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\nanosvgrast.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Utils\stb_image.h"
 					>
 				</File>

@@ -2,6 +2,10 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../Utils/stb_image.h"
+#define NANOSVG_IMPLEMENTATION
+#include "../Utils/nanosvg.h"
+#define NANOSVGRAST_IMPLEMENTATION
+#include "../Utils/nanosvgrast.h"
 
 #define RES_TYPE_COLOR _T("*COLOR*")
 
@@ -424,79 +428,98 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 	}
 
     LPBYTE pImage = NULL;
+	NSVGimage* svg = NULL;
     int x = 1, y = 1, n;
     if (!type || _tcscmp(type, RES_TYPE_COLOR) != 0) {
         pImage = stbi_load_from_memory(pData, dwSize, &x, &y, &n, 4);
+
+		if (pImage==NULL)
+		{
+			svg = nsvgParse((char*)pData, "px", 96.0f);
+			x=0;
+			y=0;
+		}
+
         delete[] pData;
-        if( !pImage ) {
+        if( (!pImage) && (!svg)) {
             //::MessageBox(0, _T("解析图片失败"), _T("抓BUG"), MB_OK);
             return NULL;
         }
     }
-    BITMAPINFO bmi;
-    ::ZeroMemory(&bmi, sizeof(BITMAPINFO));
-    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    bmi.bmiHeader.biWidth = x;
-    bmi.bmiHeader.biHeight = -y;
-    bmi.bmiHeader.biPlanes = 1;
-    bmi.bmiHeader.biBitCount = 32;
-    bmi.bmiHeader.biCompression = BI_RGB;
-    bmi.bmiHeader.biSizeImage = x * y * 4;
 
-    bool bAlphaChannel = false;
-    LPBYTE pDest = NULL;
-    HBITMAP hBitmap = ::CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, (void**)&pDest, NULL, 0);
-	if( !hBitmap ) {
-		//::MessageBox(0, _T("CreateDIBSection失败"), _T("抓BUG"), MB_OK);
-		return NULL;
+	HBITMAP hBitmap = NULL;
+	LPBYTE pDest = NULL;
+	bool bAlphaChannel = false;	
+	if (svg==NULL)
+	{
+		BITMAPINFO bmi;
+		::ZeroMemory(&bmi, sizeof(BITMAPINFO));
+		bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+		bmi.bmiHeader.biWidth = x;
+		bmi.bmiHeader.biHeight = -y;
+		bmi.bmiHeader.biPlanes = 1;
+		bmi.bmiHeader.biBitCount = 32;
+		bmi.bmiHeader.biCompression = BI_RGB;
+		bmi.bmiHeader.biSizeImage = x * y * 4;
+			
+		hBitmap = ::CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, (void**)&pDest, NULL, 0);
+		if( !hBitmap ) {
+			//::MessageBox(0, _T("CreateDIBSection失败"), _T("抓BUG"), MB_OK);
+			return NULL;
+		}
+
+		BYTE bColorBits[4] = { 0 };
+		if (type && _tcscmp(type, RES_TYPE_COLOR) == 0) {
+			LPTSTR pstr = NULL;
+			LPCTSTR pstrValue = bitmap.m_lpstr;
+			if (*pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+
+			pImage = (LPBYTE)&clrColor;
+			/* BGRA -> RGBA */
+			bColorBits[3] = pImage[3];
+			bColorBits[2] = pImage[0];
+			bColorBits[1] = pImage[1];
+			bColorBits[0] = pImage[2];
+			pImage = bColorBits;
+		}
+
+		for( int i = 0; i < x * y; i++ ) 
+		{
+			pDest[i*4 + 3] = pImage[i*4 + 3];
+			if( pDest[i*4 + 3] < 255 )
+			{
+				pDest[i*4] = (BYTE)(DWORD(pImage[i*4 + 2])*pImage[i*4 + 3]/255);
+				pDest[i*4 + 1] = (BYTE)(DWORD(pImage[i*4 + 1])*pImage[i*4 + 3]/255);
+				pDest[i*4 + 2] = (BYTE)(DWORD(pImage[i*4])*pImage[i*4 + 3]/255); 
+				bAlphaChannel = true;
+			}
+			else
+			{
+				pDest[i*4] = pImage[i*4 + 2];
+				pDest[i*4 + 1] = pImage[i*4 + 1];
+				pDest[i*4 + 2] = pImage[i*4]; 
+			}
+
+			if( *(DWORD*)(&pDest[i*4]) == mask ) {
+				pDest[i*4] = (BYTE)0;
+				pDest[i*4 + 1] = (BYTE)0;
+				pDest[i*4 + 2] = (BYTE)0; 
+				pDest[i*4 + 3] = (BYTE)0;
+				bAlphaChannel = true;
+			}
+		}
+
+		if (!type || _tcscmp(type, RES_TYPE_COLOR) != 0) {
+			stbi_image_free(pImage);
+		}
 	}
-
-    BYTE bColorBits[4] = { 0 };
-    if (type && _tcscmp(type, RES_TYPE_COLOR) == 0) {
-        LPTSTR pstr = NULL;
-        LPCTSTR pstrValue = bitmap.m_lpstr;
-        if (*pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
-
-        pImage = (LPBYTE)&clrColor;
-        /* BGRA -> RGBA */
-        bColorBits[3] = pImage[3];
-        bColorBits[2] = pImage[0];
-        bColorBits[1] = pImage[1];
-        bColorBits[0] = pImage[2];
-        pImage = bColorBits;
-    }
-
-    for( int i = 0; i < x * y; i++ ) 
-    {
-        pDest[i*4 + 3] = pImage[i*4 + 3];
-        if( pDest[i*4 + 3] < 255 )
-        {
-            pDest[i*4] = (BYTE)(DWORD(pImage[i*4 + 2])*pImage[i*4 + 3]/255);
-            pDest[i*4 + 1] = (BYTE)(DWORD(pImage[i*4 + 1])*pImage[i*4 + 3]/255);
-            pDest[i*4 + 2] = (BYTE)(DWORD(pImage[i*4])*pImage[i*4 + 3]/255); 
-            bAlphaChannel = true;
-        }
-        else
-        {
-            pDest[i*4] = pImage[i*4 + 2];
-            pDest[i*4 + 1] = pImage[i*4 + 1];
-            pDest[i*4 + 2] = pImage[i*4]; 
-        }
-
-        if( *(DWORD*)(&pDest[i*4]) == mask ) {
-            pDest[i*4] = (BYTE)0;
-            pDest[i*4 + 1] = (BYTE)0;
-            pDest[i*4 + 2] = (BYTE)0; 
-            pDest[i*4 + 3] = (BYTE)0;
-            bAlphaChannel = true;
-        }
-    }
-
-    if (!type || _tcscmp(type, RES_TYPE_COLOR) != 0) {
-        stbi_image_free(pImage);
-    }
-
+	else
+	{
+		x=svg->width;
+		y=svg->height;
+	}
+    
 	TImageInfo* data = new TImageInfo;
 	data->hBitmap = hBitmap;
 	data->pBits = pDest;
@@ -505,6 +528,7 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 	data->bAlpha = bAlphaChannel;
 	data->bUseHSL = false;
 	data->pSrcBits = NULL;
+	data->pSvg = svg;
 	return data;
 }
 
@@ -518,6 +542,11 @@ void CRenderEngine::FreeImage(TImageInfo* bitmap, bool bDelete)
 	if (bitmap->pSrcBits) {
 		delete[] bitmap->pSrcBits;
 		bitmap->pSrcBits = NULL;
+	}
+	if (bitmap->pSvg)
+	{
+		nsvgDelete((NSVGimage *)bitmap->pSvg);
+		bitmap->pSvg = NULL;
 	}
 	if (bDelete) delete bitmap ;
 }
@@ -1064,6 +1093,13 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 	::DeleteDC(hCloneDC);
 }
 
+bool IsRectNull(const RECT& rc)
+{
+	if (rc.left==0 && rc.right==0 && rc.top==0 && rc.bottom==0)
+		return true;
+
+	return false;
+}
 bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rcItem, const RECT& rcPaint, 
 					  TDrawInfo& drawInfo)
 {
@@ -1142,8 +1178,8 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 					drawInfo.rcScale9.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
 				}
 				else if( sItem == _T("mask") ) {
-					if( sValue[0] == _T('#')) dwMask = _tcstoul(sValue.GetData() + 1, &pstr, 16);
-					else dwMask = _tcstoul(sValue.GetData(), &pstr, 16);
+					if( sValue[0] == _T('#')) drawInfo.dwMask = _tcstoul(sValue.GetData() + 1, &pstr, 16);
+					else drawInfo.dwMask = _tcstoul(sValue.GetData(), &pstr, 16);
 				}
 				else if( sItem == _T("fade") ) {
 					drawInfo.uFade = (BYTE)_tcstoul(sValue.GetData(), &pstr, 10);
@@ -1200,8 +1236,245 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 	RECT rcTemp;
 	if( !::IntersectRect(&rcTemp, &rcDest, &rcItem) ) return true;
 	if( !::IntersectRect(&rcTemp, &rcDest, &rcPaint) ) return true;
-	DrawImage(hDC, drawInfo.pImageInfo->hBitmap, rcDest, rcPaint, drawInfo.rcBmpPart, drawInfo.rcScale9,
-		drawInfo.pImageInfo->bAlpha, drawInfo.uFade, drawInfo.bHole, drawInfo.bTiledX, drawInfo.bTiledY);
+
+	//处理svg以得到图片
+	if (drawInfo.pImageInfo->pSvg)
+	{
+		NSVGimage* svg = (NSVGimage *)drawInfo.pImageInfo->pSvg;
+		if (drawInfo.pImageInfo->hBitmap==NULL)
+		{
+			if (IsRectNull(drawInfo.rcBmpPart)==false || IsRectNull(drawInfo.rcScale9)==false || drawInfo.bTiledX || drawInfo.bTiledY)
+			{
+				int nWidth = svg->width;
+				int nHeight = svg->height;
+				NSVGrasterizer* rast = nsvgCreateRasterizer();
+				if (rast == NULL)
+					return false;
+
+				LPBYTE pImage = (LPBYTE)malloc(nWidth * nHeight * 4);
+
+				nsvgRasterize(rast, svg, 0, 0, 1, pImage, nWidth, nHeight, nWidth * 4);
+
+				BITMAPINFO bmi;
+				::ZeroMemory(&bmi, sizeof(BITMAPINFO));
+				bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+				bmi.bmiHeader.biWidth = nWidth;
+				bmi.bmiHeader.biHeight = -nHeight;
+				bmi.bmiHeader.biPlanes = 1;
+				bmi.bmiHeader.biBitCount = 32;
+				bmi.bmiHeader.biCompression = BI_RGB;
+				bmi.bmiHeader.biSizeImage = nWidth * nHeight * 4;
+
+				LPBYTE pDest = NULL;
+				HBITMAP hBitmap = ::CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, (void**)&pDest, NULL, 0);
+				if( !hBitmap ) {
+					free(pImage);
+					nsvgDeleteRasterizer(rast);
+					return false;
+				}
+
+				bool bAlphaChannel = false;
+				for( int i = 0; i < nWidth * nHeight; i++ ) 
+				{
+					pDest[i*4 + 3] = pImage[i*4 + 3];
+					if( pDest[i*4 + 3] < 255 )
+					{
+						pDest[i*4] = (BYTE)(DWORD(pImage[i*4 + 2])*pImage[i*4 + 3]/255);
+						pDest[i*4 + 1] = (BYTE)(DWORD(pImage[i*4 + 1])*pImage[i*4 + 3]/255);
+						pDest[i*4 + 2] = (BYTE)(DWORD(pImage[i*4])*pImage[i*4 + 3]/255); 
+						bAlphaChannel = true;
+					}
+					else
+					{
+						pDest[i*4] = pImage[i*4 + 2];
+						pDest[i*4 + 1] = pImage[i*4 + 1];
+						pDest[i*4 + 2] = pImage[i*4]; 
+					}
+
+					if( *(DWORD*)(&pDest[i*4]) == drawInfo.dwMask ) {
+						pDest[i*4] = (BYTE)0;
+						pDest[i*4 + 1] = (BYTE)0;
+						pDest[i*4 + 2] = (BYTE)0; 
+						pDest[i*4 + 3] = (BYTE)0;
+						bAlphaChannel = true;
+					}
+				}
+
+				drawInfo.pImageInfo = pManager->ModifyImage(drawInfo.sImageName.GetData(),hBitmap,pDest,nWidth,nHeight,bAlphaChannel);
+
+
+				free(pImage);
+				nsvgDeleteRasterizer(rast);
+			}
+			else
+			{
+				int nWidth = rcDest.right-rcDest.left;
+				int nHeight = rcDest.bottom-rcDest.top;
+				NSVGrasterizer* rast = nsvgCreateRasterizer();
+				if (rast == NULL)
+					return false;
+
+				LPBYTE pImage = (LPBYTE)malloc(nWidth * nHeight * 4);
+				float fscale = ((float)nWidth)/svg->width; 
+				nsvgRasterize(rast, svg, 0, 0, fscale, pImage, nWidth, nHeight, nWidth * 4);
+
+				BITMAPINFO bmi;
+				::ZeroMemory(&bmi, sizeof(BITMAPINFO));
+				bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+				bmi.bmiHeader.biWidth = nWidth;
+				bmi.bmiHeader.biHeight = -nHeight;
+				bmi.bmiHeader.biPlanes = 1;
+				bmi.bmiHeader.biBitCount = 32;
+				bmi.bmiHeader.biCompression = BI_RGB;
+				bmi.bmiHeader.biSizeImage = nWidth * nHeight * 4;
+
+				LPBYTE pDest = NULL;
+				HBITMAP hBitmap = ::CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, (void**)&pDest, NULL, 0);
+				if( !hBitmap ) {
+					free(pImage);
+					nsvgDeleteRasterizer(rast);
+					return false;
+				}
+
+				bool bAlphaChannel = false;
+				for( int i = 0; i < nWidth * nHeight; i++ ) 
+				{
+					pDest[i*4 + 3] = pImage[i*4 + 3];
+					if( pDest[i*4 + 3] < 255 )
+					{
+						pDest[i*4] = (BYTE)(DWORD(pImage[i*4 + 2])*pImage[i*4 + 3]/255);
+						pDest[i*4 + 1] = (BYTE)(DWORD(pImage[i*4 + 1])*pImage[i*4 + 3]/255);
+						pDest[i*4 + 2] = (BYTE)(DWORD(pImage[i*4])*pImage[i*4 + 3]/255); 
+						bAlphaChannel = true;
+					}
+					else
+					{
+						pDest[i*4] = pImage[i*4 + 2];
+						pDest[i*4 + 1] = pImage[i*4 + 1];
+						pDest[i*4 + 2] = pImage[i*4]; 
+					}
+
+					if((drawInfo.dwMask!=0) && (*(DWORD*)(&pDest[i*4]) == drawInfo.dwMask) ) {
+						pDest[i*4] = (BYTE)0;
+						pDest[i*4 + 1] = (BYTE)0;
+						pDest[i*4 + 2] = (BYTE)0; 
+						pDest[i*4 + 3] = (BYTE)0;
+						bAlphaChannel = true;
+					}
+				}
+
+				drawInfo.pImageInfo = pManager->ModifyImage(drawInfo.sImageName.GetData(),hBitmap,pDest,nWidth,nHeight,bAlphaChannel);
+
+				free(pImage);
+				nsvgDeleteRasterizer(rast);
+			}
+		}
+		else
+		{
+			if (IsRectNull(drawInfo.rcBmpPart)==false || IsRectNull(drawInfo.rcScale9)==false || drawInfo.bTiledX || drawInfo.bTiledY)
+			{
+				;
+			}
+			else
+			{
+				if ( (rcDest.right-rcDest.left==drawInfo.pImageInfo->nX) && (rcDest.bottom-rcDest.top==drawInfo.pImageInfo->nY) )
+				{
+					;
+				}
+				else
+				{
+					int nWidth = rcDest.right-rcDest.left;
+					int nHeight = rcDest.bottom-rcDest.top;
+					NSVGrasterizer* rast = nsvgCreateRasterizer();
+					if (rast == NULL)
+						return false;
+
+					LPBYTE pImage = (LPBYTE)malloc(nWidth * nHeight * 4);
+					float fscale = ((float)nWidth)/svg->width; 
+					nsvgRasterize(rast, svg, 0, 0, fscale, pImage, nWidth, nHeight, nWidth * 4);
+
+					BITMAPINFO bmi;
+					::ZeroMemory(&bmi, sizeof(BITMAPINFO));
+					bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+					bmi.bmiHeader.biWidth = nWidth;
+					bmi.bmiHeader.biHeight = -nHeight;
+					bmi.bmiHeader.biPlanes = 1;
+					bmi.bmiHeader.biBitCount = 32;
+					bmi.bmiHeader.biCompression = BI_RGB;
+					bmi.bmiHeader.biSizeImage = nWidth * nHeight * 4;
+
+					LPBYTE pDest = NULL;
+					HBITMAP hBitmap = ::CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, (void**)&pDest, NULL, 0);
+					if( !hBitmap ) {
+						free(pImage);
+						nsvgDeleteRasterizer(rast);
+						return false;
+					}
+
+					bool bAlphaChannel = false;
+					for( int i = 0; i < nWidth * nHeight; i++ ) 
+					{
+						pDest[i*4 + 3] = pImage[i*4 + 3];
+						if( pDest[i*4 + 3] < 255 )
+						{
+							pDest[i*4] = (BYTE)(DWORD(pImage[i*4 + 2])*pImage[i*4 + 3]/255);
+							pDest[i*4 + 1] = (BYTE)(DWORD(pImage[i*4 + 1])*pImage[i*4 + 3]/255);
+							pDest[i*4 + 2] = (BYTE)(DWORD(pImage[i*4])*pImage[i*4 + 3]/255); 
+							bAlphaChannel = true;
+						}
+						else
+						{
+							pDest[i*4] = pImage[i*4 + 2];
+							pDest[i*4 + 1] = pImage[i*4 + 1];
+							pDest[i*4 + 2] = pImage[i*4]; 
+						}
+
+						if( *(DWORD*)(&pDest[i*4]) == drawInfo.dwMask ) {
+							pDest[i*4] = (BYTE)0;
+							pDest[i*4 + 1] = (BYTE)0;
+							pDest[i*4 + 2] = (BYTE)0; 
+							pDest[i*4 + 3] = (BYTE)0;
+							bAlphaChannel = true;
+						}
+					}
+
+					if (drawInfo.pImageInfo->hBitmap)
+						DeleteBitmap(drawInfo.pImageInfo->hBitmap);
+					drawInfo.pImageInfo = pManager->ModifyImage(drawInfo.sImageName.GetData(),hBitmap,pDest,nWidth,nHeight,bAlphaChannel);
+
+					free(pImage);
+					nsvgDeleteRasterizer(rast);
+				}
+			}
+		}
+	}
+
+	if (drawInfo.pImageInfo->pSvg)
+	{
+		RECT rcBmpPart = {0,0,0,0};
+		if( drawInfo.rcBmpPart.left == 0 && drawInfo.rcBmpPart.right == 0 && drawInfo.rcBmpPart.top == 0 && drawInfo.rcBmpPart.bottom == 0 )
+		{
+				rcBmpPart.right = drawInfo.pImageInfo->nX;
+				rcBmpPart.bottom = drawInfo.pImageInfo->nY;
+		}
+		else
+		{
+			rcBmpPart.left = drawInfo.rcBmpPart.left;
+			rcBmpPart.right = drawInfo.rcBmpPart.right;
+			rcBmpPart.top = drawInfo.rcBmpPart.top;
+			rcBmpPart.bottom = drawInfo.rcBmpPart.bottom;
+		}
+		if( rcBmpPart.right > drawInfo.pImageInfo->nX ) rcBmpPart.right = drawInfo.pImageInfo->nX;
+		if( rcBmpPart.bottom > drawInfo.pImageInfo->nY ) rcBmpPart.bottom = drawInfo.pImageInfo->nY;
+		DrawImage(hDC, drawInfo.pImageInfo->hBitmap, rcDest, rcPaint, rcBmpPart, drawInfo.rcScale9,
+			drawInfo.pImageInfo->bAlpha, drawInfo.uFade, drawInfo.bHole, drawInfo.bTiledX, drawInfo.bTiledY);
+	}
+	else
+	{
+		DrawImage(hDC, drawInfo.pImageInfo->hBitmap, rcDest, rcPaint, drawInfo.rcBmpPart, drawInfo.rcScale9,
+			drawInfo.pImageInfo->bAlpha, drawInfo.uFade, drawInfo.bHole, drawInfo.bTiledX, drawInfo.bTiledY);
+	}
+
 	return true;
 }
 
