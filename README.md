@@ -110,6 +110,7 @@
 91.PaintManager新增了字体相关静态接口，可以使用ttf文件或者ttf内存流来引入新字体，比如PingFang字体，思源字体等win没有自带的字体。在窗体创建之前调用。AddTTF之后，可以像使用系统字体（比如宋体、微软雅黑）那样在xml或者程序中使用。注意字体版权问题。<br />
 92.gif和apng解析都使用stbimage解析，同时绘制采用gdi,gif抛弃了gdi+，apng抛弃了libpng库。这样gif控件和apng控件的背景图就类似普通控件背景图，支持file,source,dest,xtiled,ytiled,mask等属性了。<br />
 93.修复图片仅设置xtiled=true不设置ytiled时，平铺效果不对的问题。<br />
+94.增加svg图片支持<br />
 
 
 <br />
