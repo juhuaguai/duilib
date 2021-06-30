@@ -111,6 +111,7 @@
 92.gif和apng解析都使用stbimage解析，同时绘制采用gdi,gif抛弃了gdi+，apng抛弃了libpng库。这样gif控件和apng控件的背景图就类似普通控件背景图，支持file,source,dest,xtiled,ytiled,mask等属性了。<br />
 93.修复图片仅设置xtiled=true不设置ytiled时，平铺效果不对的问题。<br />
 94.增加svg图片支持<br />
+95.修复某些情况下richedit干扰上层控件鼠标消息的问题<br />
 
 
 <br />
