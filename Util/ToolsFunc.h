@@ -65,6 +65,10 @@ int DeleteFolder(const xstring& strDest);
 bool RecursionSearchFile(const wchar_t* pszSource,const wchar_t* pszDestFileName,wchar_t* pszOutMsg,int nOutMaxLen);
 // 文件夹是否为空
 bool IsEmptyFolder(const wchar_t* pszSource, const wchar_t* pszDestFileName, wchar_t* pszOutMsg, int nOutMaxLen);
+// 查询路径下的文件夹
+deque<wstring> RecursionSearchFloder(const wchar_t* pszSource,const wchar_t* pszDestFileName,wchar_t* pszOutMsg,int nOutMaxLen);
+// 查询路径下的指定后缀文件
+deque<wstring> RecursionSearchNameSuffix(const wchar_t* pszSource,const wchar_t* pszNameSuffix,wchar_t* pszOutMsg,int nOutMaxLen);
 
 //读取注册表
 bool ReadRegString(HKEY hKey,const xstring& strSubKey,const xstring& strKeyName,const DWORD& dwType ,xstring& strValue);
@@ -80,6 +84,7 @@ bool DeleteRegSubKey(HKEY hKey,const xstring& strSubKey);
 
 //获取App所在目录(结尾有'/'或者'\\')
 xstring GetAppPath(HMODULE hModul=NULL);
+xstring GetExeName(HMODULE hModul=NULL);
 
 //检查端口是否被占用 返回值:-1-表示未被使用,否则返回使用的进程PID
 int CheckPortUsed(int nPort);
@@ -242,3 +247,9 @@ BOOL ReSetWindows(DWORD dwFlags, BOOL bForce);
 //		0       ---  成功
 //		其它值  ---  需要的缓冲区大小
 LONG GetSoftSign(const wchar_t* v_pszFilePath,wchar_t * v_pszSign,int v_iBufSize, wchar_t* szSerialNumber, int nSerialSize);
+
+// 由进程id获取进程所在路径
+wstring GetProcessPathByPid(const DWORD dwProcessId);
+
+// 检测网卡是否连接
+bool IsConnectTheAdapt(const int& nIndex);
