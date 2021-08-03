@@ -72,6 +72,8 @@ public:
 	RECT GetDropBorderSize() const;
 	void SetDropBorderSize(int iSize);
 	void SetDropBorderSize(RECT rc);
+	DWORD GetDropBkColor() const;
+	void SetDropBkColor(DWORD dwColor);	
 
     TListInfoUI* GetListInfo();
     UINT GetItemFixedHeight();
@@ -159,6 +161,7 @@ protected:
 	UINT	m_uTextStyle;
 	RECT m_rcDropBorderSize;
 	DWORD m_dwDropBorderColor;
+	DWORD m_dwDropBkColor;
 
 	TDrawInfo m_diNormal;
     TDrawInfo m_diHot;

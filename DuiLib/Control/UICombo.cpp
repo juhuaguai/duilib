@@ -227,7 +227,7 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         if( pDefaultAttributes ) {
             m_pLayout->SetAttributeList(pDefaultAttributes);
         }
-		m_pLayout->SetBkColor(m_pOwner->GetItemBkColor());
+		m_pLayout->SetBkColor(m_pOwner->GetDropBkColor());
 		m_pLayout->SetBorderColor(m_pOwner->GetDropBorderColor());
 		m_pLayout->SetBorderSize(m_pOwner->GetDropBorderSize());
 		m_pLayout->SetInset(m_pOwner->GetDropBorderSize());
@@ -374,7 +374,7 @@ UINT CComboWnd::GetClassStyle() const
 ////////////////////////////////////////////////////////
 
 
-CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0),m_dwTextColor(0),m_dwDisabledTextColor(0),m_iFont(-1),m_uTextStyle(DT_VCENTER|DT_SINGLELINE|DT_LEFT),m_EnableEffect(false),m_TextRenderingAlias(TextRenderingHintAntiAlias),m_dwDropBorderColor(0xFF000000)
+CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0),m_dwTextColor(0),m_dwDisabledTextColor(0),m_iFont(-1),m_uTextStyle(DT_VCENTER|DT_SINGLELINE|DT_LEFT),m_EnableEffect(false),m_TextRenderingAlias(TextRenderingHintAntiAlias),m_dwDropBorderColor(0xFF000000),m_dwDropBkColor(0xFF000000)
 {
     m_szDropBox = CDuiSize(0, 150);
     ::ZeroMemory(&m_rcTextPadding, sizeof(m_rcTextPadding));
@@ -1184,6 +1184,18 @@ void CComboUI::SetDropBorderColor(DWORD dwColor)
 	m_dwDropBorderColor = dwColor;
 	Invalidate();
 }
+DWORD CComboUI::GetDropBkColor() const
+{
+	return m_dwDropBkColor;
+}
+
+void CComboUI::SetDropBkColor(DWORD dwColor)
+{
+	if( m_dwDropBkColor == dwColor ) return;
+
+	m_dwDropBkColor = dwColor;
+	Invalidate();
+}
 
 void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
@@ -1262,6 +1274,12 @@ void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 			rcBorder.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
 			SetDropBorderSize(rcBorder);
 		}
+	}
+	else if( _tcscmp(pstrName, _T("dropbkcolor")) == 0 ) {
+		if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+		LPTSTR pstr = NULL;
+		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		SetDropBkColor(clrColor);
 	}
     else if( _tcscmp(pstrName, _T("itemheight")) == 0 ) m_ListInfo.uFixedHeight = _ttoi(pstrValue);
     else if( _tcscmp(pstrName, _T("itemfont")) == 0 ) m_ListInfo.nFont = _ttoi(pstrValue);

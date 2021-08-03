@@ -315,6 +315,7 @@
 		<Attribute name="dropboxsize" default="0,150" type="STRING" comment="弹出框大小设置"/>
 		<Attribute name="dropbordersize" default="0,0,0,0" type="RECT" comment="弹出框边框大小设置，内边框，会挤压内部item的大小"/>
 		<Attribute name="dropbordercolor" default="0xFF000000" type="DWORD" comment="弹出框边框的颜色"/>
+		<Attribute name="dropbkcolor" default="0xFF000000" type="DWORD" comment="弹出框的背景颜色"/>
 		<Attribute name="itemfont" default="-1" type="INT" comment="item的字体id,如(0),最好只使用共享资源中的字体.非共享资源的字体没有加载到下拉框的PM中"/>
 		<Attribute name="itemalign" default="center" type="STRING" comment="item对齐方式,取值left、right、center，如(center)"/>
 		<Attribute name="itemendellipsis" default="false" type="BOOL" comment="item句末显示不全是否使用...代替,如(true)"/>
