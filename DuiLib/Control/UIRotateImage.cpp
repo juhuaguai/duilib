@@ -78,7 +78,8 @@ namespace DuiLib
 				}
 
 				DWORD dwRead = 0;
-				pData = new BYTE[ dwSize ];
+				pData = new BYTE[ dwSize+1 ];
+				pData[dwSize] = '\0';
 				::ReadFile( hFile, pData, dwSize, &dwRead, NULL );
 				::CloseHandle( hFile );
 
@@ -132,7 +133,8 @@ namespace DuiLib
 			}
 
 			DWORD dwRead = 0;
-			pData = new BYTE[ dwSize ];
+			pData = new BYTE[ dwSize+1 ];
+			pData[dwSize] = '\0';
 			::ReadFile( hFile, pData, dwSize, &dwRead, NULL );
 			::CloseHandle( hFile );
 

@@ -338,7 +338,8 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 				}
 
 				DWORD dwRead = 0;
-				pData = new BYTE[ dwSize ];
+				pData = new BYTE[ dwSize+1 ];
+				pData[dwSize] = '\0';
 				::ReadFile( hFile, pData, dwSize, &dwRead, NULL );
 				::CloseHandle( hFile );
 
@@ -407,7 +408,8 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 		}
 
 		DWORD dwRead = 0;
-		pData = new BYTE[ dwSize ];
+		pData = new BYTE[ dwSize+1 ];
+		pData[dwSize] = '\0';
 		::ReadFile( hFile, pData, dwSize, &dwRead, NULL );
 		::CloseHandle( hFile );
 
