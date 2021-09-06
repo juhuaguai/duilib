@@ -344,7 +344,8 @@ bool CMarkup::LoadFromFile(LPCTSTR pstrFilename, int encoding)
         if ( dwSize > 4096*1024 ) return _Failed(_T("File too large"));
 
         DWORD dwRead = 0;
-        BYTE* pByte = new BYTE[ dwSize ];
+        BYTE* pByte = new BYTE[ dwSize+1 ];
+		pByte[dwSize] = '\0';
         ::ReadFile( hFile, pByte, dwSize, &dwRead, NULL );
         ::CloseHandle( hFile );
 
