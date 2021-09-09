@@ -140,6 +140,10 @@ public:
 	CDuiString GetVscrollStyle() const;
 	CDuiString GetHscrollStyle() const;
 
+	//是否支持不展开下拉框的情况下鼠标滚轮改变combo选项
+	bool IsCanMouseWheel() const;
+	void SetCanMouseWheel(bool bCan);
+
 protected:
     CComboWnd* m_pWindow;
 
@@ -172,6 +176,8 @@ protected:
     TListInfoUI m_ListInfo;
 
 	TextRenderingHint		m_TextRenderingAlias;	//文字抗锯齿级别
+
+	bool m_bCanMouseWheel;
 };
 
 } // namespace DuiLib

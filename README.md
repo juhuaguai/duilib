@@ -111,6 +111,8 @@
 92.gif和apng解析都使用stbimage解析，同时绘制采用gdi,gif抛弃了gdi+，apng抛弃了libpng库。这样gif控件和apng控件的背景图就类似普通控件背景图，支持file,source,dest,xtiled,ytiled,mask等属性了。<br />
 93.修复图片仅设置xtiled=true不设置ytiled时，平铺效果不对的问题。<br />
 94.新增combo的下拉框的背景色的属性dropbkcolor，可以设置下拉框背景色而不再使用itembkcolor作为下拉框背景色了。itembkcolor仅仅是下拉款里面item的背景色。<br />
+95.button控件增加hotbordercolor属性的解析和使用，之前支持hotbordercolor，但是xml解析时并没有解析该属性，该属性表示鼠标悬停状态时控件边框的颜色。<br />
+96.给Combo控件增加mousewheel属性，用来控制Combo是否支持滚轮切换选项的操作，默认为true。当mousewheel为false时，鼠标移动到Combo控件上，滚动滚轮不会引起combo选项的改变。在一些combo放到有滚动条的布局的情况下，可能比较有用（可以有效防止鼠标滚轮的误操作）。<br />
 
 
 <br />

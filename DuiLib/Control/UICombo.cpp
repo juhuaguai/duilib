@@ -374,7 +374,19 @@ UINT CComboWnd::GetClassStyle() const
 ////////////////////////////////////////////////////////
 
 
-CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0),m_dwTextColor(0),m_dwDisabledTextColor(0),m_iFont(-1),m_uTextStyle(DT_VCENTER|DT_SINGLELINE|DT_LEFT),m_EnableEffect(false),m_TextRenderingAlias(TextRenderingHintAntiAlias),m_dwDropBorderColor(0xFF000000),m_dwDropBkColor(0xFF000000)
+CComboUI::CComboUI() 
+	: m_pWindow(NULL)
+	, m_iCurSel(-1)
+	, m_uButtonState(0)
+	,m_dwTextColor(0)
+	,m_dwDisabledTextColor(0)
+	,m_iFont(-1)
+	,m_uTextStyle(DT_VCENTER|DT_SINGLELINE|DT_LEFT)
+	,m_EnableEffect(false)
+	,m_TextRenderingAlias(TextRenderingHintAntiAlias)
+	,m_dwDropBorderColor(0xFF000000)
+	,m_dwDropBkColor(0xFF000000)
+	,m_bCanMouseWheel(true)
 {
     m_szDropBox = CDuiSize(0, 150);
     ::ZeroMemory(&m_rcTextPadding, sizeof(m_rcTextPadding));
@@ -683,11 +695,25 @@ void CComboUI::DoEvent(TEventUI& event)
     if( event.Type == UIEVENT_SCROLLWHEEL )
     {
         if (IsEnabled()) {
-            bool bDownward = LOWORD(event.wParam) == SB_LINEDOWN;
-            SetSelectCloseFlag(false);
-            SelectItem(FindSelectable(m_iCurSel + (bDownward ? 1 : -1), bDownward));
-            SetSelectCloseFlag(true);
-            return;
+			if (m_pWindow)
+			{
+				bool bDownward = LOWORD(event.wParam) == SB_LINEDOWN;
+				SetSelectCloseFlag(false);
+				SelectItem(FindSelectable(m_iCurSel + (bDownward ? 1 : -1), bDownward));
+				SetSelectCloseFlag(true);
+				return;
+			}
+			else
+			{
+				if (IsCanMouseWheel())
+				{
+					bool bDownward = LOWORD(event.wParam) == SB_LINEDOWN;
+					SetSelectCloseFlag(false);
+					SelectItem(FindSelectable(m_iCurSel + (bDownward ? 1 : -1), bDownward));
+					SetSelectCloseFlag(true);
+					return;
+				}
+			}           
         }
     }
     if( event.Type == UIEVENT_CONTEXTMENU )
@@ -1382,6 +1408,7 @@ void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	else if (_tcscmp(pstrName, _T("hscrollbar")) == 0)	m_sHscrollbar = pstrValue;
 	else if( _tcscmp(pstrName, _T("vscrollbarstyle")) == 0 )	m_sVscrollbarStyle = pstrValue;
 	else if( _tcscmp(pstrName, _T("hscrollbarstyle")) == 0 )	m_sHscrollStyle = pstrValue;
+	else if( _tcscmp(pstrName, _T("mousewheel")) == 0 ) SetCanMouseWheel(_tcscmp(pstrValue, _T("true")) == 0);
     else CContainerUI::SetAttribute(pstrName, pstrValue);
 }
 
@@ -1556,6 +1583,15 @@ CDuiString CComboUI::GetVscrollStyle() const
 CDuiString CComboUI::GetHscrollStyle() const
 {
 	return m_sHscrollStyle;
+}
+
+bool CComboUI::IsCanMouseWheel() const
+{
+	return m_bCanMouseWheel;
+}
+void CComboUI::SetCanMouseWheel(bool bCan)
+{
+	m_bCanMouseWheel = bCan;
 }
 
 } // namespace DuiLib

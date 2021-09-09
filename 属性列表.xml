@@ -298,6 +298,7 @@
 		<Attribute name="enabled" default="true" type="BOOL" comment="是否可以响应用户操作,如(true)"/>
 		<Attribute name="mouse" default="true" type="BOOL" comment="本控件是否可以响应鼠标操作,如(true)"/>
 		<Attribute name="mousechild" default="true" type="BOOL" comment="本控件的子控件是否可以响应用户操作,如(true)"/>
+		<Attribute name="mousewheel" default="true" type="BOOL" comment="本控件是否可以响应鼠标滚轮操作(不是下拉框),如(true)"/>		
 		<Attribute name="visible" default="true" type="BOOL" comment="是否可见,如(true)"/>
 		<Attribute name="float" default="false" type="BOOL" comment="是否使用绝对定位,如(true)"/>
 		<Attribute name="shortcut" default="" type="CHAR" comment="对应的快捷键,如(P)"/>
