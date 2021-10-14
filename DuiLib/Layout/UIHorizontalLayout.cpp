@@ -84,13 +84,16 @@ namespace DuiLib
 			if (iControlMaxHeight <= 0) iControlMaxHeight = pControl->GetMaxHeight();
 			if (szControlAvailable.cx > iControlMaxWidth) szControlAvailable.cx = iControlMaxWidth;
 			if (szControlAvailable.cy > iControlMaxHeight) szControlAvailable.cy = iControlMaxHeight;
-			SIZE sz = { 0 };
+			SIZE sz = pControl->EstimateSize(szControlAvailable);
 			if (pControl->GetFixedWidth() == 0) {
-				nAdjustables++;
-				sz.cy = pControl->GetFixedHeight();
+				if (pControl->IsAutoCalWidth() == false)
+				{
+					sz.cx = 0;
+					nAdjustables++;
+				}
+				sz.cy = pControl->GetFixedHeight();				
 			}
 			else {
-				sz = pControl->EstimateSize(szControlAvailable);
 				if (sz.cx == 0) {
 					nAdjustables++;
 				}
@@ -146,8 +149,8 @@ namespace DuiLib
 			cxFixedRemaining = cxFixedRemaining - (rcPadding.left + rcPadding.right);
 			if (iEstimate > 1) cxFixedRemaining = cxFixedRemaining - m_iChildPadding;
 			SIZE sz = pControl->EstimateSize(szControlAvailable);
-			if (pControl->GetFixedWidth() == 0 || sz.cx == 0) {
-				iAdjustable++;
+			if ((pControl->IsAutoCalWidth() == false) && (pControl->GetFixedWidth() == 0 || sz.cx == 0)) {
+				iAdjustable++;				
 				sz.cx = cxExpand;
 				// Distribute remaining to last element (usually round-off left-overs)
 				if( iAdjustable == nAdjustables ) {
@@ -162,7 +165,8 @@ namespace DuiLib
 				cxFixedRemaining -= sz.cx;
 			}
 
-			sz.cy = pControl->GetMaxHeight();
+			if (pControl->IsAutoCalHeight() == false)
+				sz.cy = pControl->GetMaxHeight();
 			if( sz.cy == 0 ) sz.cy = szAvailable.cy - rcPadding.top - rcPadding.bottom;
 			if( sz.cy < 0 ) sz.cy = 0;
 			if( sz.cy > szControlAvailable.cy ) sz.cy = szControlAvailable.cy;
@@ -175,7 +179,7 @@ namespace DuiLib
 					iPosY += m_pVerticalScrollBar->GetScrollRange() / 2;
 					iPosY -= m_pVerticalScrollBar->GetScrollPos();
 				}
-				RECT rcCtrl = { iPosX + rcPadding.left, iPosY - sz.cy/2, iPosX + sz.cx + rcPadding.left, iPosY + sz.cy - sz.cy/2 };
+				RECT rcCtrl = { iPosX + rcPadding.left, iPosY - sz.cy/2 + rcPadding.top - rcPadding.bottom, iPosX + sz.cx + rcPadding.left, iPosY + sz.cy - sz.cy/2 +rcPadding.top - rcPadding.bottom};
 				pControl->SetPos(rcCtrl, false);
 			}
 			else if (iChildAlign == DT_BOTTOM) {

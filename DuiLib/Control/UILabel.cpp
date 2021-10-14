@@ -29,7 +29,9 @@ namespace DuiLib
 		m_dwStrokeColor(0),
 		m_EnabledShadow(false),
 		m_GradientLength(0),
-		m_TextRenderingAlias(TextRenderingHintAntiAlias)
+		m_TextRenderingAlias(TextRenderingHintAntiAlias),
+		m_bAutocalcwidth(false),
+		m_bAutocalcHeight(false)
 	{
 		m_ShadowOffset.X		= 0.0f;
 		m_ShadowOffset.Y		= 0.0f;
@@ -195,6 +197,30 @@ namespace DuiLib
 		Invalidate();
 	}
 
+	bool CLabelUI::IsAutoCalWidth()
+	{
+		return m_bAutocalcwidth;
+	}
+	void CLabelUI::SetAutoCalWidth(bool bAuto/* = true*/)
+	{
+		if (m_bAutocalcwidth == bAuto)
+			return;
+		m_bAutocalcwidth = bAuto;
+		Invalidate();
+	}
+	bool CLabelUI::IsAutoCalHeight()
+	{
+		return m_bAutocalcHeight;
+	}
+	void CLabelUI::SetAutoCalHeight(bool bAuto/* = true*/)
+	{
+		if (m_bAutocalcHeight == bAuto)
+			return;
+		m_bAutocalcHeight = bAuto;
+		Invalidate();
+	}
+
+	/*
 	SIZE CLabelUI::EstimateSize(SIZE szAvailable)
 	{
         if (m_cxyFixed.cx > 0 && m_cxyFixed.cy > 0) return m_cxyFixed;
@@ -248,6 +274,76 @@ namespace DuiLib
 		{
 			m_cxyFixedLast.cx = m_cxyFixedLast.cx*1.03;	//1.03是经过测试观察的结果 //目前先修正宽度,高度待有空详测后再修正
 		}
+		return m_cxyFixedLast;
+	}*/
+	SIZE CLabelUI::EstimateSize(SIZE szAvailable)
+	{
+		//如果设置了固定宽高，就直接返回
+		if (m_cxyFixed.cx > 0 && m_cxyFixed.cy > 0) return m_cxyFixed;
+
+		//如果父控件的有效宽高变化了，子控件也需要重新计算
+		if (szAvailable.cx != m_szAvailableLast.cx || szAvailable.cy != m_szAvailableLast.cy) {
+			m_bNeedEstimateSize = true;
+		}
+
+		if (m_bNeedEstimateSize) {
+			m_bNeedEstimateSize = false;
+			m_szAvailableLast = szAvailable;
+		
+			CDuiString sText = GetText();
+			CPaintManagerUI::ProcessMultiLanguageTokens(sText);
+
+			if ((m_uTextStyle & DT_SINGLELINE) != 0) //单行
+			{
+				if (m_cxyFixed.cy==0)
+				{
+					m_cxyFixedLast.cy = m_pManager->GetFontInfo(m_iFont)->tm.tmHeight + 8;
+					m_cxyFixedLast.cy += m_rcTextPadding.top + m_rcTextPadding.bottom;
+				}
+				else
+				{
+					m_cxyFixedLast.cy = m_cxyFixed.cy;
+				}
+				if (m_cxyFixed.cx == 0)
+					m_cxyFixedLast.cx = 99999;
+				else
+				{
+					m_cxyFixedLast.cx =m_cxyFixed.cx;
+					return m_cxyFixed;
+				}
+			}
+			else	//多行
+			{
+				if (m_cxyFixed.cy<=0)	//没有指定高度
+					m_cxyFixedLast.cy = 99999;
+				else
+					m_cxyFixedLast.cy = m_cxyFixed.cy;
+				if( m_cxyFixed.cx <= 0 )	//没有指定宽度						
+					m_cxyFixedLast.cx = szAvailable.cx;
+				else
+					m_cxyFixedLast.cx = m_cxyFixed.cx;
+			}
+		
+			RECT rcText = { 0, 0, m_cxyFixedLast.cx, m_cxyFixedLast.cy };
+			int nLinks = 0;
+			if( IsShowHtml() )
+				CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, sText.GetData(), 0, NULL, NULL, nLinks, m_iFont, DT_CALCRECT | m_uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+			else
+				CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, sText.GetData(), 0, m_iFont, DT_CALCRECT | m_uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+
+			m_cxyFixedLast.cx = rcText.right - rcText.left;
+			m_cxyFixedLast.cx += m_rcTextPadding.left + m_rcTextPadding.right;
+
+			m_cxyFixedLast.cy = rcText.bottom - rcText.top;
+			m_cxyFixedLast.cy += m_rcTextPadding.top + m_rcTextPadding.bottom;
+			
+			//GDI+绘制所需的宽度与GDI稍微不一样,这里做个修正
+			if (m_EnableEffect && m_cxyFixed.cx<=0)
+			{
+				m_cxyFixedLast.cx = m_cxyFixedLast.cx*1.03;	//1.03是经过测试观察的结果 //目前先修正宽度,高度待有空详测后再修正
+			}
+		}	
+
 		return m_cxyFixedLast;
 	}
 
@@ -331,6 +427,8 @@ namespace DuiLib
 		}
 		else if( _tcscmp(pstrName, _T("multiline")) == 0 ) SetMultiLine(_tcscmp(pstrValue, _T("true")) == 0);
 		else if( _tcscmp(pstrName, _T("showhtml")) == 0 ) SetShowHtml(_tcscmp(pstrValue, _T("true")) == 0);
+		else if( _tcsicmp(pstrName, _T("autocalwidth")) == 0 ) SetAutoCalWidth(_tcsicmp(pstrValue, _T("true")) == 0);
+		else if( _tcsicmp(pstrName, _T("autocalheight")) == 0 ) SetAutoCalHeight(_tcsicmp(pstrValue, _T("true")) == 0);
 		else if( _tcscmp(pstrName, _T("enabledeffect")) == 0 ) SetEnabledEffect(_tcscmp(pstrValue, _T("true")) == 0);
 		else if( _tcscmp(pstrName, _T("enabledluminous")) == 0 ) SetEnabledLuminous(_tcscmp(pstrValue, _T("true")) == 0);
 		else if(_tcscmp(pstrName, _T("rhaa")) == 0 ) SetTextRenderingAlias(_ttoi(pstrValue));

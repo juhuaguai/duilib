@@ -156,6 +156,10 @@ public:
 	virtual CDuiString GetAttributeList(bool bIgnoreDefault = true);
     virtual void SetAttributeList(LPCTSTR pstrList);
 
+	virtual bool IsAutoCalWidth();
+	virtual void SetAutoCalWidth(bool bAuto = true);
+	virtual bool IsAutoCalHeight();
+	virtual void SetAutoCalHeight(bool bAuto = true);
     virtual SIZE EstimateSize(SIZE szAvailable);
 
 	virtual bool Paint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl=NULL); // 返回要不要继续绘制
@@ -226,6 +230,9 @@ protected:
     RECT m_rcPaint;
 	RECT m_rcBorderSize;
 	CDuiStringPtrMap m_mCustomAttrHash;
+
+	bool m_bAutocalcwidth;
+	bool m_bAutocalcHeight;
 };
 
 } // namespace DuiLib
