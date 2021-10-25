@@ -331,11 +331,21 @@ namespace DuiLib
 			else
 				CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, sText.GetData(), 0, m_iFont, DT_CALCRECT | m_uTextStyle & ~DT_RIGHT & ~DT_CENTER);
 
-			m_cxyFixedLast.cx = rcText.right - rcText.left;
-			m_cxyFixedLast.cx += m_rcTextPadding.left + m_rcTextPadding.right;
+			if (m_cxyFixed.cx == 0)
+			{
+				m_cxyFixedLast.cx = rcText.right - rcText.left;
+				m_cxyFixedLast.cx += m_rcTextPadding.left + m_rcTextPadding.right;
+			}
+			else
+				m_cxyFixedLast.cx = m_cxyFixed.cx;
 
-			m_cxyFixedLast.cy = rcText.bottom - rcText.top;
-			m_cxyFixedLast.cy += m_rcTextPadding.top + m_rcTextPadding.bottom;
+			if (m_cxyFixed.cy == 0)
+			{
+				m_cxyFixedLast.cy = rcText.bottom - rcText.top;
+				m_cxyFixedLast.cy += m_rcTextPadding.top + m_rcTextPadding.bottom;
+			}
+			else
+				m_cxyFixedLast.cy = m_cxyFixed.cy;
 			
 			//GDI+绘制所需的宽度与GDI稍微不一样,这里做个修正
 			if (m_EnableEffect && m_cxyFixed.cx<=0)
