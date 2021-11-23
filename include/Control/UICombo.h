@@ -72,6 +72,8 @@ public:
 	RECT GetDropBorderSize() const;
 	void SetDropBorderSize(int iSize);
 	void SetDropBorderSize(RECT rc);
+	DWORD GetDropBkColor() const;
+	void SetDropBkColor(DWORD dwColor);	
 
     TListInfoUI* GetListInfo();
     UINT GetItemFixedHeight();
@@ -138,6 +140,10 @@ public:
 	CDuiString GetVscrollStyle() const;
 	CDuiString GetHscrollStyle() const;
 
+	//是否支持不展开下拉框的情况下鼠标滚轮改变combo选项
+	bool IsCanMouseWheel() const;
+	void SetCanMouseWheel(bool bCan);
+
 protected:
     CComboWnd* m_pWindow;
 
@@ -159,6 +165,7 @@ protected:
 	UINT	m_uTextStyle;
 	RECT m_rcDropBorderSize;
 	DWORD m_dwDropBorderColor;
+	DWORD m_dwDropBkColor;
 
 	TDrawInfo m_diNormal;
     TDrawInfo m_diHot;
@@ -169,6 +176,8 @@ protected:
     TListInfoUI m_ListInfo;
 
 	TextRenderingHint		m_TextRenderingAlias;	//文字抗锯齿级别
+
+	bool m_bCanMouseWheel;
 };
 
 } // namespace DuiLib

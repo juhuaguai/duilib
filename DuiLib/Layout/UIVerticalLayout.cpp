@@ -155,7 +155,8 @@ namespace DuiLib
 				cyFixedRemaining -= sz.cy + rcPadding.top + rcPadding.bottom;
 			}
 
-			sz.cx = pControl->GetMaxWidth();
+			if (pControl->IsAutoCalWidth() == false)
+				sz.cx = pControl->GetMaxWidth();
 			if( sz.cx == 0 ) sz.cx = szAvailable.cx - rcPadding.left - rcPadding.right;
 			if( sz.cx < 0 ) sz.cx = 0;
 			if( sz.cx > szControlAvailable.cx ) sz.cx = szControlAvailable.cx;

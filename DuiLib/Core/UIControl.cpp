@@ -26,7 +26,9 @@ m_dwBorderColor(0),
 m_dwFocusBorderColor(0),
 m_bColorHSL(false),
 m_nBorderStyle(PS_SOLID),
-m_nTooltipWidth(300)
+m_nTooltipWidth(300),
+m_bAutocalcwidth(false),
+m_bAutocalcHeight(false)
 {
     m_cXY.cx = m_cXY.cy = 0;
     m_cxyFixed.cx = m_cxyFixed.cy = 0;
@@ -707,6 +709,29 @@ void CControlUI::SetFloat(bool bFloat)
     NeedParentUpdate();
 }
 
+bool CControlUI::IsAutoCalWidth()
+{
+	return m_bAutocalcwidth;
+}
+void CControlUI::SetAutoCalWidth(bool bAuto/* = true*/)
+{
+	if (m_bAutocalcwidth == bAuto)
+		return;
+	m_bAutocalcwidth = bAuto;
+	Invalidate();
+}
+bool CControlUI::IsAutoCalHeight()
+{
+	return m_bAutocalcHeight;
+}
+void CControlUI::SetAutoCalHeight(bool bAuto/* = true*/)
+{
+	if (m_bAutocalcHeight == bAuto)
+		return;
+	m_bAutocalcHeight = bAuto;
+	Invalidate();
+}
+
 void CControlUI::AddCustomAttribute(LPCTSTR pstrName, LPCTSTR pstrAttr)
 {
 	if( pstrName == NULL || pstrName[0] == _T('\0') || pstrAttr == NULL || pstrAttr[0] == _T('\0') ) return;
@@ -1026,6 +1051,8 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcscmp(pstrName, _T("shortcut")) == 0 ) SetShortcut(pstrValue[0]);
     else if( _tcscmp(pstrName, _T("menu")) == 0 ) SetContextMenuUsed(_tcscmp(pstrValue, _T("true")) == 0);
 	else if( _tcscmp(pstrName, _T("virtualwnd")) == 0 ) SetVirtualWnd(pstrValue);
+	else if( _tcsicmp(pstrName, _T("autocalwidth")) == 0 ) SetAutoCalWidth(_tcsicmp(pstrValue, _T("true")) == 0);
+	else if( _tcsicmp(pstrName, _T("autocalheight")) == 0 ) SetAutoCalHeight(_tcsicmp(pstrValue, _T("true")) == 0);
 	else {
 		AddCustomAttribute(pstrName, pstrValue);
 	}

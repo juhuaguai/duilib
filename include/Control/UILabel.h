@@ -34,6 +34,10 @@ namespace DuiLib
 		void SetTextPadding(RECT rc);
 		bool IsShowHtml();
 		void SetShowHtml(bool bShowHtml = true);
+		bool IsAutoCalWidth();
+		void SetAutoCalWidth(bool bAuto = true);
+		bool IsAutoCalHeight();
+		void SetAutoCalHeight(bool bAuto = true);
 
 		SIZE EstimateSize(SIZE szAvailable);
 		void DoEvent(TEventUI& event);
@@ -81,6 +85,8 @@ namespace DuiLib
         SIZE    m_szAvailableLast;
         SIZE    m_cxyFixedLast;
         bool    m_bNeedEstimateSize;
+		bool	m_bAutocalcwidth;
+		bool	m_bAutocalcHeight;
 
 		float					m_fLuminousFuzzy;
 		int						m_GradientLength;

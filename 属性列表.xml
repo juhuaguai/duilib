@@ -298,6 +298,7 @@
 		<Attribute name="enabled" default="true" type="BOOL" comment="是否可以响应用户操作,如(true)"/>
 		<Attribute name="mouse" default="true" type="BOOL" comment="本控件是否可以响应鼠标操作,如(true)"/>
 		<Attribute name="mousechild" default="true" type="BOOL" comment="本控件的子控件是否可以响应用户操作,如(true)"/>
+		<Attribute name="mousewheel" default="true" type="BOOL" comment="本控件是否可以响应鼠标滚轮操作(不是下拉框),如(true)"/>		
 		<Attribute name="visible" default="true" type="BOOL" comment="是否可见,如(true)"/>
 		<Attribute name="float" default="false" type="BOOL" comment="是否使用绝对定位,如(true)"/>
 		<Attribute name="shortcut" default="" type="CHAR" comment="对应的快捷键,如(P)"/>
@@ -315,6 +316,7 @@
 		<Attribute name="dropboxsize" default="0,150" type="STRING" comment="弹出框大小设置"/>
 		<Attribute name="dropbordersize" default="0,0,0,0" type="RECT" comment="弹出框边框大小设置，内边框，会挤压内部item的大小"/>
 		<Attribute name="dropbordercolor" default="0xFF000000" type="DWORD" comment="弹出框边框的颜色"/>
+		<Attribute name="dropbkcolor" default="0xFF000000" type="DWORD" comment="弹出框的背景颜色"/>
 		<Attribute name="itemfont" default="-1" type="INT" comment="item的字体id,如(0),最好只使用共享资源中的字体.非共享资源的字体没有加载到下拉框的PM中"/>
 		<Attribute name="itemalign" default="center" type="STRING" comment="item对齐方式,取值left、right、center，如(center)"/>
 		<Attribute name="itemendellipsis" default="false" type="BOOL" comment="item句末显示不全是否使用...代替,如(true)"/>
@@ -386,6 +388,8 @@
 		<Attribute name="textshadowcolorb" default="0xff000000" type="STRING" comment="字体阴影渐变色"/>
 		<Attribute name="transshadow" default="100" type="INT" comment="阴影透明度"/>
 		<Attribute name="transshadow1" default="100" type="INT" comment="阴影透明度"/>
+		<Attribute name="autocalwidth" default="false" type="BOOL" comment="float=false情况下是否自动根据文本内容计算宽度，如果同时有width存在，那么width的优先级应该更高"/>
+		<Attribute name="autocalheight" default="false" type="BOOL" comment="float=false情况下是否自动根据文本内容计算高度，如果同时有height存在，那么height的优先级应该更高"/>
 	</Label>
 	<Button parent="Label" notifies="setfocus killfocus timer menu click windowinit(root)">
 		<Attribute name="name" default="" type="STRING" comment="控件名字，同一窗口内必须唯一，如(testbtn)"/>

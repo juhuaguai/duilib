@@ -110,9 +110,12 @@
 91.PaintManager新增了字体相关静态接口，可以使用ttf文件或者ttf内存流来引入新字体，比如PingFang字体，思源字体等win没有自带的字体。在窗体创建之前调用。AddTTF之后，可以像使用系统字体（比如宋体、微软雅黑）那样在xml或者程序中使用。注意字体版权问题。<br />
 92.gif和apng解析都使用stbimage解析，同时绘制采用gdi,gif抛弃了gdi+，apng抛弃了libpng库。这样gif控件和apng控件的背景图就类似普通控件背景图，支持file,source,dest,xtiled,ytiled,mask等属性了。<br />
 93.修复图片仅设置xtiled=true不设置ytiled时，平铺效果不对的问题。<br />
-94.增加svg图片支持<br />
-95.修复某些情况下richedit干扰上层控件鼠标消息的问题<br />
-
+94.新增combo的下拉框的背景色的属性dropbkcolor，可以设置下拉框背景色而不再使用itembkcolor作为下拉框背景色了。itembkcolor仅仅是下拉款里面item的背景色。<br />
+95.button控件增加hotbordercolor属性的解析和使用，之前支持hotbordercolor，但是xml解析时并没有解析该属性，该属性表示鼠标悬停状态时控件边框的颜色。<br />
+96.给Combo控件增加mousewheel属性，用来控制Combo是否支持滚轮切换选项的操作，默认为true。当mousewheel为false时，鼠标移动到Combo控件上，滚动滚轮不会引起combo选项的改变。在一些combo放到有滚动条的布局的情况下，可能比较有用（可以有效防止鼠标滚轮的误操作）。<br />
+97.给Label控件增加autocalwidth,autocalheight属性，默认为false。用来表示改控件是否根据文本内容自动计算宽高。请仅在float=false下使用。如果同时存在指定了width或height，那么width的优先级高于autocalwidth，height的优先级高于autocalheight。常用于单行文本时根据文本内容自动计算调整宽度，多行文本给定宽度时自动计算并调整高度。（使用过程中有问题可以提issue给我）。<br />
+98.增加svg图片支持<br />
+99.修复某些情况下richedit干扰上层控件鼠标消息的问题<br />
 
 <br />
 其他改动：<br />
