@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<Window size="640,480" caption="0,0,0,-1" layeredimage="" shadowsize="20" shadowcolor="ffffff00" shadowfocusscales="0.6">
+	<Font shared="true" id="0" name="微软雅黑" size="14" bold="false" default="true"/>
+    <VerticalLayout bkcolor="ff00ff00" childalign="center">
+		<Label text="这是" autocalwidth="false" bkcolor="ffffffff" height="60" autocalheight="true" bkcolor="ff00ffFF"/>
+    	<Label text="这是APNG动画11111士大夫222222地方啊22sdfsdf是否是这是APNG动画11111士大夫222222地方啊22sdfsdf是否是" multiline="true" autocalwidth="true" autocalheight="false" textcolor="ffff0000" bkcolor="ffffffff"/>
+		<Label text="dfg是否速度梵蒂冈发个"/>
+    </VerticalLayout>
+</Window>
