@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Window size="708,508" caption="0,0,0,34" layeredimage="" shadowsize="4" shadowfocusscales="0.8" nolayeredpadding="4,4,4,4">
+	<Font shared="true" id="0" name="微软雅黑" size="14" bold="false" default="true"/>
+	<VerticalLayout bkcolor="FFffffff"><!--主窗口大小：700,500-->
+		<HorizontalLayout height="30" bkcolor="ff00b2fc"><!--标题栏-->
+			<Control />
+			<Button name="close_btn" width="14" height="14" padding="7,8,14,8" bkimage="img/close.png" hotbkcolor="30ffffff"/>
+		</HorizontalLayout>
+		<Container>
+			<Combo name="languageCombo" selectedid="0" float="true" pos="200,20,0,0" width="200" height="30" textpadding="10" itemtextpadding="10" dropboxsize="200,92" dropbordersize="1" dropbordercolor="ffaaaaaa" dropbkcolor="ffff0000" bordersize="1" bordercolor="ffaaaaaa" normalimage="file='img/arrow_down.png' dest='180,12,190,18'" pushedimage="file='img/arrow_up.png' dest='180,12,190,18'">
+				<ListLabelElement text="简体中文" height="30"/>
+				<ListLabelElement text="英文" height="30"/>
+				<ListLabelElement text="日文" height="30"/>
+			</Combo>
+			
+			<Label text="%{1}" bkcolor="ffffff00" float="true" pos="200,60,0,0" width="200" height="30" textpadding="5" enabledeffect="true"/>
+			<Button name="test_button" text="%{2}" bkcolor="ff00ff00" float="true" pos="200,100,0,0" width="200" height="30" textpadding="5" enabledeffect="true"/>
+		</Container>
+	</VerticalLayout>
+</Window>
