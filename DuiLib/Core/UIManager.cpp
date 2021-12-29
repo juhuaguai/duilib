@@ -1184,12 +1184,14 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 						{
 							if (*pOffscreenBits!=0)
 							{
-								A=255;
+								A=(BYTE)((*pOffscreenBits) >> 24);
+								if (A==0)
+									A=255;
 								R = (BYTE)((*pOffscreenBits) >> 16);
 								G = (BYTE)((*pOffscreenBits) >> 8);
 								B = (BYTE)(*pOffscreenBits);
 								*pOffscreenBits = RGB(B, G, R) + ((DWORD)A << 24);
-							}							
+							}
 						}
 						else
 						{
