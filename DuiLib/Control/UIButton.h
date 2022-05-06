@@ -54,7 +54,7 @@ namespace DuiLib
 		DWORD GetFocusedTextColor() const;
 		void SetFocusedBkColor(DWORD dwColor);
 		DWORD GetFocusedBkColor() const;
-		SIZE EstimateSize(SIZE szAvailable);
+		//SIZE EstimateSize(SIZE szAvailable);
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
 		void PaintText(HDC hDC);

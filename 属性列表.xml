@@ -400,6 +400,7 @@
 		<Attribute name="bkcolor3" default="0x00000000" type="DWORD" comment="背景渐变色3,和bkcolor、bkcolor2配合使用,如(0xFFFF00FF)"/>
 		<Attribute name="bordercolor" default="0x00000000" type="DWORD" comment="边框颜色,如(0xFF000000)"/>
 		<Attribute name="focusbordercolor" default="0x00000000" type="DWORD" comment="获得焦点时边框的颜色,如(0xFFFF0000)"/>
+		<Attribute name="hotbordercolor" default="0x00000000" type="DWORD" comment="鼠标悬停时边框的颜色,如(0xFFFF0000)"/>
 		<Attribute name="colorhsl" default="false" type="BOOL" comment="本控件的颜色是否随窗口的hsl变化而变化,如(false)"/>
 		<Attribute name="bordersize" default="1" type="INT" comment="边框大小，如(1)"/>
 		<Attribute name="borderround" default="0,0" type="SIZE" comment="边框圆角半径,如(2,2)"/>
@@ -993,6 +994,7 @@
 		<Attribute name="maxchar" default="255" type="INT" comment="输入字符最大长度，如(100)"/>
 		<Attribute name="tipvalue" default="" type="STRING" comment="输入内容为空时的提示文本，如（请输入密码）"/>
 		<Attribute name="tipcolor" default="0xFF000000" type="DWORD" comment="输入内容为空时的提示文本的字体颜色，如(0xFFFF0000)"/>
+		<Attribute name="showcaret" default="true" type="BOOL" comment="是否显示光标,如(true)"/>
 	</RichEdit>
 	<TreeView parent="List" notifies="selectchanged setfocus killfocus timer menu itemselect windowinit(root)">
 		<Attribute name="name" default="" type="STRING" comment="控件名字，同一窗口内必须唯一，如(testbtn)"/>
