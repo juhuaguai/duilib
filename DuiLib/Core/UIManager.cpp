@@ -195,7 +195,7 @@ CPaintManagerUI::~CPaintManagerUI()
 	RemoveAllWindowCustomAttribute();
     RemoveAllOptionGroups();
     RemoveAllTimers();
-	ReleaseAllTTF();
+	//ReleaseAllTTF();
 
     // Reset other parts...
     if( m_hwndTooltip != NULL )
@@ -1184,9 +1184,10 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 						{
 							if (*pOffscreenBits!=0)
 							{
-								A=(BYTE)((*pOffscreenBits) >> 24);
-								if (A==0)
-									A=255;
+								//A=(BYTE)((*pOffscreenBits) >> 24);
+								//if (A==0)
+								//	A=255;
+								A=255;
 								R = (BYTE)((*pOffscreenBits) >> 16);
 								G = (BYTE)((*pOffscreenBits) >> 8);
 								B = (BYTE)(*pOffscreenBits);
