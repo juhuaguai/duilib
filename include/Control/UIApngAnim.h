@@ -83,7 +83,7 @@ namespace DuiLib
 		void	BlendOver(COLORREF* dst, COLORREF* src,UINT32 dstWidth, UINT32 dstHeight,UINT32 xoffset, UINT32 yoffset, UINT32 width, UINT32 height);
 		void	BlendSource(COLORREF* dst, COLORREF* src,UINT32 dstWidth, UINT32 dstHeight,UINT32 xoffset, UINT32 yoffset, UINT32 width, UINT32 height);
 		void	BlendZero(COLORREF* dst, UINT32 dstWidth, UINT32 dstHeight,UINT32 xoffset, UINT32 yoffset, UINT32 width, UINT32 height);
-		HBITMAP CreateFramBmp(LPBYTE pBits,UINT32 dstWidth, UINT32 dstHeight,DWORD dwMask);
+		HBITMAP CreateFramBmp(LPBYTE pImage,UINT32 dstWidth, UINT32 dstHeight,DWORD dwMask);
 	};
 }
 
