@@ -114,6 +114,9 @@
 95.button控件增加hotbordercolor属性的解析和使用，之前支持hotbordercolor，但是xml解析时并没有解析该属性，该属性表示鼠标悬停状态时控件边框的颜色。<br />
 96.给Combo控件增加mousewheel属性，用来控制Combo是否支持滚轮切换选项的操作，默认为true。当mousewheel为false时，鼠标移动到Combo控件上，滚动滚轮不会引起combo选项的改变。在一些combo放到有滚动条的布局的情况下，可能比较有用（可以有效防止鼠标滚轮的误操作）。<br />
 97.给Label控件增加autocalwidth,autocalheight属性，默认为false。用来表示改控件是否根据文本内容自动计算宽高。请仅在float=false下使用。如果同时存在指定了width或height，那么width的优先级高于autocalwidth，height的优先级高于autocalheight。常用于单行文本时根据文本内容自动计算调整宽度，多行文本给定宽度时自动计算并调整高度。（使用过程中有问题可以提issue给我）。<br />
+98.在CRenderEngine中增加两个转换svg格式的方法：<br />
+  SvgFile2PngFile将svg文件转换成指定大小的png图片存到磁盘;<br />
+  SvgFile2HBITMAP将svg文件转换成duilib的HBITMAP,可以不存磁盘直接addimage来调用。<br />
 
 <br />
 其他改动：<br />

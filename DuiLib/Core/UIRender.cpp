@@ -3,6 +3,12 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../Utils/stb_image.h"
 
+//svg
+#define NANOSVG_IMPLEMENTATION
+#include "nanosvg.h"
+#define NANOSVGRAST_IMPLEMENTATION
+#include "nanosvgrast.h"
+
 #define RES_TYPE_COLOR _T("*COLOR*")
 
 extern "C"
@@ -2476,6 +2482,138 @@ SIZE CRenderEngine::EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR
 	}
 	
 	return size;
+}
+
+bool CRenderEngine::SvgFile2PngFile(LPCWSTR pstrSvgFile,LPCWSTR pstrPngFile,const int& nPngWidth,const int& nPngHeight)
+{
+	NSVGimage* psvg = nsvgParseFromFile(pstrSvgFile, "px", 96.0f);
+	if (psvg==NULL)
+		return false;
+	NSVGrasterizer* rast = nsvgCreateRasterizer();
+	if (rast == NULL)
+		return false;
+
+	float fX = ((float)nPngWidth) / (psvg->width);
+	float fY = ((float)nPngHeight) / (psvg->height);
+	float fScale = (fX<=fY) ? fX : fY;
+	LPBYTE pImage = (LPBYTE)malloc(nPngWidth * nPngHeight * 4);
+
+	nsvgRasterize(rast, psvg, 0.0, 0.0, fScale, pImage, nPngWidth, nPngHeight, nPngWidth * 4);
+
+	//
+	LPBYTE pDest = (LPBYTE)malloc(nPngWidth * nPngHeight * 4);
+	for( int i = 0; i < nPngWidth * nPngHeight; i++ ) 
+	{
+		pDest[i*4 + 3] = pImage[i*4 + 3];
+		if( pDest[i*4 + 3] < 255 )
+		{
+			pDest[i*4] = (BYTE)(DWORD(pImage[i*4 + 2])*pImage[i*4 + 3]/255);
+			pDest[i*4 + 1] = (BYTE)(DWORD(pImage[i*4 + 1])*pImage[i*4 + 3]/255);
+			pDest[i*4 + 2] = (BYTE)(DWORD(pImage[i*4])*pImage[i*4 + 3]/255); 
+		}
+		else
+		{
+			pDest[i*4] = pImage[i*4 + 2];
+			pDest[i*4 + 1] = pImage[i*4 + 1];
+			pDest[i*4 + 2] = pImage[i*4]; 
+		}
+	}
+
+	Gdiplus::Bitmap srcBmp(nPngWidth, nPngHeight);
+	//填充GDI+ Bitmap数据
+	Gdiplus::BitmapData bitmapData;
+	Gdiplus::Rect rect(0, 0, nPngWidth, nPngHeight);
+	srcBmp.LockBits(&rect, Gdiplus::ImageLockModeWrite, PixelFormat32bppARGB, &bitmapData);
+	int nLineSize = nPngWidth * 4;		
+	BYTE *pDestBits = (BYTE*)bitmapData.Scan0;
+	for ( int y = 0; y < nPngWidth; y++ )
+	{
+		memcpy( pDestBits + y * nLineSize, pDest + y * nLineSize, nLineSize);//按行复制
+	}
+	srcBmp.UnlockBits(&bitmapData);
+	free(pImage);
+	free(pDest);
+
+	nsvgDeleteRasterizer(rast);	
+	nsvgDelete(psvg);
+
+	UINT  num = 0 ,size = 0;
+	// size of the image encoder array in bytes
+	ImageCodecInfo* pImageCodecInfo = NULL;
+	if(GetImageEncodersSize(&num, &size)!= Ok || size == 0 )
+		return false;  // Failure
+	pImageCodecInfo = (ImageCodecInfo*)(malloc(size));
+	if(pImageCodecInfo == NULL)
+		return false;  // Failure
+	if(GetImageEncoders(num, size, pImageCodecInfo)!= Ok )
+		return false;
+
+	for(UINT j = 0; j < num; ++j)
+	{
+		if( wcsicmp(pImageCodecInfo[j].MimeType, L"image/png") == 0 ) //保存为png格式
+		{
+			srcBmp.Save(pstrPngFile,&(pImageCodecInfo[j].Clsid));
+			break;
+		}
+	}
+	free(pImageCodecInfo);
+	return true;
+}
+HBITMAP CRenderEngine::SvgFile2HBITMAP(const LPCWSTR pstrSvgFile,const int& nBmpWidth,const int& nBmpHeight)
+{
+	NSVGimage* psvg = nsvgParseFromFile(pstrSvgFile, "px", 96.0f);
+	if (psvg==NULL)
+		return NULL;
+	NSVGrasterizer* rast = nsvgCreateRasterizer();
+	if (rast == NULL)
+		return NULL;
+
+	float fX = ((float)nBmpWidth) / (psvg->width);
+	float fY = ((float)nBmpHeight) / (psvg->height);
+	float fScale = (fX<=fY) ? fX : fY;
+	LPBYTE pImage = (LPBYTE)malloc(nBmpWidth * nBmpHeight * 4);
+
+	nsvgRasterize(rast, psvg, 0.0, 0.0, fScale, pImage, nBmpWidth, nBmpHeight, nBmpWidth * 4);
+
+	//
+	BITMAPINFO bmi;
+	::ZeroMemory(&bmi, sizeof(BITMAPINFO));
+	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bmi.bmiHeader.biWidth = nBmpWidth;
+	bmi.bmiHeader.biHeight = -nBmpHeight;
+	bmi.bmiHeader.biPlanes = 1;
+	bmi.bmiHeader.biBitCount = 32;
+	bmi.bmiHeader.biCompression = BI_RGB;
+	bmi.bmiHeader.biSizeImage = nBmpWidth * nBmpHeight * 4;
+
+	LPBYTE pDest = NULL;
+	HBITMAP hBitmap = ::CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, (void**)&pDest, NULL, 0);
+	if( !hBitmap )
+		return NULL;
+
+	for( int i = 0; i < nBmpWidth * nBmpHeight; i++ ) 
+	{
+		pDest[i*4 + 3] = pImage[i*4 + 3];
+		if( pDest[i*4 + 3] < 255 )
+		{
+			pDest[i*4] = (BYTE)(DWORD(pImage[i*4 + 2])*pImage[i*4 + 3]/255);
+			pDest[i*4 + 1] = (BYTE)(DWORD(pImage[i*4 + 1])*pImage[i*4 + 3]/255);
+			pDest[i*4 + 2] = (BYTE)(DWORD(pImage[i*4])*pImage[i*4 + 3]/255); 
+		}
+		else
+		{
+			pDest[i*4] = pImage[i*4 + 2];
+			pDest[i*4 + 1] = pImage[i*4 + 1];
+			pDest[i*4 + 2] = pImage[i*4]; 
+		}
+	}
+
+	free(pImage);
+
+	nsvgDeleteRasterizer(rast);	
+	nsvgDelete(psvg);
+
+	return hBitmap;
 }
 
 } // namespace DuiLib
