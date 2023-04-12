@@ -2632,11 +2632,14 @@ bool CRichEditUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl
 	{
 		RECT rc = {0,0,0,0},rcTextPadding={0,0,0,0};
 		m_pTwh->GetControlRect(&rc);
-		rcTextPadding = GetTextPadding();
-		rc.left += rcTextPadding.left;
-		rc.right -= rcTextPadding.right;
-		rc.top += rcTextPadding.top;
-		rc.bottom -= rcTextPadding.bottom;
+		if (GetMultLine())
+		{
+			rcTextPadding = GetTextPadding();
+			rc.left += rcTextPadding.left;
+			rc.right -= rcTextPadding.right;
+			rc.top += rcTextPadding.top;
+			rc.bottom -= rcTextPadding.bottom;
+		}
 		CRenderEngine::DrawText(hDC, m_pManager, rc, GetTipValueText().GetData(), GetTipValueTextColor(), m_iFont, DT_LEFT|DT_VCENTER);
 	}
 
