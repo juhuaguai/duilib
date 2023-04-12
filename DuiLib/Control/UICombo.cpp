@@ -167,6 +167,7 @@ void CComboWnd::Init(CComboUI* pOwner)
         SIZE sz = pControl->EstimateSize(szAvailable);
         cyFixed += sz.cy;
     }
+	cyFixed += m_pOwner->GetDropBorderSize().top + m_pOwner->GetDropBorderSize().bottom;
     //cyFixed += 4; // CVerticalLayoutUI 默认的Inset 调整
     rc.bottom = rc.top + MIN(cyFixed, szDrop.cy);
 
@@ -198,6 +199,10 @@ void CComboWnd::Notify(TNotifyUI& msg)
 	if (msg.sType == DUI_MSGTYPE_ITEMCLICK || msg.sType == DUI_MSGTYPE_ITEMACTIVATE || msg.sType == DUI_MSGTYPE_LINK ||		//ListElement的一些事件
 		msg.sType == DUI_MSGTYPE_CLICK)																						//Button的一些事件,其他一些控件一般不会用作combo的item,因此一些事件也没有进行转发,可根据需要增删
 		m_pOwner->GetManager()->SendNotify(msg.pSender,msg.sType.GetData(),msg.wParam,msg.lParam,true);	
+	else if (msg.sType == DUI_MSGTYPE_WINDOWINIT)
+	{
+		EnsureVisible( m_pOwner->GetCurSel());
+	}
 }
 
 LPCTSTR CComboWnd::GetWindowClassName() const
@@ -314,8 +319,17 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         event.wParam = MAKELPARAM(zDelta < 0 ? SB_LINEDOWN : SB_LINEUP, 0);
         event.lParam = lParam;
         event.dwTimestamp = ::GetTickCount();
-        m_pOwner->DoEvent(event);
-        EnsureVisible(m_pOwner->GetCurSel());
+		if (m_pOwner->IsCanMouseWheel())
+		{
+			m_pOwner->DoEvent(event);
+			EnsureVisible(m_pOwner->GetCurSel());
+		}
+		else
+		{
+			m_pOwner->DoEvent(event);
+			m_pLayout->DoEvent(event);
+		}
+        
         return 0;
     }
     else if( uMsg == WM_KILLFOCUS ) {
@@ -348,6 +362,9 @@ void CComboWnd::EnsureVisible(int iIndex)
     m_pLayout->FindSelectable(m_pOwner->GetCurSel(), false);
     RECT rcItem = m_pLayout->GetItemAt(iIndex)->GetPos();
     RECT rcList = m_pLayout->GetPos();
+	RECT rcInset = m_pLayout->GetInset();
+	rcList.top = rcList.top + rcInset.top;
+	rcList.bottom = rcList.bottom- rcInset.bottom;
     CScrollBarUI* pHorizontalScrollBar = m_pLayout->GetHorizontalScrollBar();
     if( pHorizontalScrollBar && pHorizontalScrollBar->IsVisible() ) rcList.bottom -= pHorizontalScrollBar->GetFixedHeight();
     int iPos = m_pLayout->GetScrollPos().cy;
@@ -697,11 +714,14 @@ void CComboUI::DoEvent(TEventUI& event)
         if (IsEnabled()) {
 			if (m_pWindow)
 			{
-				bool bDownward = LOWORD(event.wParam) == SB_LINEDOWN;
-				SetSelectCloseFlag(false);
-				SelectItem(FindSelectable(m_iCurSel + (bDownward ? 1 : -1), bDownward));
-				SetSelectCloseFlag(true);
-				return;
+				if (IsCanMouseWheel())
+				{
+					bool bDownward = LOWORD(event.wParam) == SB_LINEDOWN;
+					SetSelectCloseFlag(false);
+					SelectItem(FindSelectable(m_iCurSel + (bDownward ? 1 : -1), bDownward));
+					SetSelectCloseFlag(true);
+					return;
+				}
 			}
 			else
 			{
