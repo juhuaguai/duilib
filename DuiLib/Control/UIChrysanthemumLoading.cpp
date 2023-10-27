@@ -143,6 +143,12 @@ namespace DuiLib
 
 	void CChrysanthemumLoadingUI::PaintBitMap()
 	{
+		m_nProgressValue = ++m_nProgressValue % m_nNumberOfSpoke;
+		bool bVisible = (::GetWindowLong(m_pManager->GetPaintWindow(), GWL_STYLE) & WS_VISIBLE);
+		if (IsIconic(m_pManager->GetPaintWindow()) || bVisible==false ||  IsVisible() == false)
+		{
+			return;
+		}
 		int nWidth = m_rcItem.right-m_rcItem.left;
 		int nHeight = m_rcItem.bottom-m_rcItem.top;
 		m_CenterPoint.X = nWidth / 2;
@@ -159,7 +165,6 @@ namespace DuiLib
 		SolidBrush backBrush(ARGB2Color(m_dwBackColor));
 		g.FillRectangle(&backBrush,0,0,nWidth,nHeight);
 
-		m_nProgressValue = ++m_nProgressValue % m_nNumberOfSpoke;
 		int intPosition = m_nProgressValue;
 		for (int intCounter = 0; intCounter < m_nNumberOfSpoke; intCounter++)
 		{
