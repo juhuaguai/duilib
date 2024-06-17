@@ -566,7 +566,6 @@
 		<Attribute name="min" default="0" type="INT" comment="进度最小值，如(0)"/>
 		<Attribute name="max" default="100" type="INT" comment="进度最大值，如(100)"/>
 		<Attribute name="value" default="0" type="INT" comment="进度值，如(50)"/>
-		<Attribute name="isstretchfore" default="TRUE" type="BOOL" comment="指定前景图片是否缩放显示"/>
 	</Progress>
 	<Slider parent="Progress" notifies="setfocus killfocus timer menu valuechanged windowinit(root)">
 		<Attribute name="name" default="" type="STRING" comment="控件名字，同一窗口内必须唯一，如(testbtn)"/>

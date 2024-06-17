@@ -73,8 +73,8 @@ namespace DuiLib
 		if (m_pColors)
 			delete []m_pColors;	
 		m_pColors = new Color[m_nNumberOfSpoke];
-		byte bytIncrement = (byte)(255 / m_nNumberOfSpoke);
-		byte PERCENTAGE_OF_DARKEN = 0;
+		BYTE bytIncrement = (BYTE)(255 / m_nNumberOfSpoke);
+		BYTE PERCENTAGE_OF_DARKEN = 0;
 		for (int intCursor = 0; intCursor < m_nNumberOfSpoke; intCursor++)
 		{
 			if (intCursor == 0)
