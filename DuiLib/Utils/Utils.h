@@ -242,6 +242,7 @@ namespace DuiLib
 		void RemoveAll();
 		int GetSize() const;
 		LPCTSTR GetAt(int iIndex) const;
+		LPVOID GetAtVal(int iIndex) const;
 		LPCTSTR operator[] (int nIndex) const;
 
 	protected:

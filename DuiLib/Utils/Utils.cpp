@@ -996,6 +996,23 @@ namespace DuiLib
 		return NULL;
 	}
 
+	LPVOID CDuiStringPtrMap::GetAtVal(int iIndex) const
+	{
+		if (m_nBuckets == 0 || GetSize() == 0) return NULL;
+
+		int pos = 0;
+		int len = m_nBuckets;
+		while (len--) {
+			for (TITEM* pItem = m_aT[len]; pItem; pItem = pItem->pNext) {
+				if (pos++ == iIndex) {
+					return pItem->Data;
+				}
+			}
+		}
+
+		return NULL;
+	}
+
 	LPCTSTR CDuiStringPtrMap::operator[] (int nIndex) const
 	{
 		return GetAt(nIndex);
