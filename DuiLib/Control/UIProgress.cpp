@@ -92,14 +92,33 @@ namespace DuiLib
 		else CLabelUI::SetAttribute(pstrName, pstrValue);
 	}
 
+	//void CProgressUI::PaintStatusImage(HDC hDC)
+	//{
+	//	if( m_nMax <= m_nMin ) m_nMax = m_nMin + 1;
+	//	if( m_nValue > m_nMax ) m_nValue = m_nMax;
+	//	if( m_nValue < m_nMin ) m_nValue = m_nMin;
+
+	//	RECT rc = {0};
+	//	if( m_bHorizontal ) {
+	//		rc.right = (m_nValue - m_nMin) * (m_rcItem.right - m_rcItem.left) / (m_nMax - m_nMin);
+	//		rc.bottom = m_rcItem.bottom - m_rcItem.top;
+	//	}
+	//	else {
+	//		rc.top = (m_rcItem.bottom - m_rcItem.top) * (m_nMax - m_nValue) / (m_nMax - m_nMin);
+	//		rc.right = m_rcItem.right - m_rcItem.left;
+	//		rc.bottom = m_rcItem.bottom - m_rcItem.top;
+	//	}
+	//	m_diFore.rcDestOffset = rc;
+	//	if( DrawImage(hDC, m_diFore) ) return;
+	//}
 	void CProgressUI::PaintStatusImage(HDC hDC)
 	{
-		if( m_nMax <= m_nMin ) m_nMax = m_nMin + 1;
-		if( m_nValue > m_nMax ) m_nValue = m_nMax;
-		if( m_nValue < m_nMin ) m_nValue = m_nMin;
+		if (m_nMax <= m_nMin) m_nMax = m_nMin + 1;
+		if (m_nValue > m_nMax) m_nValue = m_nMax;
+		if (m_nValue < m_nMin) m_nValue = m_nMin;
 
-		RECT rc = {0};
-		if( m_bHorizontal ) {
+		RECT rc = { 0 };
+		if (m_bHorizontal) {
 			rc.right = (m_nValue - m_nMin) * (m_rcItem.right - m_rcItem.left) / (m_nMax - m_nMin);
 			rc.bottom = m_rcItem.bottom - m_rcItem.top;
 		}
@@ -108,7 +127,34 @@ namespace DuiLib
 			rc.right = m_rcItem.right - m_rcItem.left;
 			rc.bottom = m_rcItem.bottom - m_rcItem.top;
 		}
-		m_diFore.rcDestOffset = rc;
-		if( DrawImage(hDC, m_diFore) ) return;
+
+		CDuiString strFore;
+		CDuiString strImg = m_diFore.sDrawString;
+		int nPos = strImg.Find(L"file='");
+		if (nPos != -1)
+		{
+			strImg = strImg.Mid(nPos + 6);
+			nPos = strImg.Find(L"'");
+			strImg = strImg.Left(nPos);
+		}
+		strFore.Format(L"file='%s' source='%d,%d,%d,%d' dest='%d,%d,%d,%d'", strImg.GetData(), rc.left, rc.top, rc.right, rc.bottom, rc.left, rc.top, rc.right, rc.bottom);
+
+		CDuiString strCorner = m_diFore.sDrawString;
+		nPos = strCorner.Find(L"corner='");
+		if (nPos != -1)
+		{
+			strCorner = strCorner.Mid(nPos + 8);
+			nPos = strCorner.Find(L"'");
+			strCorner = strCorner.Left(nPos);
+
+			strFore += L" corner='";
+			strFore += strCorner;
+			strFore += L"'";
+		}
+		
+		TDrawInfo diFore;
+		diFore.sDrawString = strFore;
+
+		if (DrawImage(hDC, diFore)) return;
 	}
 }

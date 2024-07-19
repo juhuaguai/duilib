@@ -117,6 +117,7 @@
 98.在CRenderEngine中增加两个转换svg格式的方法：<br />
   SvgFile2PngFile将svg文件转换成指定大小的png图片存到磁盘;<br />
   SvgFile2HBITMAP将svg文件转换成duilib的HBITMAP,可以不存磁盘直接addimage来调用。<br />
+99.改进了进度条控件progress的前景图绘制，建议设置的时候，背景图前景图大小一样，这样即便是圆形的进度条，也可以完美支持。hor="false"可以设置进度为竖向的进度<br />
 
 <br />
 其他改动：<br />
