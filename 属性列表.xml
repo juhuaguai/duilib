@@ -533,6 +533,7 @@
 		<Attribute name="bkcolor" default="0x00000000" type="DWORD" comment="背景颜色,如(0xFFFF0000)"/>
 		<Attribute name="bkcolor2" default="0x00000000" type="DWORD" comment="背景渐变色2,和bkcolor配合使用,如(0xFFFFFF00)"/>
 		<Attribute name="bkcolor3" default="0x00000000" type="DWORD" comment="背景渐变色3,和bkcolor、bkcolor2配合使用,如(0xFFFF00FF)"/>
+		<Attribute name="forebkcolor" default="0x00000000" type="DWORD" comment="前景图的背景色，画在bkcolor上面的，配合bkcolor使用，可以不用图片就能做进度条"/>		
 		<Attribute name="bordercolor" default="0x00000000" type="DWORD" comment="边框颜色,如(0xFF000000)"/>
 		<Attribute name="focusbordercolor" default="0x00000000" type="DWORD" comment="获得焦点时边框的颜色,如(0xFFFF0000)"/>
 		<Attribute name="colorhsl" default="false" type="BOOL" comment="本控件的颜色是否随窗口的hsl变化而变化,如(false)"/>

@@ -23,6 +23,8 @@ namespace DuiLib
 		void SetValue(int nValue);
 		CDuiString GetForeImage() const;
 		void SetForeImage(LPCTSTR pStrImage);
+		DWORD GetForeBkColor() const;
+		void SetForeBkColor(DWORD dwForeColor);
 
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 		void PaintStatusImage(HDC hDC);
@@ -33,6 +35,7 @@ namespace DuiLib
 		int m_nMin;
 		int m_nValue;
 
+		DWORD m_dwForeColor;
 		TDrawInfo m_diFore;
 	};
 

@@ -3,7 +3,7 @@
 
 namespace DuiLib
 {
-	CProgressUI::CProgressUI() : m_bHorizontal(true), m_nMin(0), m_nMax(100), m_nValue(0)
+	CProgressUI::CProgressUI() : m_bHorizontal(true), m_nMin(0), m_nMax(100), m_nValue(0), m_dwForeColor(0)
 	{
 		m_uTextStyle = DT_SINGLELINE | DT_CENTER;
 		SetFixedHeight(12);
@@ -81,6 +81,14 @@ namespace DuiLib
 		m_diFore.sDrawString = pStrImage;
 		Invalidate();
 	}
+	DWORD CProgressUI::GetForeBkColor() const
+	{
+		return m_dwForeColor;
+	}
+	void CProgressUI::SetForeBkColor(DWORD dwForeColor)
+	{
+		m_dwForeColor = dwForeColor;
+	}
 
 	void CProgressUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
@@ -89,6 +97,13 @@ namespace DuiLib
 		else if( _tcscmp(pstrName, _T("min")) == 0 ) SetMinValue(_ttoi(pstrValue));
 		else if( _tcscmp(pstrName, _T("max")) == 0 ) SetMaxValue(_ttoi(pstrValue));
 		else if( _tcscmp(pstrName, _T("value")) == 0 ) SetValue(_ttoi(pstrValue));
+		else if (_tcsicmp(pstrName, _T("forebkcolor")) == 0) {
+			while (*pstrValue > _T('\0') && *pstrValue <= _T(' ')) pstrValue = ::CharNext(pstrValue);
+			if (*pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+			LPTSTR pstr = NULL;
+			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			SetForeBkColor(clrColor);
+		}
 		else CLabelUI::SetAttribute(pstrName, pstrValue);
 	}
 
@@ -128,6 +143,21 @@ namespace DuiLib
 			rc.bottom = m_rcItem.bottom - m_rcItem.top;
 		}
 
+		if (m_dwForeColor > 0)
+		{
+			int nW = rc.right - rc.left;
+			int nH = rc.bottom - rc.top;
+			RECT rcForeColor = { m_rcItem.left + rc.left,m_rcItem.top + rc.top,0,0 };
+			rcForeColor.right = rcForeColor.left + nW;
+			rcForeColor.bottom = rcForeColor.top + nH;
+			CRenderEngine::DrawColor(hDC, rcForeColor, m_dwForeColor);
+		}
+
+		if (m_diFore.sDrawString.IsEmpty())
+		{
+			return;
+		}
+
 		CDuiString strFore;
 		CDuiString strImg = m_diFore.sDrawString;
 		int nPos = strImg.Find(L"file='");
@@ -150,7 +180,7 @@ namespace DuiLib
 			strFore += L" corner='";
 			strFore += strCorner;
 			strFore += L"'";
-		}
+		}	
 		
 		TDrawInfo diFore;
 		diFore.sDrawString = strFore;
