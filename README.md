@@ -104,8 +104,8 @@
 85.修复textui控件中非showhtml时a标签数量计数错误的问题。<br />
 86.修复richedit在win7系统上内容可能被缩小的bug。（richedit作为子控件放到容器中，如果容器中包含有滚动条，滚动容器的滚动条，richedit的内容可能会随之缩放）<br />
 87.修复某些情况下showmodal不能返回正确的关闭值的问题。(比如在子窗口标题栏被鼠标左键按下不松开时调用了Close来关闭窗口)<br />
-<strike>88.新增了一个动画控件用来支持apng，使用了libpng来解析生成每帧数据，GDI+去绘制，同时支持设置背景色和文本</strike><br />
-<strike>89.新增了一个支持apng动画的按钮控件，使用了libpng来解析生成每帧数据，GDI+去绘制，同时支持设置背景色和文本，支持背景图dest设置。</strike><br />
+88.新增了一个动画控件用来支持apng，<strike>使用了libpng来解析生成每帧数据，GDI+去绘制，同时支持设置背景色和文本</strike><br />
+89.新增了一个支持apng动画的按钮控件，<strike>使用了libpng来解析生成每帧数据，GDI+去绘制，同时支持设置背景色和文本，支持背景图dest设置。</strike><br />
 90.修复图片旋转控件旋转时图像像素漂移的问题。<br />
 91.PaintManager新增了字体相关静态接口，可以使用ttf文件或者ttf内存流来引入新字体，比如PingFang字体，思源字体等win没有自带的字体。在窗体创建之前调用。AddTTF之后，可以像使用系统字体（比如宋体、微软雅黑）那样在xml或者程序中使用。注意字体版权问题。<br />
 92.gif和apng解析都使用stbimage解析，同时绘制采用gdi,gif抛弃了gdi+，apng抛弃了libpng库。这样gif控件和apng控件的背景图就类似普通控件背景图，支持file,source,dest,xtiled,ytiled,mask等属性了。<br />
