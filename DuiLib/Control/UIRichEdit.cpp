@@ -1550,10 +1550,16 @@ CDuiString CRichEditUI::GetTipValueText() const
 }
 void CRichEditUI::SetTipValueText(const CDuiString& strText)
 {
+#ifdef USE_OPENCC
+	CDuiString strConv = OpenccConvert(strText.GetData());
+	if (m_strTipValue==strConv)
+		return;
+	m_strTipValue = strConv;
+#else
 	if (m_strTipValue==strText)
 		return;
-
 	m_strTipValue = strText;
+#endif	
 	Invalidate();
 }
 

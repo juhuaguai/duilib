@@ -112,34 +112,79 @@ int OpenccClose()
 }
 const wchar_t* OpenccConvertW(const wchar_t* pszText)
 {
-	if (g_opencc==NULL)
+	if (g_opencc==NULL || pszText==NULL)
 		return pszText;
 
-	if (pszText && wcslen(pszText)>0)
+	static int nRetUnicode = 1024*sizeof(wchar_t);
+	static wchar_t* pszwUnicode = (wchar_t*)malloc(nRetUnicode);
+
+	int nInLen = wcslen(pszText);
+	if (nInLen>1024)
 	{
+		int nSize = nInLen*sizeof(wchar_t);
+		char* pszUtf8 = (char*)malloc(nSize);
+
 		//转utf8
-		int nLength = ::WideCharToMultiByte(CP_UTF8, 0, pszText, wcslen(pszText), NULL, 0, NULL, FALSE);
-		if (nLength < 1)
+		int nLength = ::WideCharToMultiByte(CP_UTF8, 0, pszText, wcslen(pszText), pszUtf8, nSize, NULL, FALSE);
+		if (nLength == 0)
+		{
+			free(pszUtf8);
 			return pszText;
-		static char* pszUtf8 = NULL;
-		pszUtf8 = (char*)realloc(pszUtf8,nLength+1);
-		::WideCharToMultiByte(CP_UTF8, 0, pszText, wcslen(pszText), pszUtf8, nLength, NULL, FALSE);
+		}
 		pszUtf8[nLength] = '\0';
 
 		//转换
-		static char* pszRetUtf8 = NULL;
-		pszRetUtf8 = (char*)realloc(pszRetUtf8,nLength*1.5+1);
+		char* pszRetUtf8 = (char*)malloc(nLength*1.5+1);
 		size_t retConv = openConvertUtft8(g_opencc,pszUtf8,nLength,pszRetUtf8);
 		pszRetUtf8[retConv] = '\0';
 		
-		//转回unicode
-		nLength = ::MultiByteToWideChar(CP_UTF8, 0, pszRetUtf8, retConv, NULL, 0);
-		if (nLength < 1)
-			return pszText;
+		free(pszUtf8);
 
-		static wchar_t* pszwUnicode = NULL;
-		pszwUnicode = (wchar_t*)realloc(pszwUnicode,nLength*sizeof(wchar_t)+sizeof(wchar_t));
-		::MultiByteToWideChar(CP_UTF8, 0, pszRetUtf8, retConv, pszwUnicode, nLength);
+		//转回unicode
+		if (nRetUnicode < retConv*sizeof(wchar_t))
+		{
+			free(pszwUnicode);
+			nRetUnicode = (retConv+1)*sizeof(wchar_t);
+			pszwUnicode = (wchar_t*)malloc(nRetUnicode);
+		}
+		nLength = ::MultiByteToWideChar(CP_UTF8, 0, pszRetUtf8, retConv,pszwUnicode, retConv);
+		if (nLength == 0)
+		{
+			free(pszRetUtf8);
+			return pszText;
+		}
+		pszwUnicode[nLength] = L'\0';
+
+		free(pszRetUtf8);
+
+		return pszwUnicode;
+	}
+	else
+	{
+		char szUtf8[2048] = {0};
+		//转utf8
+		int nLength = ::WideCharToMultiByte(CP_UTF8, 0, pszText, wcslen(pszText), szUtf8, 2048, NULL, FALSE);
+		if (nLength == 0)
+			return pszText;
+		szUtf8[nLength] = '\0';
+
+		//转换
+		char szRetUtf8[2048] = {0};
+		size_t retConv = openConvertUtft8(g_opencc,szUtf8,nLength,szRetUtf8);
+		szRetUtf8[retConv] = '\0';
+
+		//转回unicode
+		if (nRetUnicode < retConv*sizeof(wchar_t))
+		{
+			free(pszwUnicode);
+			nRetUnicode = (retConv+1)*sizeof(wchar_t);
+			pszwUnicode = (wchar_t*)malloc(nRetUnicode);
+		}
+		nLength = ::MultiByteToWideChar(CP_UTF8, 0, szRetUtf8, retConv,pszwUnicode, retConv);
+		if (nLength == 0)
+		{
+			return pszText;
+		}
 		pszwUnicode[nLength] = L'\0';
 
 		return pszwUnicode;
@@ -149,53 +194,116 @@ const wchar_t* OpenccConvertW(const wchar_t* pszText)
 }
 const char* OpenccConvertA(const char* pszAnsiText)
 {
-	if (g_opencc==NULL)
+	if (g_opencc==NULL || pszAnsiText==NULL)
 		return pszAnsiText;
 
-	if (pszAnsiText && strlen(pszAnsiText)>0)
+	static int nRetAnsi = 1024;
+	static char* pszRetAnsi = (char*)malloc(nRetAnsi);
+
+	int nInLen = strlen(pszAnsiText);
+	if (nInLen>1024)
 	{
 		//ansi转unicode
-		int nUnicodeLength = ::MultiByteToWideChar(CP_ACP, 0, pszAnsiText, strlen(pszAnsiText), NULL, 0);
-		if (nUnicodeLength < 1)
+		int nSize = (nInLen+1)*sizeof(wchar_t);
+		wchar_t* pszwUnicode = (wchar_t*)malloc(nSize);		
+		int nUnicodeLength = ::MultiByteToWideChar(CP_ACP, 0, pszAnsiText, nInLen, pszwUnicode, nInLen);
+		if (nUnicodeLength == 0)
+		{
+			free(pszwUnicode);
 			return pszAnsiText;
-		static wchar_t* pszwUnicode = NULL;
-		pszwUnicode = (wchar_t*)realloc(pszwUnicode,nUnicodeLength*sizeof(wchar_t)+sizeof(wchar_t));
-		::MultiByteToWideChar(CP_ACP, 0, pszAnsiText, strlen(pszAnsiText), pszwUnicode, nUnicodeLength);
+		}
 		pszwUnicode[nUnicodeLength] = L'\0';
 
 		//转utf8
-		int nLength = ::WideCharToMultiByte(CP_UTF8, 0, pszwUnicode, nUnicodeLength, NULL, 0, NULL, FALSE);
-		if (nLength < 1)
+		char* pszUtf8 = (char*)malloc(nSize);
+		int nLength = ::WideCharToMultiByte(CP_UTF8, 0, pszwUnicode, nUnicodeLength, pszUtf8, nSize, NULL, FALSE);
+		if (nLength == 0)
+		{
+			free(pszwUnicode);
+			free(pszUtf8);
 			return pszAnsiText;
-		static char* pszUtf8 = NULL;
-		pszUtf8 = (char*)realloc(pszUtf8,nLength+1);
-		::WideCharToMultiByte(CP_UTF8, 0, pszwUnicode, nUnicodeLength, pszUtf8, nLength, NULL, FALSE);
+		}
 		pszUtf8[nLength] = '\0';
 
+		free(pszwUnicode);
+
 		//转换
-		static char* pszRetUtf8 = NULL;
-		pszRetUtf8 = (char*)realloc(pszRetUtf8,nLength*1.5+1);
+		char* pszRetUtf8 = (char*)malloc(nLength*1.5+1);
 		size_t retConv = openConvertUtft8(g_opencc,pszUtf8,nLength,pszRetUtf8);
 		pszRetUtf8[retConv] = '\0';
 
-		//转回unicode
-		nLength = ::MultiByteToWideChar(CP_UTF8, 0, pszRetUtf8, retConv, NULL, 0);
-		if (nLength < 1)
-			return pszAnsiText;
+		free(pszUtf8);
 
-		static wchar_t* pszwUnicode2 = NULL;
-		pszwUnicode2 = (wchar_t*)realloc(pszwUnicode2,nLength*sizeof(wchar_t)+sizeof(wchar_t));
-		::MultiByteToWideChar(CP_UTF8, 0, pszRetUtf8, retConv, pszwUnicode2, nLength);
-		pszwUnicode2[nLength] = L'\0';
+		//转回unicode
+		wchar_t* pszwRetUnicode = (wchar_t*)malloc((retConv+1)*sizeof(wchar_t));
+		nLength = ::MultiByteToWideChar(CP_UTF8, 0, pszRetUtf8, retConv, pszwRetUnicode, retConv);
+		if (nLength == 0)
+		{
+			free(pszRetUtf8);
+			free(pszwRetUnicode);
+			return pszAnsiText;
+		}
+		pszwRetUnicode[nLength] = L'\0';
+
+		free(pszRetUtf8);
 
 		//转回ansi
-		int nAnsiLength = ::WideCharToMultiByte(CP_ACP, 0, pszwUnicode2, nLength, NULL, 0, NULL, FALSE);
-		if (nAnsiLength < 1)
+		if (nRetAnsi < nLength*sizeof(wchar_t))
+		{
+			free(pszRetAnsi);
+			nRetAnsi = nLength*sizeof(wchar_t);
+			pszRetAnsi = (char*)malloc(nRetAnsi);
+		}
+		int nAnsiLength = ::WideCharToMultiByte(CP_ACP, 0, pszwRetUnicode, nLength, pszRetAnsi, nRetAnsi, NULL, FALSE);
+		if (nAnsiLength == 0)
+		{
+			free(pszwRetUnicode);
 			return pszAnsiText;
+		}
+		pszRetAnsi[nAnsiLength] = '\0';
 
-		static char* pszRetAnsi = NULL;
-		pszRetAnsi = (char*)realloc(pszRetAnsi,nAnsiLength+1);
-		::WideCharToMultiByte(CP_ACP, 0, pszwUnicode2, nLength, pszRetAnsi, nAnsiLength, NULL, FALSE);
+		free(pszwRetUnicode);
+
+		return pszRetAnsi;
+	}
+	else
+	{
+		//ansi转unicode
+		wchar_t szwUnicode[1024] = {0}; 
+		int nUnicodeLength = ::MultiByteToWideChar(CP_ACP, 0, pszAnsiText, nInLen, szwUnicode, 1024);
+		if (nUnicodeLength == 0)
+			return pszAnsiText;
+		szwUnicode[nUnicodeLength] = L'\0';
+
+		//转utf8
+		char szUtf8[2048] = {0};
+		int nLength = ::WideCharToMultiByte(CP_UTF8, 0, szwUnicode, nUnicodeLength, szUtf8, 2048, NULL, FALSE);
+		if (nLength == 0)
+			return pszAnsiText;
+		szUtf8[nLength] = '\0';
+
+		//转换
+		char szRetUtf8[2048] = {0};
+		size_t retConv = openConvertUtft8(g_opencc,szUtf8,nLength,szRetUtf8);
+		szRetUtf8[retConv] = '\0';
+
+		//转回unicode
+		wchar_t szwRetUnicode[2048] = {0};
+		nLength = ::MultiByteToWideChar(CP_UTF8, 0, szRetUtf8, retConv, szwRetUnicode, 2048);
+		if (nLength == 0)
+			return pszAnsiText;
+		szwRetUnicode[nLength] = L'\0';
+
+		//转回ansi
+		if (nRetAnsi < nLength*sizeof(wchar_t))
+		{
+			free(pszRetAnsi);
+			nRetAnsi = nLength*sizeof(wchar_t);
+			pszRetAnsi = (char*)malloc(nRetAnsi);
+		}
+		int nAnsiLength = ::WideCharToMultiByte(CP_ACP, 0, szwRetUnicode, nLength, pszRetAnsi, nRetAnsi, NULL, FALSE);
+		if (nAnsiLength == 0)
+			return pszAnsiText;
 		pszRetAnsi[nAnsiLength] = '\0';
 
 		return pszRetAnsi;
