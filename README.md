@@ -119,7 +119,8 @@
   SvgFile2HBITMAP将svg文件转换成duilib的HBITMAP,可以不存磁盘直接addimage来调用。<br />
 99.改进了进度条控件progress的前景图绘制，建议设置的时候，背景图前景图大小一样，这样即便是圆形的进度条，也可以完美支持。hor="false"可以设置进度为竖向的进度<br />
 100.给进度条控件progress的增加前景色绘制，绘制层级顺序：背景色，然后背景图盖上，然后前景色盖上，然后前景图盖上。这样可以仅使用背景色和前景色就能显示个简单的进度条了。<br />
-101.引入opencc（https://github.com/BYVoid/OpenCC ）库来支持简体自动转繁体。实现了通过xml或者控件的SetText接口设置文本时，自动将简体转换为繁体显示。特别注意，对于edit和richedit，只有通过xml设置的text属性或者SetText接口设置的文本，才会自动转为繁体，通过输入法输入或者copy进来的文本，则不会自动转换（如需支持请自行修改代码，搜索USE_OPENCC即可看到）。<br />
+101.引入opencc（https://github.com/BYVoid/OpenCC ）库来支持简体自动转繁体。实现了通过xml或者控件的SetText接口设置文本时，自动将简体转换为繁体显示。<br />
+  特别注意，对于edit和richedit，只有通过xml设置的text属性或者SetText接口设置的文本，才会自动转为繁体，通过输入法输入或者copy进来的文本，则不会自动转换（如需支持请自行修改代码，搜索USE_OPENCC即可看到）。<br />
   opencc相关功能可以通过预处理的USE_OPENCC宏来控制，移除此宏就不会编译相关代码。需要此功能时，请在预处理器里添加宏USE_OPENCC。<br />
   当开启opencc功能时，如果你的程序需要自动简体转繁体，那么可以在main函数里调用CPaintManagerUI::SetOpenCC(true,"c:\\myapp\\opencc\\s2t.json");同时将opencc.dll放置到主程序同级目录，将.ocd2放到s2t.json同级目录。<br />
   opencc.dll的位置也可以修改或者改为自行传递，具体代码在StdAfx.cpp里面。<br />
