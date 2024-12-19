@@ -43,9 +43,12 @@ void CMainWnd::InitDlg()
 	RECT rcWnd = {0,0,0,0};
 	GetWindowRect(m_hWnd,&rcWnd);
 	CRichEditUI* pEdit = static_cast<CRichEditUI*>(m_PM.FindControl(_T("log_edit")));
-	TCHAR szValue[512] = {0};
-	_stprintf_s(szValue,_T("rcWnd=%d,%d,%d,%d"),rcWnd.left,rcWnd.top,rcWnd.right,rcWnd.bottom);
-	pEdit->AppendText(szValue);
+	if (pEdit)
+	{
+		TCHAR szValue[512] = {0};
+		_stprintf_s(szValue,_T("rcWnd=%d,%d,%d,%d"),rcWnd.left,rcWnd.top,rcWnd.right,rcWnd.bottom);
+		pEdit->AppendText(szValue);
+	}
 }
 
 LRESULT CMainWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
