@@ -2387,13 +2387,25 @@ void CListTextElementUI::SetText(int iIndex, LPCTSTR pstrText)
     
     while( m_aTexts.GetSize() < pInfo->nColumns ) { m_aTexts.Add(NULL); }
 
-    CDuiString* pText = static_cast<CDuiString*>(m_aTexts[iIndex]);
-    if( (pText == NULL && pstrText == NULL) || (pText && *pText == pstrText) ) return;
+#ifdef USE_OPENCC
+	CDuiString strConvText = OpenccConvert(pstrText);
+	CDuiString* pText = static_cast<CDuiString*>(m_aTexts[iIndex]);
+	if( (pText == NULL && pstrText == NULL) || (pText && *pText == strConvText) ) return;
+
+	if ( pText ) //by cddjr 2011/10/20
+		pText->Assign(strConvText.GetData());
+	else
+		m_aTexts.SetAt(iIndex, new CDuiString(strConvText));
+#else
+	CDuiString* pText = static_cast<CDuiString*>(m_aTexts[iIndex]);
+	if( (pText == NULL && pstrText == NULL) || (pText && *pText == pstrText) ) return;
 
 	if ( pText ) //by cddjr 2011/10/20
 		pText->Assign(pstrText);
 	else
 		m_aTexts.SetAt(iIndex, new CDuiString(pstrText));
+#endif    
+
     Invalidate();
 }
 

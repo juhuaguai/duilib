@@ -364,6 +364,20 @@ void CPaintManagerUI::SetResourceZip(const CDuiString& strZip, bool bCachedResou
     }
 }
 
+void CPaintManagerUI::SetOpenCC(bool bOpen,const CDuiString& strJsonCfg)
+{
+#ifdef USE_OPENCC
+	if (bOpen)
+	{
+		OpenccOpen(strJsonCfg.GetData());
+	}
+	else
+	{
+		OpenccClose();
+	}
+#endif
+}
+
 bool CPaintManagerUI::GetHSL(short* H, short* S, short* L)
 {
     *H = m_H;

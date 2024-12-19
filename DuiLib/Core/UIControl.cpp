@@ -144,10 +144,19 @@ CDuiString CControlUI::GetText() const
 
 void CControlUI::SetText(const CDuiString& strText)
 {
-    if( m_sText == strText ) 
+#ifdef USE_OPENCC
+	CDuiString strConv = OpenccConvert(strText.GetData());
+	if( m_sText == strConv ) 
 		return;
 
-    m_sText = strText;
+	m_sText = strConv;
+#else
+	if( m_sText == strText ) 
+		return;
+
+	m_sText = strText;
+#endif		
+
     Invalidate();
 }
 

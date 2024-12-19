@@ -1499,14 +1499,28 @@ CDuiString CRichEditUI::GetText() const
 
 void CRichEditUI::SetText(const CDuiString& strText)
 {
+#ifdef USE_OPENCC
+
+	CDuiString strConv = OpenccConvert(strText.GetData());
+
+	bool bTextChanged = false;
+	if (m_sText!=strConv)
+		bTextChanged = true;
+
+	m_sText = strConv;
+	if( !m_pTwh ) return;
+	SetSel(0, -1);
+	ReplaceSel(strConv.GetData(), FALSE);
+#else
 	bool bTextChanged = false;
 	if (m_sText!=strText)
 		bTextChanged = true;
 
-    m_sText = strText;
-    if( !m_pTwh ) return;
-    SetSel(0, -1);
-    ReplaceSel(strText.GetData(), FALSE);
+	m_sText = strText;
+	if( !m_pTwh ) return;
+	SetSel(0, -1);
+	ReplaceSel(strText.GetData(), FALSE);
+#endif
 
 	if (bTextChanged)
 		GetManager()->SendNotify(this, DUI_MSGTYPE_TEXTCHANGED);	
@@ -2190,7 +2204,11 @@ void CRichEditUI::OnTxNotify(DWORD iNotify, void *pv)
 			if (m_sText!=GetText())
 			{
 				GetManager()->SendNotify(this, DUI_MSGTYPE_TEXTCHANGED);
+#ifdef USE_OPENCC
 				m_sText = GetText();
+#else
+				m_sText = GetText();
+#endif				
 			}
 		}
 		break;

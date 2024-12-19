@@ -160,21 +160,21 @@ namespace DuiLib
 
 		CDuiString strFore;
 		CDuiString strImg = m_diFore.sDrawString;
-		int nPos = strImg.Find(L"file='");
+		int nPos = strImg.Find(_T("file='"));
 		if (nPos != -1)
 		{
 			strImg = strImg.Mid(nPos + 6);
-			nPos = strImg.Find(L"'");
+			nPos = strImg.Find(_T("'"));
 			strImg = strImg.Left(nPos);
 		}
-		strFore.Format(L"file='%s' source='%d,%d,%d,%d' dest='%d,%d,%d,%d'", strImg.GetData(), rc.left, rc.top, rc.right, rc.bottom, rc.left, rc.top, rc.right, rc.bottom);
+		strFore.Format(_T("file='%s' source='%d,%d,%d,%d' dest='%d,%d,%d,%d'"), strImg.GetData(), rc.left, rc.top, rc.right, rc.bottom, rc.left, rc.top, rc.right, rc.bottom);
 
 		CDuiString strCorner = m_diFore.sDrawString;
-		nPos = strCorner.Find(L"corner='");
+		nPos = strCorner.Find(_T("corner='"));
 		if (nPos != -1)
 		{
 			strCorner = strCorner.Mid(nPos + 8);
-			nPos = strCorner.Find(L"'");
+			nPos = strCorner.Find(_T("'"));
 			strCorner = strCorner.Left(nPos);
 
 			strFore += L" corner='";

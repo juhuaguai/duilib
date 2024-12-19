@@ -283,6 +283,7 @@ public:
 	static CDuiPtrArray* GetPaintManagers();
     static bool LoadPlugin(LPCTSTR pstrModuleName);
     static CDuiPtrArray* GetPlugins();
+	static void SetOpenCC(bool bOpen,const CDuiString& strJsonCfg);
 
 	bool IsForceUseSharedRes() const;
 	void SetForceUseSharedRes(bool bForce);

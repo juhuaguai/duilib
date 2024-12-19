@@ -64,4 +64,21 @@
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
+#ifdef USE_OPENCC
+//说明：此模块使用opencc，请务必将.json配置文件和其中用到的.ocd2文件放到一起。
+typedef void* opencc_t;
+opencc_t OpenccOpenW(const wchar_t* pszCfgFile);
+opencc_t OpenccOpenA(const char* pszCfgFile);
+int OpenccClose();
+const wchar_t* OpenccConvertW(const wchar_t* pszText);
+const char* OpenccConvertA(const char* pszAnsiText);
+	#ifdef _UNICODE
+		#define OpenccOpen OpenccOpenW
+		#define OpenccConvert OpenccConvertW
+	#else
+		#define OpenccOpen OpenccOpenA
+		#define OpenccConvert OpenccConvertA
+	#endif
+#endif
+
 #endif // !defined(AFX_STDAFX_H__E30B2003_188B_4EB4_AB99_3F3734D6CE6C__INCLUDED_)

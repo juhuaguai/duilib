@@ -83,11 +83,11 @@ namespace DuiLib
 #ifdef _UNICODE
 			m_pWideText = (LPWSTR)m_sText.GetData();
 #else 
-			int iLen = _tcslen(strText.GetData());
+			int iLen = _tcslen(m_sText.GetData());
 			if (m_pWideText) delete[] m_pWideText;
 			m_pWideText = new WCHAR[iLen + 1];
 			::ZeroMemory(m_pWideText, (iLen + 1) * sizeof(WCHAR));
-			::MultiByteToWideChar(CP_ACP, 0, strText.GetData(), -1, (LPWSTR)m_pWideText, iLen);
+			::MultiByteToWideChar(CP_ACP, 0, m_sText.GetData(), -1, (LPWSTR)m_pWideText, iLen);
 #endif
 		}
 	}

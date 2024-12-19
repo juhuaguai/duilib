@@ -245,7 +245,11 @@ namespace DuiLib
 		ASSERT(pstr);
 		if( pstr == NULL ) return 0;
 		::GetWindowText(m_hWnd, pstr, cchLen);
+#ifdef USE_OPENCC
 		m_pOwner->m_sText = pstr;
+#else
+		m_pOwner->m_sText = pstr;
+#endif
 		m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_TEXTCHANGED);
 		if( m_pOwner->GetManager()->IsLayered() ) m_pOwner->Invalidate();
 		return 0;
@@ -396,7 +400,11 @@ namespace DuiLib
 
 	void CEditUI::SetText(const CDuiString& strText)
 	{
+#ifdef USE_OPENCC
+		m_sText = OpenccConvert(strText.GetData());
+#else
 		m_sText = strText;
+#endif		
 		if( m_pWindow != NULL ) Edit_SetText(*m_pWindow, m_sText.GetData());
 		Invalidate();
 	}
