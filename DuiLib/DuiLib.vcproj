@@ -434,7 +434,7 @@
 				Optimization="0"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories=""
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;UILIB_STATIC;_USE_GDIPLUS;_CRT_SECURE_NO_WARNINGS;SUPPORT_APNG;USE_OPENCC"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;UILIB_STATIC;_USE_GDIPLUS;_CRT_SECURE_NO_WARNINGS;SUPPORT_APNG"
 				StringPooling="true"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
@@ -561,6 +561,87 @@
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
+		<Configuration
+			Name="static_use_opencc|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/DuiLib.tlb"
+				HeaderFileName=""
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories=""
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;UILIB_STATIC;_USE_GDIPLUS;_CRT_SECURE_NO_WARNINGS;SUPPORT_APNG;USE_OPENCC"
+				StringPooling="true"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderFile=".\Build\Static_u/DuiLib.pch"
+				AssemblerListingLocation=".\Static_u/"
+				ObjectFile=".\Static_u/"
+				ProgramDataBaseFileName=".\Static_u/"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1030"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				OutputFile="..\Lib\Duilib_uStatic.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+				SuppressStartupBanner="true"
+				OutputFile=".\Release/DuiLib.bsc"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
 	</Configurations>
 	<References>
 	</References>
@@ -616,6 +697,14 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="static_debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="static_use_opencc|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -679,6 +768,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="static_debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="static_use_opencc|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -828,6 +925,10 @@
 				</File>
 				<File
 					RelativePath=".\Control\UIScrollBar.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Control\UIScrollLabel.cpp"
 					>
 				</File>
 				<File
@@ -1033,6 +1134,10 @@
 				</File>
 				<File
 					RelativePath=".\Control\UIScrollBar.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Control\UIScrollLabel.h"
 					>
 				</File>
 				<File
