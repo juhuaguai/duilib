@@ -57,7 +57,7 @@ public:
     static HBITMAP GenerateBitmap(CPaintManagerUI* pManager, CControlUI* pControl, RECT rc, DWORD dwFilterColor = 0);
 	static SIZE GetTextSize(HDC hDC, CPaintManagerUI* pManager , LPCTSTR pstrText, int iFont, UINT uStyle);
 	//nSpecifyWidth/nSpecifyHeight指定宽高都大于0时,直接返回指定的宽高
-	static SIZE EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR pstrText,int iFont, UINT uStyle,bool bShowhtml=false,bool bEnabledEffect=false,int nSpecifyWidth=0,int nSpecifyHeight=0,const RECT* prcTextpadding=NULL);
+	static SIZE EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR pstrText,int iFont, UINT uStyle,bool bShowhtml=false,bool bEnabledEffect=false,int nSpecifyWidth=0,int nSpecifyHeight=0);
 	//svg文件转png文件
 	static bool SvgFile2PngFile(LPCWSTR pstrSvgFile,LPCWSTR pstrPngFile,const int& nPngWidth,const int& nPngHeight);
 	static HBITMAP SvgFile2HBITMAP(const LPCWSTR pstrSvgFile,const int& nBmpWidth,const int& nBmpHeight);

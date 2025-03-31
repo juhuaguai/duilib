@@ -2379,7 +2379,7 @@ SIZE CRenderEngine::GetTextSize( HDC hDC, CPaintManagerUI* pManager , LPCTSTR ps
 	return size;
 }
 
-SIZE CRenderEngine::EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR pstrText,int iFont, UINT uStyle,bool bShowhtml/* =false */,bool bEnabledEffect/* =false */,int nSpecifyWidth/* =0 */,int nSpecifyHeight/* =0 */,const RECT* prcTextpadding/* =NULL */)
+SIZE CRenderEngine::EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR pstrText,int iFont, UINT uStyle,bool bShowhtml/* =false */,bool bEnabledEffect/* =false */,int nSpecifyWidth/* =0 */,int nSpecifyHeight/* =0 */)
 {
 	SIZE size = {nSpecifyWidth,nSpecifyHeight};
 	if (nSpecifyWidth>0 && nSpecifyHeight>0)
@@ -2389,96 +2389,212 @@ SIZE CRenderEngine::EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR
 
 	CDuiString sText = pstrText;
 	CPaintManagerUI::ProcessMultiLanguageTokens(sText);
-	if ((uStyle & DT_SINGLELINE) != 0) //单行
-	{
-		if (size.cy == 0)
-		{
-			size.cy = pManager->GetFontInfo(iFont)->tm.tmHeight + 8;
-			if (prcTextpadding)
-				size.cy += prcTextpadding->top + prcTextpadding->bottom;
-		}
-		if (size.cx == 0) 
-		{
-			RECT rcText = { 0, 0, 9999, size.cy };
-			int nLinks = 0;
-			if( bShowhtml )
-				DrawHtmlText(hDC, pManager, rcText, sText.GetData(), 0, NULL, NULL, nLinks, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
-			else
-				DrawText(hDC, pManager, rcText, sText.GetData(), 0, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
 
-			size.cx = rcText.right - rcText.left;
-			if (prcTextpadding)
-				size.cx += prcTextpadding->left + prcTextpadding->right;
-		}
-	}
-	else	//多行
+	if (bEnabledEffect==false)
 	{
-		if (size.cy<=0)	//没有指定高度
+		if ((uStyle & DT_SINGLELINE) != 0) //单行
 		{
-			if( size.cx <= 0 )	//没有指定高度,也没有指定宽度
+			if (size.cy == 0)
 			{
 				size.cy = pManager->GetFontInfo(iFont)->tm.tmHeight + 8;
-				if (prcTextpadding)
-					size.cy += prcTextpadding->top + prcTextpadding->bottom;
-
-				int nLinks = 0;
-				RECT rcText = { 0, 0, 9999, size.cy };
-				if( bShowhtml )
-					DrawHtmlText(hDC, pManager, rcText, sText.GetData(), 0, NULL, NULL, nLinks, iFont, DT_CALCRECT | DT_SINGLELINE | uStyle & ~DT_RIGHT & ~DT_CENTER);
-				else
-					DrawText(hDC, pManager, rcText, sText.GetData(), 0, iFont, DT_CALCRECT | DT_SINGLELINE | uStyle & ~DT_RIGHT & ~DT_CENTER);
-
-				size.cx = rcText.right - rcText.left;
-				if (prcTextpadding)
-					size.cx += prcTextpadding->left + prcTextpadding->right;
 			}
-			else	//没有指定高度,但是指定了宽度
+			if (size.cx == 0) 
 			{
-				RECT rcText = { 0, 0, size.cx, 9999 };
-				if (prcTextpadding)
-				{
-					rcText.left += prcTextpadding->left;
-					rcText.right -= prcTextpadding->right;
-				}				
+				RECT rcText = { 0, 0, 9999, size.cy };
 				int nLinks = 0;
-				if( bShowhtml ) 
+				if( bShowhtml )
 					CRenderEngine::DrawHtmlText(hDC, pManager, rcText, sText.GetData(), 0, NULL, NULL, nLinks, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
 				else
 					CRenderEngine::DrawText(hDC, pManager, rcText, sText.GetData(), 0, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
-				size.cy = rcText.bottom - rcText.top;
-				if (prcTextpadding)
-					size.cy += prcTextpadding->top + prcTextpadding->bottom;
+
+				size.cx = rcText.right - rcText.left;
 			}
 		}
-		else	//指定了高度
+		else	//多行
 		{
-			if( size.cx <= 0 )	//指定了高度,但没有指定宽度
+			if (size.cy<=0)	//没有指定高度
 			{
-				RECT rcText = { 0, 0, 9999, size.cy };
-				if (prcTextpadding)
+				if( size.cx <= 0 )	//没有指定高度,也没有指定宽度
 				{
-					rcText.top += prcTextpadding->top;
-					rcText.bottom -= prcTextpadding->bottom;
+					size.cy = pManager->GetFontInfo(iFont)->tm.tmHeight + 8;
+
+					int nLinks = 0;
+					RECT rcText = { 0, 0, 9999, size.cy };
+					if( bShowhtml )
+						CRenderEngine::DrawHtmlText(hDC, pManager, rcText, sText.GetData(), 0, NULL, NULL, nLinks, iFont, DT_CALCRECT | DT_SINGLELINE | uStyle & ~DT_RIGHT & ~DT_CENTER);
+					else
+						CRenderEngine::DrawText(hDC, pManager, rcText, sText.GetData(), 0, iFont, DT_CALCRECT | DT_SINGLELINE | uStyle & ~DT_RIGHT & ~DT_CENTER);
+
+					size.cx = rcText.right - rcText.left;
 				}
-				int nLinks = 0;
-				if( bShowhtml ) 
-					CRenderEngine::DrawHtmlText(hDC, pManager, rcText, sText.GetData(), 0, NULL, NULL, nLinks, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
-				else
-					CRenderEngine::DrawText(hDC, pManager, rcText, sText.GetData(), 0, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
-
-				size.cx = rcText.right - rcText.left;
-				if (prcTextpadding)
-					size.cx += prcTextpadding->left + prcTextpadding->right;
+				else	//没有指定高度,但是指定了宽度
+				{
+					RECT rcText = { 0, 0, size.cx, 9999 };
+					int nLinks = 0;
+					if( bShowhtml ) 
+						CRenderEngine::DrawHtmlText(hDC, pManager, rcText, sText.GetData(), 0, NULL, NULL, nLinks, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
+					else
+						CRenderEngine::DrawText(hDC, pManager, rcText, sText.GetData(), 0, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
+					size.cy = rcText.bottom - rcText.top;
+				}
 			}
+			else	//指定了高度
+			{
+				if( size.cx <= 0 )	//指定了高度,但没有指定宽度
+				{
+					RECT rcText = { 0, 0, 9999, size.cy };
+					int nLinks = 0;
+					if( bShowhtml ) 
+						CRenderEngine::DrawHtmlText(hDC, pManager, rcText, sText.GetData(), 0, NULL, NULL, nLinks, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
+					else
+						CRenderEngine::DrawText(hDC, pManager, rcText, sText.GetData(), 0, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
 
-			//指定了宽也指定了高的话,用不着算,上面直接返回了.
+					size.cx = rcText.right - rcText.left;
+				}
+
+				//指定了宽也指定了高的话,用不着算,上面直接返回了.
+			}
 		}
 	}
-
-	//GDI+绘制所需的宽度与GDI稍微不一样,这里做个修正
-	if (bEnabledEffect && nSpecifyWidth<=0)
+	else
 	{
-		size.cx = size.cx*1.03;	//1.03是经过测试观察的结果 //目前先修正宽度,高度待有空详测后再修正
+		//
+		////GDI+绘制所需的宽度与GDI稍微不一样,这里做个修正
+		//if (bEnabledEffect && nSpecifyWidth<=0)
+		//{
+		//	size.cx = size.cx*1.09;	//1.03或1.09是经过测试观察的结果 //目前先修正宽度,高度待有空详测后再修正
+		//}
+
+		if ((uStyle & DT_SINGLELINE) != 0) //单行
+		{
+			if (size.cy == 0)
+				size.cy = pManager->GetFontInfo(iFont)->tm.tmHeight + 8;
+
+			Font	nFont(hDC,pManager->GetFont(iFont));
+			Graphics nGraphics(hDC);
+			nGraphics.SetTextRenderingHint(TextRenderingHintAntiAlias);
+
+			StringFormat format;
+			StringAlignment sa = StringAlignment::StringAlignmentNear;
+			if ((uStyle & DT_VCENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
+			else if( (uStyle & DT_BOTTOM) != 0) sa = StringAlignment::StringAlignmentFar;
+			format.SetLineAlignment((StringAlignment)sa);
+			sa = StringAlignment::StringAlignmentNear;
+			if ((uStyle & DT_CENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
+			else if( (uStyle & DT_RIGHT) != 0) sa = StringAlignment::StringAlignmentFar;
+			format.SetAlignment((StringAlignment)sa);
+			if ((uStyle & DT_SINGLELINE) != 0) format.SetFormatFlags(StringFormatFlagsNoWrap);
+			format.SetFormatFlags(StringFormatFlagsMeasureTrailingSpaces);
+
+			RectF nRc((float)0,(float)0,(float)9999,(float)size.cy);
+			//RectF nShadowRc = nRc;
+			//nShadowRc.X += m_ShadowOffset.X;
+			//nShadowRc.Y += m_ShadowOffset.Y;
+
+			RectF boundRect;
+			// Measure the string.
+			int nLen = wcslen(pstrText);
+			nGraphics.MeasureString(pstrText, nLen, &nFont, nRc, &format, &boundRect);
+			size.cx = boundRect.Width+1;
+		}
+		else//多行
+		{
+			if (size.cy<=0)	//没有指定高度
+			{
+				if( size.cx <= 0 )	//没有指定高度,也没有指定宽度
+				{
+					size.cy = pManager->GetFontInfo(iFont)->tm.tmHeight + 8;
+					
+					Font	nFont(hDC,pManager->GetFont(iFont));
+					Graphics nGraphics(hDC);
+					nGraphics.SetTextRenderingHint(TextRenderingHintAntiAlias);
+
+					StringFormat format;
+					StringAlignment sa = StringAlignment::StringAlignmentNear;
+					if ((uStyle & DT_VCENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
+					else if( (uStyle & DT_BOTTOM) != 0) sa = StringAlignment::StringAlignmentFar;
+					format.SetLineAlignment((StringAlignment)sa);
+					sa = StringAlignment::StringAlignmentNear;
+					if ((uStyle & DT_CENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
+					else if( (uStyle & DT_RIGHT) != 0) sa = StringAlignment::StringAlignmentFar;
+					format.SetAlignment((StringAlignment)sa);
+					if ((uStyle & DT_SINGLELINE) != 0) format.SetFormatFlags(StringFormatFlagsNoWrap);
+					format.SetFormatFlags(StringFormatFlagsMeasureTrailingSpaces);
+
+					RectF nRc((float)0,(float)0,(float)9999,(float)size.cy);
+					RectF boundRect;
+					// Measure the string.
+					int nLen = wcslen(pstrText);
+					nGraphics.MeasureString(pstrText, nLen, &nFont, nRc, &format, &boundRect);
+					size.cx = boundRect.Width+1;
+				}
+				else	//没有指定高度,但是指定了宽度
+				{				
+					Font	nFont(hDC,pManager->GetFont(iFont));
+					Graphics nGraphics(hDC);
+					nGraphics.SetTextRenderingHint(TextRenderingHintAntiAlias);
+
+					StringFormat format;
+					StringAlignment sa = StringAlignment::StringAlignmentNear;
+					if ((uStyle & DT_VCENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
+					else if( (uStyle & DT_BOTTOM) != 0) sa = StringAlignment::StringAlignmentFar;
+					format.SetLineAlignment((StringAlignment)sa);
+					sa = StringAlignment::StringAlignmentNear;
+					if ((uStyle & DT_CENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
+					else if( (uStyle & DT_RIGHT) != 0) sa = StringAlignment::StringAlignmentFar;
+					format.SetAlignment((StringAlignment)sa);
+					if ((uStyle & DT_SINGLELINE) != 0) format.SetFormatFlags(StringFormatFlagsNoWrap);
+					format.SetFormatFlags(StringFormatFlagsMeasureTrailingSpaces);
+
+					RectF nRc((float)0,(float)0,(float)size.cx,(float)9999);
+					//RectF nShadowRc = nRc;
+					//nShadowRc.X += m_ShadowOffset.X;
+					//nShadowRc.Y += m_ShadowOffset.Y;
+
+					RectF boundRect;
+					// Measure the string.
+					int nLen = wcslen(pstrText);
+					nGraphics.MeasureString(pstrText, nLen, &nFont, nRc, &format, &boundRect);
+					size.cy = boundRect.Height+1;
+				}
+			}
+			else	//指定了高度
+			{
+				if( size.cx <= 0 )	//指定了高度,但没有指定宽度
+				{
+					RECT rcText = { 0, 0, 9999, size.cy };
+					Font	nFont(hDC,pManager->GetFont(iFont));
+					Graphics nGraphics(hDC);
+					nGraphics.SetTextRenderingHint(TextRenderingHintAntiAlias);
+
+					StringFormat format;
+					StringAlignment sa = StringAlignment::StringAlignmentNear;
+					if ((uStyle & DT_VCENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
+					else if( (uStyle & DT_BOTTOM) != 0) sa = StringAlignment::StringAlignmentFar;
+					format.SetLineAlignment((StringAlignment)sa);
+					sa = StringAlignment::StringAlignmentNear;
+					if ((uStyle & DT_CENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
+					else if( (uStyle & DT_RIGHT) != 0) sa = StringAlignment::StringAlignmentFar;
+					format.SetAlignment((StringAlignment)sa);
+					if ((uStyle & DT_SINGLELINE) != 0) format.SetFormatFlags(StringFormatFlagsNoWrap);
+					format.SetFormatFlags(StringFormatFlagsMeasureTrailingSpaces);
+
+					RectF nRc((float)0,(float)0,(float)9999,(float)size.cy);
+					//RectF nShadowRc = nRc;
+					//nShadowRc.X += m_ShadowOffset.X;
+					//nShadowRc.Y += m_ShadowOffset.Y;
+
+					RectF boundRect;
+					// Measure the string.
+					int nLen = wcslen(pstrText);
+					nGraphics.MeasureString(pstrText, nLen, &nFont, nRc, &format, &boundRect);
+					size.cx = boundRect.Width+1;
+				}
+
+				//指定了宽也指定了高的话,用不着算,上面直接返回了.
+			}
+		}
+		
 	}
 	
 	return size;
