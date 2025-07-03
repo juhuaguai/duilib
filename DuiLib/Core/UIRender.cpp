@@ -2403,9 +2403,9 @@ SIZE CRenderEngine::EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR
 				RECT rcText = { 0, 0, 9999, size.cy };
 				int nLinks = 0;
 				if( bShowhtml )
-					CRenderEngine::DrawHtmlText(hDC, pManager, rcText, sText.GetData(), 0, NULL, NULL, nLinks, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
+					CRenderEngine::DrawHtmlText(hDC, pManager, rcText, sText.GetData(), 0, NULL, NULL, nLinks, iFont, DT_VCENTER | DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
 				else
-					CRenderEngine::DrawText(hDC, pManager, rcText, sText.GetData(), 0, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
+					CRenderEngine::DrawText(hDC, pManager, rcText, sText.GetData(), 0, iFont, DT_VCENTER | DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
 
 				size.cx = rcText.right - rcText.left;
 			}
@@ -2421,9 +2421,9 @@ SIZE CRenderEngine::EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR
 					int nLinks = 0;
 					RECT rcText = { 0, 0, 9999, size.cy };
 					if( bShowhtml )
-						CRenderEngine::DrawHtmlText(hDC, pManager, rcText, sText.GetData(), 0, NULL, NULL, nLinks, iFont, DT_CALCRECT | DT_SINGLELINE | uStyle & ~DT_RIGHT & ~DT_CENTER);
+						CRenderEngine::DrawHtmlText(hDC, pManager, rcText, sText.GetData(), 0, NULL, NULL, nLinks, iFont, DT_VCENTER | DT_CALCRECT | DT_SINGLELINE | uStyle & ~DT_RIGHT & ~DT_CENTER);
 					else
-						CRenderEngine::DrawText(hDC, pManager, rcText, sText.GetData(), 0, iFont, DT_CALCRECT | DT_SINGLELINE | uStyle & ~DT_RIGHT & ~DT_CENTER);
+						CRenderEngine::DrawText(hDC, pManager, rcText, sText.GetData(), 0, iFont, DT_VCENTER | DT_CALCRECT | DT_SINGLELINE | uStyle & ~DT_RIGHT & ~DT_CENTER);
 
 					size.cx = rcText.right - rcText.left;
 				}
@@ -2445,9 +2445,9 @@ SIZE CRenderEngine::EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR
 					RECT rcText = { 0, 0, 9999, size.cy };
 					int nLinks = 0;
 					if( bShowhtml ) 
-						CRenderEngine::DrawHtmlText(hDC, pManager, rcText, sText.GetData(), 0, NULL, NULL, nLinks, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
+						CRenderEngine::DrawHtmlText(hDC, pManager, rcText, sText.GetData(), 0, NULL, NULL, nLinks, iFont, DT_VCENTER | DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
 					else
-						CRenderEngine::DrawText(hDC, pManager, rcText, sText.GetData(), 0, iFont, DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
+						CRenderEngine::DrawText(hDC, pManager, rcText, sText.GetData(), 0, iFont, DT_VCENTER | DT_CALCRECT | uStyle & ~DT_RIGHT & ~DT_CENTER);
 
 					size.cx = rcText.right - rcText.left;
 				}
