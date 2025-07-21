@@ -2493,9 +2493,19 @@ SIZE CRenderEngine::EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR
 
 			RectF boundRect;
 			// Measure the string.
-			int nLen = wcslen(pstrText);
+#ifdef _UNICODE
+			int nLen = _tcslen(pstrText);
 			nGraphics.MeasureString(pstrText, nLen, &nFont, nRc, &format, &boundRect);
 			size.cx = boundRect.Width+1;
+#else
+			int nLen = _tcslen(pstrText);
+			PWCHAR wpszText = new WCHAR[nLen + 1];
+			::ZeroMemory(wpszText, (nLen + 1) * sizeof(WCHAR));
+			::MultiByteToWideChar(CP_ACP, 0, pstrText, -1, (LPWSTR)wpszText, nLen);
+			nGraphics.MeasureString(wpszText, nLen, &nFont, nRc, &format, &boundRect);
+			size.cx = boundRect.Width+1;
+			delete[] wpszText;
+#endif
 		}
 		else//多行
 		{
@@ -2524,9 +2534,19 @@ SIZE CRenderEngine::EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR
 					RectF nRc((float)0,(float)0,(float)9999,(float)size.cy);
 					RectF boundRect;
 					// Measure the string.
-					int nLen = wcslen(pstrText);
+#ifdef _UNICODE
+					int nLen = _tcslen(pstrText);
 					nGraphics.MeasureString(pstrText, nLen, &nFont, nRc, &format, &boundRect);
 					size.cx = boundRect.Width+1;
+#else
+					int nLen = _tcslen(pstrText);
+					PWCHAR wpszText = new WCHAR[nLen + 1];
+					::ZeroMemory(wpszText, (nLen + 1) * sizeof(WCHAR));
+					::MultiByteToWideChar(CP_ACP, 0, pstrText, -1, (LPWSTR)wpszText, nLen);
+					nGraphics.MeasureString(wpszText, nLen, &nFont, nRc, &format, &boundRect);
+					size.cx = boundRect.Width+1;
+					delete[] wpszText;
+#endif
 				}
 				else	//没有指定高度,但是指定了宽度
 				{				
@@ -2553,9 +2573,19 @@ SIZE CRenderEngine::EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR
 
 					RectF boundRect;
 					// Measure the string.
-					int nLen = wcslen(pstrText);
+#ifdef _UNICODE
+					int nLen = _tcslen(pstrText);
 					nGraphics.MeasureString(pstrText, nLen, &nFont, nRc, &format, &boundRect);
 					size.cy = boundRect.Height+1;
+#else
+					int nLen = _tcslen(pstrText);
+					PWCHAR wpszText = new WCHAR[nLen + 1];
+					::ZeroMemory(wpszText, (nLen + 1) * sizeof(WCHAR));
+					::MultiByteToWideChar(CP_ACP, 0, pstrText, -1, (LPWSTR)wpszText, nLen);
+					nGraphics.MeasureString(wpszText, nLen, &nFont, nRc, &format, &boundRect);
+					size.cy = boundRect.Height+1;
+					delete[] wpszText;
+#endif
 				}
 			}
 			else	//指定了高度
@@ -2586,9 +2616,19 @@ SIZE CRenderEngine::EstimateTextSize(HDC hDC, CPaintManagerUI* pManager, LPCTSTR
 
 					RectF boundRect;
 					// Measure the string.
-					int nLen = wcslen(pstrText);
+#ifdef _UNICODE
+					int nLen = _tcslen(pstrText);
 					nGraphics.MeasureString(pstrText, nLen, &nFont, nRc, &format, &boundRect);
 					size.cx = boundRect.Width+1;
+#else
+					int nLen = _tcslen(pstrText);
+					PWCHAR wpszText = new WCHAR[nLen + 1];
+					::ZeroMemory(wpszText, (nLen + 1) * sizeof(WCHAR));
+					::MultiByteToWideChar(CP_ACP, 0, pstrText, -1, (LPWSTR)wpszText, nLen);
+					nGraphics.MeasureString(wpszText, nLen, &nFont, nRc, &format, &boundRect);
+					size.cx = boundRect.Width+1;
+					delete[] wpszText;
+#endif
 				}
 
 				//指定了宽也指定了高的话,用不着算,上面直接返回了.
