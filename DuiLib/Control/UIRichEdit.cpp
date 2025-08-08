@@ -2156,7 +2156,7 @@ void CRichEditUI::DoInit()
         m_pTwh->GetTextServices()->TxSendMessage(EM_SETLANGOPTIONS, 0, 0, &lResult);
         m_pTwh->OnTxInPlaceActivate(NULL);
         m_pManager->AddMessageFilter(this);
-		if( m_pManager->IsLayered() ) 
+		if( m_pManager->IsLayered() && m_pManager->GetFocus() == this) 
 			m_pManager->SetTimer(this, DEFAULT_TIMERID, ::GetCaretBlinkTime());
 
 		TxSendMessage(EM_GETEVENTMASK, 0, 0, &lResult);
@@ -2389,6 +2389,8 @@ void CRichEditUI::DoEvent(TEventUI& event)
         if( m_pTwh ) {
             m_pTwh->OnTxInPlaceActivate(NULL);
             m_pTwh->GetTextServices()->TxSendMessage(WM_SETFOCUS, 0, 0, 0);
+			if( m_pManager->IsLayered()) 
+				m_pManager->SetTimer(this, DEFAULT_TIMERID, ::GetCaretBlinkTime());
         }
 		m_bFocused = true;
 		Invalidate();
@@ -2398,6 +2400,8 @@ void CRichEditUI::DoEvent(TEventUI& event)
         if( m_pTwh ) {
             m_pTwh->OnTxInPlaceActivate(NULL);
             m_pTwh->GetTextServices()->TxSendMessage(WM_KILLFOCUS, 0, 0, 0);
+			if( m_pManager->IsLayered()) 
+				m_pManager->KillTimer(this, DEFAULT_TIMERID);
         }
 		m_bFocused = false;
 		Invalidate();
