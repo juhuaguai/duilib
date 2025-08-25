@@ -4271,6 +4271,7 @@ ZRESULT TUnzip1::Unzip(int index,void *dst,unsigned int len,DWORD flags)
 #ifdef ZIP_STD
 		h = fopen(fn,"wb");
 #else
+		SetFileAttributes(fn, FILE_ATTRIBUTE_NORMAL);
 		h = CreateFile(fn,GENERIC_WRITE,0,NULL,CREATE_ALWAYS,ze.attr,NULL);
 #endif
 	}
