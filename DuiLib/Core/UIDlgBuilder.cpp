@@ -236,7 +236,7 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
         }
 		//Ê÷¿Ø¼þXML½âÎö
 		else if( _tcsicmp(pstrClass, _T("TreeNode")) == 0 ) {
-			CTreeNodeUI* pParentNode	= static_cast<CTreeNodeUI*>(pParent->GetInterface(_T("TreeNode")));
+			CTreeNodeUI* pParentNode	= static_cast<CTreeNodeUI*>(pParent->GetInterface(DUI_CTR_TREENODE));
 			CTreeNodeUI* pNode			= new CTreeNodeUI();
 			if(pParentNode){
 				if(!pParentNode->Add(pNode)){
@@ -278,7 +278,7 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
 			}
 
 			if(!pParentNode){
-				CTreeViewUI* pTreeView = static_cast<CTreeViewUI*>(pParent->GetInterface(_T("TreeView")));
+				CTreeViewUI* pTreeView = static_cast<CTreeViewUI*>(pParent->GetInterface(DUI_CTR_TREEVIEW));
 				ASSERT(pTreeView);
 				if( pTreeView == NULL ) return NULL;
 				if( !pTreeView->Add(pNode) ) {
